@@ -1,0 +1,520 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeuroCode · Rotación Mental</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 34 34'%3E%3Ccircle cx='17' cy='17' r='15' fill='%2304070d' stroke='%2322d3ee' stroke-width='2'/%3E%3Ctext x='17' y='23' font-size='17' font-family='Arial' font-weight='900' fill='%2322d3ee' text-anchor='middle'%3ER%3C/text%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --bg:#04070d; --panel:rgba(10,20,34,.72); --borde:rgba(56,189,248,.25);
+    --cian:#22d3ee; --cian2:#67e8f9; --violeta:#a78bfa; --texto:#e2f3ff; --suave:#8aa4bd;
+    --ok:#34d399; --mal:#f87171; --aviso:#fbbf24;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    background:radial-gradient(ellipse at 50% 0%,#0b1d33 0%,var(--bg) 60%);
+    color:var(--texto); font-family:"Space Grotesk",system-ui,Segoe UI,sans-serif;
+    overflow-x:hidden; min-height:100vh;
+  }
+  #red{position:fixed;inset:0;z-index:0;transition:opacity .6s}
+  #red.atenuada{opacity:.08}
+  main{position:relative;z-index:1;min-height:100vh;display:flex;flex-direction:column}
+  header{display:flex;align-items:center;justify-content:space-between;padding:18px 28px;gap:12px}
+  .marca{display:flex;align-items:center;gap:12px;font-weight:700;letter-spacing:.14em;font-size:15px}
+  .marca svg{filter:drop-shadow(0 0 8px var(--cian))}
+  .marca small{display:block;font-weight:400;letter-spacing:.08em;color:var(--suave);font-size:11px}
+  .chip{font-family:"JetBrains Mono",monospace;font-size:12px;color:var(--cian2);border:1px solid var(--borde);
+        padding:6px 12px;border-radius:999px;background:rgba(34,211,238,.06)}
+  .pantalla{display:none;flex:1;align-items:center;justify-content:center;padding:16px 16px 40px}
+  .pantalla.activa{display:flex}
+  .panel{background:var(--panel);border:1px solid var(--borde);border-radius:20px;padding:36px;
+         backdrop-filter:blur(14px);box-shadow:0 0 60px rgba(34,211,238,.08),inset 0 0 40px rgba(34,211,238,.03);
+         width:min(760px,100%)}
+  h1{font-size:clamp(30px,5vw,48px);line-height:1.05;margin-bottom:10px;
+     background:linear-gradient(90deg,var(--cian2),var(--violeta));-webkit-background-clip:text;background-clip:text;color:transparent}
+  h2{font-size:24px;margin-bottom:14px}
+  p{color:var(--suave);line-height:1.6;margin-bottom:14px}
+  p strong{color:var(--texto)}
+  label{display:block;font-size:13px;color:var(--suave);margin-bottom:6px;letter-spacing:.04em}
+  input{width:100%;background:rgba(2,8,16,.8);border:1px solid var(--borde);color:var(--texto);
+        font:500 18px "JetBrains Mono",monospace;padding:14px 16px;border-radius:12px;outline:none}
+  input:focus{border-color:var(--cian);box-shadow:0 0 0 3px rgba(34,211,238,.18)}
+  .fila{display:flex;gap:12px;flex-wrap:wrap;margin-top:22px}
+  button{font:600 15px "Space Grotesk",sans-serif;border-radius:12px;padding:14px 22px;cursor:pointer;border:1px solid var(--borde);
+         background:rgba(34,211,238,.06);color:var(--texto);transition:.2s}
+  button:hover{border-color:var(--cian);background:rgba(34,211,238,.14)}
+  button.primario{background:linear-gradient(90deg,#0891b2,#7c3aed);border:none;box-shadow:0 0 24px rgba(34,211,238,.35)}
+  button.primario:hover{filter:brightness(1.15)}
+  button.peligro{color:var(--mal);border-color:rgba(248,113,113,.35)}
+  button:disabled{opacity:.4;cursor:not-allowed}
+  details{margin-top:20px;border-top:1px solid var(--borde);padding-top:14px}
+  summary{cursor:pointer;color:var(--suave);font-size:14px}
+  .config{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px}
+  .config input{font-size:15px;padding:10px 12px}
+  .ejemplos{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}
+  .ejemplo{border:1px solid var(--borde);border-radius:16px;padding:16px;text-align:center;background:rgba(2,8,16,.5)}
+  .ejemplo .letra{font:900 84px Arial,Helvetica,sans-serif;color:var(--cian2);line-height:1.1;
+                  text-shadow:0 0 18px rgba(34,211,238,.6);display:inline-block}
+  .tecla{display:inline-block;font:600 14px "JetBrains Mono",monospace;border:1px solid var(--cian);border-radius:8px;
+         padding:4px 10px;margin-top:8px;color:var(--cian2);box-shadow:0 0 12px rgba(34,211,238,.25)}
+  ul.reglas{list-style:none;margin:6px 0 4px}
+  ul.reglas li{color:var(--suave);padding:6px 0 6px 22px;position:relative;line-height:1.5}
+  ul.reglas li::before{content:"";position:absolute;left:4px;top:13px;width:7px;height:7px;border-radius:50%;
+                       background:var(--cian);box-shadow:0 0 8px var(--cian)}
+  /* Prueba */
+  #pPrueba{flex-direction:column;gap:18px}
+  .hud{width:min(760px,100%);display:flex;justify-content:space-between;align-items:center;gap:12px;
+       font:500 13px "JetBrains Mono",monospace;color:var(--suave)}
+  .barra{flex:1;height:6px;background:rgba(138,164,189,.15);border-radius:999px;overflow:hidden}
+  .barra i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--cian),var(--violeta));transition:width .3s}
+  .escenario{width:min(460px,90vw,56vh);aspect-ratio:1;border-radius:50%;display:grid;place-items:center;position:relative;
+             border:1px solid rgba(34,211,238,.18);background:radial-gradient(circle,rgba(34,211,238,.05),transparent 70%)}
+  .escenario::after{content:"";position:absolute;inset:14px;border-radius:50%;border:1px dashed rgba(34,211,238,.10)}
+  #estimulo{font:900 min(190px,22vw,24vh) Arial,Helvetica,sans-serif;color:#eaffff;line-height:1;
+            text-shadow:0 0 22px rgba(34,211,238,.55);user-select:none;visibility:hidden}
+  #fijacion{position:absolute;font:300 56px "JetBrains Mono",monospace;color:var(--suave);visibility:hidden}
+  #feedback{position:absolute;bottom:-46px;font:600 16px "JetBrains Mono",monospace;height:22px}
+  .botonesResp{display:flex;gap:16px;width:min(460px,90vw);margin-top:24px}
+  .botonesResp button{flex:1;padding:18px 10px;font-size:16px}
+  .botonesResp b{font-family:"JetBrains Mono",monospace;color:var(--cian2)}
+  /* Resultados */
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:12px;margin:18px 0}
+  .stat{border:1px solid var(--borde);border-radius:14px;padding:14px;background:rgba(2,8,16,.5)}
+  .stat span{display:block;font-size:12px;color:var(--suave);letter-spacing:.05em}
+  .stat strong{font:600 22px "JetBrains Mono",monospace;color:var(--cian2)}
+  #grafica{width:100%;height:auto;margin-top:8px}
+  .nota{font-size:12px;color:var(--suave);margin-top:8px}
+  @media (max-width:560px){ .panel{padding:22px} header{padding:14px 16px} .ejemplos{gap:10px} }
+</style>
+</head>
+<body>
+<canvas id="red"></canvas>
+<main>
+  <header>
+    <div class="marca">
+      <svg width="34" height="34" viewBox="0 0 34 34" fill="none" stroke="#22d3ee" stroke-width="1.6">
+        <circle cx="17" cy="17" r="15" opacity=".35"/>
+        <circle cx="17" cy="9" r="2.6"/><circle cx="9" cy="21" r="2.6"/><circle cx="25" cy="21" r="2.6"/><circle cx="17" cy="17" r="1.8" fill="#22d3ee"/>
+        <path d="M17 11.6V15.2M10.9 19.6l4.6-1.8M23.1 19.6l-4.6-1.8"/>
+      </svg>
+      <div>NEUROCODE<small>Laboratorio de rotación mental</small></div>
+    </div>
+    <div class="chip" id="chipEstado">Sistema listo</div>
+  </header>
+
+  <!-- 1. Inicio -->
+  <section class="pantalla activa" id="pInicio">
+    <div class="panel">
+      <h1>¿A qué velocidad<br>gira tu cerebro?</h1>
+      <p>Verás la letra <strong>R</strong> girada en distintos ángulos. Tu cerebro tendrá que "rotarla" mentalmente para saber si está <strong>normal</strong> o <strong>en espejo</strong>. Mediremos cuánto tardas.</p>
+      <label for="codigo">Código del participante</label>
+      <input id="codigo" maxlength="24" placeholder="Ej: P01" autocomplete="off">
+      <div class="fila">
+        <button class="primario" id="btnInstr">Continuar →</button>
+        <button id="btnVerDatos">Ver datos guardados</button>
+      </div>
+      <details>
+        <summary>Configuración del experimento</summary>
+        <div class="config">
+          <div><label for="cfgReps">Mediciones válidas por ángulo</label><input id="cfgReps" type="number" min="1" max="20" value="5"></div>
+          <div><label for="cfgWarm">Ensayos de calentamiento</label><input id="cfgWarm" type="number" min="0" max="20" value="5"></div>
+          <div><label for="cfgUmbral">Umbral posible atípico (ms)</label><input id="cfgUmbral" type="number" min="500" max="10000" value="3000"></div>
+        </div>
+        <p class="nota">Ángulos: 0°, 30°, 60°, 90°, 120°, 150°, 180°. Solo se guardan los aciertos; los errores y las respuestas anticipadas (&lt;150 ms) se repiten.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- 2. Instrucciones -->
+  <section class="pantalla" id="pInstr">
+    <div class="panel">
+      <h2>Instrucciones</h2>
+      <div class="ejemplos">
+        <div class="ejemplo"><div class="letra">R</div><br><span class="tecla">F</span><p style="margin:8px 0 0">Normal</p></div>
+        <div class="ejemplo"><div class="letra" style="transform:scaleX(-1)">R</div><br><span class="tecla">J</span><p style="margin:8px 0 0">Espejo</p></div>
+      </div>
+      <ul class="reglas">
+        <li>Primero aparece una cruz <strong>+</strong>: mira al centro.</li>
+        <li>Luego aparece la R girada. Presiona <strong>F</strong> si es normal o <strong>J</strong> si está en espejo (en celular, usa los botones).</li>
+        <li>Responde <strong>rápido pero sin equivocarte</strong>. Los errores no cuentan y se repiten.</li>
+        <li>Empiezas con <span id="txtWarm">5</span> ensayos de práctica que no se guardan.</li>
+      </ul>
+      <div class="fila">
+        <button class="primario" id="btnEmpezar">Empezar práctica (Espacio)</button>
+        <button id="btnVolver1">← Volver</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- 3. Prueba -->
+  <section class="pantalla" id="pPrueba">
+    <div class="hud">
+      <span id="hudFase">PRÁCTICA</span>
+      <div class="barra"><i id="hudBarra"></i></div>
+      <span id="hudConteo">0/0</span>
+    </div>
+    <div class="escenario">
+      <div id="fijacion">+</div>
+      <div id="estimulo">R</div>
+      <div id="feedback"></div>
+    </div>
+    <div class="botonesResp">
+      <button data-resp="normal"><b>F</b> · Normal</button>
+      <button data-resp="espejo"><b>J</b> · Espejo</button>
+    </div>
+  </section>
+
+  <!-- 4. Pausa tras la práctica -->
+  <section class="pantalla" id="pPausa">
+    <div class="panel">
+      <h2>Práctica completada ✓</h2>
+      <p>Ahora empieza la medición real: <strong id="txtTotal">35</strong> respuestas correctas. Mantén la concentración y responde lo más rápido que puedas sin equivocarte.</p>
+      <div class="fila"><button class="primario" id="btnMedir">Iniciar medición (Espacio)</button></div>
+    </div>
+  </section>
+
+  <!-- 5. Resultados -->
+  <section class="pantalla" id="pResultados">
+    <div class="panel" style="width:min(900px,100%)">
+      <h2 id="tituloRes">Resultados</h2>
+      <p id="subRes">Tiempo de respuesta según el ángulo de rotación. La recta se calcula por mínimos cuadrados.</p>
+      <div class="stats">
+        <div class="stat"><span>n datos válidos</span><strong id="sN">–</strong></div>
+        <div class="stat"><span>a* (ms / grado)</span><strong id="sA">–</strong></div>
+        <div class="stat"><span>b* (ms)</span><strong id="sB">–</strong></div>
+        <div class="stat"><span>R²</span><strong id="sR2">–</strong></div>
+        <div class="stat"><span>Errores descartados</span><strong id="sErr">–</strong></div>
+      </div>
+      <svg id="grafica" viewBox="0 0 820 420"></svg>
+      <p class="nota" id="notaVel"></p>
+      <div class="fila">
+        <button class="primario" id="btnCsvTodos">Descargar CSV (todos)</button>
+        <button id="btnCsvUno">Descargar CSV (este participante)</button>
+        <button id="btnNuevo">Nuevo participante</button>
+        <button class="peligro" id="btnBorrar">Borrar todos los datos</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<script>
+/* ===================== Configuración y estado ===================== */
+const ANGULOS = [0, 30, 60, 90, 120, 150, 180];
+const CLAVE_STORAGE = "neurocode_rotacion_v1";
+const ANTICIPACION_MS = 150, TIMEOUT_MS = 7000, FIJACION_MS = 500, FEEDBACK_MS = 450, ITI_MS = 350;
+
+let cfg = { reps: 5, warm: 5, umbral: 3000 };
+let todos = cargarDatos();          // datos válidos de todos los participantes
+let ses = null;                     // sesión actual
+let estado = "inactivo";            // inactivo | fijacion | respuesta | feedback
+let ensayo = null, t0 = 0, timerTimeout = null;
+
+const $ = id => document.getElementById(id);
+
+function cargarDatos(){
+  try { return JSON.parse(localStorage.getItem(CLAVE_STORAGE)) || []; } catch(e){ return []; }
+}
+function guardarDatos(){
+  try { localStorage.setItem(CLAVE_STORAGE, JSON.stringify(todos)); } catch(e){}
+}
+
+function mostrar(id){
+  document.querySelectorAll(".pantalla").forEach(p => p.classList.toggle("activa", p.id === id));
+  $("red").classList.toggle("atenuada", id === "pPrueba");
+  animarRed = id !== "pPrueba";
+}
+
+function barajar(arr){
+  for (let i = arr.length - 1; i > 0; i--){ const j = Math.floor(Math.random() * (i + 1)); [arr[i], arr[j]] = [arr[j], arr[i]]; }
+  return arr;
+}
+
+function nuevoEnsayo(angulo){
+  const dir = (angulo === 0 || angulo === 180) ? 1 : (Math.random() < .5 ? 1 : -1);
+  return { angulo, dir, espejo: Math.random() < .5 };
+}
+
+/* ===================== Flujo de pantallas ===================== */
+$("btnInstr").onclick = () => {
+  const codigo = $("codigo").value.trim();
+  if (!codigo){ $("codigo").focus(); $("codigo").style.borderColor = "var(--mal)"; return; }
+  cfg.reps = clamp(+$("cfgReps").value, 1, 20, 5);
+  cfg.warm = clamp(+$("cfgWarm").value, 0, 20, 5);
+  cfg.umbral = clamp(+$("cfgUmbral").value, 500, 10000, 3000);
+  $("txtWarm").textContent = cfg.warm;
+  $("txtTotal").textContent = cfg.reps * ANGULOS.length;
+  ses = { participante: codigo, validos: [], errores: 0, anticipadas: 0, sinRespuesta: 0, contador: 0 };
+  mostrar("pInstr");
+};
+$("btnVolver1").onclick = () => mostrar("pInicio");
+$("btnEmpezar").onclick = iniciarPractica;
+$("btnMedir").onclick = iniciarMedicion;
+$("btnNuevo").onclick = () => { $("codigo").value = ""; mostrar("pInicio"); $("codigo").focus(); };
+$("btnVerDatos").onclick = () => { ses = null; mostrarResultados(); };
+$("btnCsvTodos").onclick = () => descargarCSV(todos, "neurocode_todos.csv");
+$("btnCsvUno").onclick = () => ses && descargarCSV(todos.filter(d => d.participante === ses.participante), `neurocode_${ses.participante}.csv`);
+$("btnBorrar").onclick = () => {
+  if (confirm("¿Borrar TODOS los datos guardados en este navegador? Descarga primero el CSV si los necesitas.")){
+    todos = []; guardarDatos(); mostrarResultados();
+  }
+};
+$("codigo").addEventListener("input", e => e.target.style.borderColor = "");
+$("codigo").addEventListener("keydown", e => { if (e.key === "Enter") $("btnInstr").click(); });
+
+function clamp(v, min, max, def){ return Number.isFinite(v) ? Math.min(max, Math.max(min, Math.round(v))) : def; }
+
+function iniciarPractica(){
+  if (cfg.warm === 0){ mostrar("pPausa"); return; }
+  ses.fase = "practica";
+  ses.cola = Array.from({ length: cfg.warm }, () => ANGULOS[Math.floor(Math.random() * ANGULOS.length)]);
+  ses.totalFase = cfg.warm; ses.hechosFase = 0;
+  $("hudFase").textContent = "PRÁCTICA";
+  $("chipEstado").textContent = "Práctica";
+  mostrar("pPrueba");
+  setTimeout(siguienteEnsayo, 600);
+}
+
+function iniciarMedicion(){
+  ses.fase = "medicion";
+  ses.cola = barajar(ANGULOS.flatMap(a => Array(cfg.reps).fill(a)));
+  ses.totalFase = ses.cola.length; ses.hechosFase = 0;
+  $("hudFase").textContent = "MEDICIÓN";
+  $("chipEstado").textContent = "Midiendo · " + ses.participante;
+  mostrar("pPrueba");
+  setTimeout(siguienteEnsayo, 600);
+}
+
+function actualizarHud(){
+  $("hudConteo").textContent = `${ses.hechosFase}/${ses.totalFase}`;
+  $("hudBarra").style.width = (100 * ses.hechosFase / ses.totalFase) + "%";
+}
+
+/* ===================== Ensayo ===================== */
+function siguienteEnsayo(){
+  actualizarHud();
+  if (ses.cola.length === 0){ finFase(); return; }
+  ensayo = nuevoEnsayo(ses.cola.shift());
+  $("feedback").textContent = "";
+  $("estimulo").style.visibility = "hidden";
+  $("fijacion").style.visibility = "visible";
+  estado = "fijacion";
+  setTimeout(mostrarEstimulo, FIJACION_MS);
+}
+
+function mostrarEstimulo(){
+  const est = $("estimulo");
+  est.style.transform = `rotate(${ensayo.dir * ensayo.angulo}deg)` + (ensayo.espejo ? " scaleX(-1)" : "");
+  $("fijacion").style.visibility = "hidden";
+  est.style.visibility = "visible";
+  // Doble rAF: t0 se toma cuando el estímulo ya fue pintado en pantalla
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    t0 = performance.now();
+    estado = "respuesta";
+    timerTimeout = setTimeout(() => procesar(null), TIMEOUT_MS);
+  }));
+}
+
+function procesar(resp){
+  if (estado !== "respuesta") return;
+  clearTimeout(timerTimeout);
+  const rt = performance.now() - t0;
+  estado = "feedback";
+  $("estimulo").style.visibility = "hidden";
+  const fb = $("feedback");
+  let valido = false;
+
+  if (resp === null){
+    fb.textContent = "Sin respuesta"; fb.style.color = "var(--aviso)";
+    if (ses.fase === "medicion"){ ses.sinRespuesta++; reinsertar(); }
+  } else if (rt < ANTICIPACION_MS){
+    fb.textContent = "Muy rápido: anticipación"; fb.style.color = "var(--aviso)";
+    if (ses.fase === "medicion"){ ses.anticipadas++; reinsertar(); }
+  } else if ((resp === "espejo") === ensayo.espejo){
+    fb.textContent = "✓ " + Math.round(rt) + " ms"; fb.style.color = "var(--ok)";
+    valido = true;
+  } else {
+    fb.textContent = "✗ Incorrecto"; fb.style.color = "var(--mal)";
+    if (ses.fase === "medicion"){ ses.errores++; reinsertar(); }
+  }
+
+  if (ses.fase === "practica"){
+    ses.hechosFase++;
+  } else if (valido){
+    ses.contador++;
+    const dato = {
+      participante: ses.participante,
+      ensayo: ses.contador,
+      angulo_grados: ensayo.angulo,
+      direccion: ensayo.angulo === 0 || ensayo.angulo === 180 ? "-" : (ensayo.dir > 0 ? "horario" : "antihorario"),
+      espejo: ensayo.espejo ? 1 : 0,
+      tiempo_ms: +rt.toFixed(1),
+      posible_atipico: rt > cfg.umbral ? 1 : 0,
+      fecha_hora: new Date().toISOString()
+    };
+    ses.validos.push(dato); todos.push(dato); guardarDatos();
+    ses.hechosFase++;
+  }
+  setTimeout(() => { fb.textContent = ""; setTimeout(siguienteEnsayo, ITI_MS); }, FEEDBACK_MS);
+}
+
+// Un ensayo no válido se repite más adelante en una posición aleatoria
+function reinsertar(){
+  const pos = Math.floor(Math.random() * (ses.cola.length + 1));
+  ses.cola.splice(pos, 0, ensayo.angulo);
+}
+
+function finFase(){
+  estado = "inactivo";
+  if (ses.fase === "practica"){ mostrar("pPausa"); $("chipEstado").textContent = "Práctica completada"; }
+  else { $("chipEstado").textContent = "Medición completada"; mostrarResultados(); }
+}
+
+/* ===================== Teclado y botones ===================== */
+document.addEventListener("keydown", e => {
+  if (e.repeat) return;
+  const k = e.key.toLowerCase();
+  if (estado === "respuesta" && (k === "f" || k === "j")){ e.preventDefault(); procesar(k === "f" ? "normal" : "espejo"); return; }
+  if (k === " " || e.code === "Space"){
+    if ($("pInstr").classList.contains("activa")){ e.preventDefault(); iniciarPractica(); }
+    else if ($("pPausa").classList.contains("activa")){ e.preventDefault(); iniciarMedicion(); }
+  }
+});
+document.querySelectorAll("[data-resp]").forEach(b => b.addEventListener("pointerdown", e => {
+  e.preventDefault(); procesar(b.dataset.resp);
+}));
+
+/* ===================== Regresión (mínimos cuadrados) ===================== */
+function regresion(xs, ys){
+  const n = xs.length;
+  if (n < 2) return null;
+  let sx = 0, sy = 0, sxx = 0, sxy = 0;
+  for (let i = 0; i < n; i++){ sx += xs[i]; sy += ys[i]; sxx += xs[i]*xs[i]; sxy += xs[i]*ys[i]; }
+  const den = n*sxx - sx*sx;
+  if (den === 0) return null;
+  const a = (n*sxy - sx*sy) / den;       // de dS/da = 0 y dS/db = 0
+  const b = (sy - a*sx) / n;
+  const media = sy / n;
+  let sres = 0, stot = 0;
+  for (let i = 0; i < n; i++){ const e = ys[i] - (a*xs[i] + b); sres += e*e; stot += (ys[i]-media)**2; }
+  return { a, b, r2: stot ? 1 - sres/stot : 1, n };
+}
+
+/* ===================== Resultados ===================== */
+function mostrarResultados(){
+  const datos = ses ? ses.validos : todos;
+  $("tituloRes").textContent = ses ? `Resultados · ${ses.participante}` : "Datos guardados (todos los participantes)";
+  const nPart = new Set(todos.map(d => d.participante)).size;
+  $("subRes").textContent = ses
+    ? "Tiempo de respuesta según el ángulo de rotación. La recta se calcula por mínimos cuadrados."
+    : `${todos.length} datos de ${nPart} participante(s) guardados en este navegador.`;
+  $("btnCsvUno").style.display = ses ? "" : "none";
+  $("btnCsvTodos").disabled = todos.length === 0;
+
+  const r = regresion(datos.map(d => d.angulo_grados), datos.map(d => d.tiempo_ms));
+  $("sN").textContent = datos.length;
+  $("sA").textContent = r ? r.a.toFixed(2) : "–";
+  $("sB").textContent = r ? r.b.toFixed(0) : "–";
+  $("sR2").textContent = r ? r.r2.toFixed(3) : "–";
+  $("sErr").textContent = ses ? ses.errores + ses.anticipadas + ses.sinRespuesta : "–";
+  $("notaVel").textContent = !r
+    ? "Aún no hay suficientes datos para ajustar la recta."
+    : r.a > 0
+      ? `Velocidad de rotación mental estimada: ${(1000 / r.a).toFixed(0)} °/s. Los puntos naranjas superan ${cfg.umbral} ms (posibles distracciones). Resultado preliminar: el análisis formal se hace en Python.`
+      : "La pendiente no es positiva: con estos datos el tiempo no aumenta con el ángulo. Revisa si hubo distracciones o pocas mediciones. Resultado preliminar.";
+  dibujarGrafica(datos, r);
+  mostrar("pResultados");
+}
+
+function dibujarGrafica(datos, r){
+  const svg = $("grafica"), W = 820, H = 420, m = { l: 70, r: 24, t: 20, b: 56 };
+  const ys = datos.map(d => d.tiempo_ms);
+  const yMax = Math.max(1500, ...ys) * 1.08, yMin = 0;
+  const X = x => m.l + (x / 180) * (W - m.l - m.r);
+  const Y = y => H - m.b - ((y - yMin) / (yMax - yMin)) * (H - m.t - m.b);
+  const paso = yMax > 4000 ? 1000 : 500;
+  let s = "";
+  for (let v = 0; v <= yMax; v += paso){
+    s += `<line x1="${m.l}" x2="${W-m.r}" y1="${Y(v)}" y2="${Y(v)}" stroke="rgba(138,164,189,.12)"/>`;
+    s += `<text x="${m.l-10}" y="${Y(v)+4}" fill="#8aa4bd" font-size="12" text-anchor="end" font-family="JetBrains Mono">${v}</text>`;
+  }
+  ANGULOS.forEach(a => {
+    s += `<line x1="${X(a)}" x2="${X(a)}" y1="${m.t}" y2="${H-m.b}" stroke="rgba(138,164,189,.07)"/>`;
+    s += `<text x="${X(a)}" y="${H-m.b+20}" fill="#8aa4bd" font-size="12" text-anchor="middle" font-family="JetBrains Mono">${a}°</text>`;
+  });
+  s += `<text x="${(W+m.l)/2}" y="${H-10}" fill="#8aa4bd" font-size="13" text-anchor="middle">Ángulo de rotación x (grados)</text>`;
+  s += `<text transform="translate(18 ${(H-m.b+m.t)/2}) rotate(-90)" fill="#8aa4bd" font-size="13" text-anchor="middle">Tiempo de respuesta y (ms)</text>`;
+  // Línea de regresión
+  if (r){
+    s += `<line x1="${X(0)}" y1="${Y(r.b)}" x2="${X(180)}" y2="${Y(r.a*180 + r.b)}" stroke="url(#gl)" stroke-width="3" filter="url(#glow)"/>`;
+    s += `<text x="${W-m.r}" y="${m.t+14}" fill="#67e8f9" font-size="14" text-anchor="end" font-family="JetBrains Mono">y = ${r.a.toFixed(2)}x + ${r.b.toFixed(0)}</text>`;
+  }
+  // Puntos (con un pequeño desplazamiento horizontal para que no se tapen)
+  datos.forEach((d, i) => {
+    const jit = ((i * 37) % 11 - 5) * 1.2;
+    const col = d.posible_atipico ? "#fbbf24" : "#22d3ee";
+    s += `<circle cx="${X(d.angulo_grados)+jit}" cy="${Y(d.tiempo_ms)}" r="4.5" fill="${col}" fill-opacity=".75" stroke="${col}"/>`;
+  });
+  // Promedios por ángulo
+  ANGULOS.forEach(a => {
+    const v = datos.filter(d => d.angulo_grados === a).map(d => d.tiempo_ms);
+    if (v.length){ const mu = v.reduce((p,c)=>p+c,0)/v.length;
+      s += `<rect x="${X(a)-7}" y="${Y(mu)-7}" width="14" height="14" fill="none" stroke="#a78bfa" stroke-width="2" transform="rotate(45 ${X(a)} ${Y(mu)})"/>`; }
+  });
+  s += `<text x="${m.l+8}" y="${m.t+14}" fill="#8aa4bd" font-size="12" font-family="JetBrains Mono">● dato   ◇ promedio por ángulo</text>`;
+  svg.innerHTML = `<defs>
+      <linearGradient id="gl" x1="0" x2="1"><stop offset="0" stop-color="#22d3ee"/><stop offset="1" stop-color="#a78bfa"/></linearGradient>
+      <filter id="glow"><feGaussianBlur stdDeviation="3" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>` + s;
+}
+
+/* ===================== CSV ===================== */
+function descargarCSV(datos, nombre){
+  if (!datos.length) return;
+  const cols = ["participante","ensayo","angulo_grados","direccion","espejo","tiempo_ms","posible_atipico","fecha_hora"];
+  const esc = v => /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g,'""')}"` : v;
+  const csv = [cols.join(","), ...datos.map(d => cols.map(c => esc(d[c])).join(","))].join("\n");
+  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  const a = Object.assign(document.createElement("a"), { href: url, download: nombre });
+  document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+/* ===================== Fondo: red neuronal animada ===================== */
+const cv = $("red"), cx = cv.getContext("2d");
+let nodos = [], animarRed = true;
+function redimensionar(){
+  cv.width = innerWidth * devicePixelRatio; cv.height = innerHeight * devicePixelRatio;
+  cx.setTransform(devicePixelRatio, 0, 0, devicePixelRatio, 0, 0);
+  const n = Math.min(90, Math.floor(innerWidth * innerHeight / 16000));
+  nodos = Array.from({ length: n }, () => ({ x: Math.random()*innerWidth, y: Math.random()*innerHeight,
+    vx: (Math.random()-.5)*.35, vy: (Math.random()-.5)*.35, p: Math.random()*6.28 }));
+}
+function cuadro(){
+  if (animarRed){
+    cx.clearRect(0, 0, innerWidth, innerHeight);
+    for (const a of nodos){
+      a.x += a.vx; a.y += a.vy; a.p += .02;
+      if (a.x < 0 || a.x > innerWidth) a.vx *= -1;
+      if (a.y < 0 || a.y > innerHeight) a.vy *= -1;
+    }
+    for (let i = 0; i < nodos.length; i++) for (let j = i+1; j < nodos.length; j++){
+      const a = nodos[i], b = nodos[j], d = Math.hypot(a.x-b.x, a.y-b.y);
+      if (d < 140){ cx.strokeStyle = `rgba(34,211,238,${(1-d/140)*.22})`; cx.lineWidth = 1; cx.beginPath(); cx.moveTo(a.x,a.y); cx.lineTo(b.x,b.y); cx.stroke(); }
+    }
+    for (const a of nodos){
+      cx.fillStyle = `rgba(103,232,249,${.45 + .35*Math.sin(a.p)})`;
+      cx.beginPath(); cx.arc(a.x, a.y, 1.8, 0, 6.28); cx.fill();
+    }
+  }
+  requestAnimationFrame(cuadro);
+}
+addEventListener("resize", redimensionar);
+redimensionar(); cuadro();
+$("codigo").focus();
+</script>
+</body>
+</html>
