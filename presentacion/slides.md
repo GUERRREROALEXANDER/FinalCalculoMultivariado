@@ -434,7 +434,7 @@ Abrimos el simulador. Arrastramos el punto sobre el mapa y vemos cómo cambia la
 </div>
 
 <!--
-Resumen: la recta describe el costo de rotar; el cálculo garantiza el mínimo; el doble R cuadrado no es contradicción sino ruido entre personas; y somos transparentes con los límites: muestra pequeña, dos participantes añadidos, atípicos, heterocedasticidad.
+Resumen: la recta describe el costo de rotar; el cálculo garantiza el mínimo; el doble R cuadrado no es contradicción sino ruido dentro de cada ángulo (un 32 % son diferencias entre personas y un 68 % variación de ensayo a ensayo); y somos transparentes con los límites: muestra pequeña, dos participantes añadidos, atípicos, heterocedasticidad.
 -->
 
 ---
