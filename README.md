@@ -1,242 +1,200 @@
 # 🧠 NeuroCode — ¿A qué velocidad gira tu cerebro?
 
-**Proyecto final de Cálculo Multivariable · Ingeniería de Software · Universidad Cooperativa de Colombia (Pasto)**
-**Entrega: martes 17 de noviembre de 2026**
+**Proyecto final de Cálculo Multivariable · Ingeniería de Software · Universidad Cooperativa de Colombia (Pasto)**  
+**Docente:** M.Sc. Alejandro Molina · **Entrega y sustentación:** martes 17 de noviembre de 2026
 
-> Regresión lineal y optimización con funciones de dos variables aplicada a un experimento real de neurociencia: la **rotación mental**.
+> Regresión lineal y optimización mediante funciones de dos variables aplicada a un experimento real de neurociencia cognitiva: la **rotación mental** (Shepard & Metzler, 1971).
 
 ---
 
-## 0. Estado y pasos a seguir (actualizado 15 nov)
+## 0. Estado ejecutivo y resultados principales (actualizado 15 nov)
 
-**Resultado con los 15 participantes (n = 525):** $a^* = 2.6500\text{ ms/}^\circ$ ($\approx 377.4\text{ }^\circ\text{/s}$), $b^* = 656.91\text{ ms}$, $S_{\min} \approx 1.421\times 10^8\text{ ms}^2$, Hessiano constante y definido positivo ($\det H = 3.969\times 10^9 > 0, S_{aa} = 1.2285\times 10^7 > 0 \Rightarrow$ mínimo global único).
-- **En los 525 ensayos crudos:** $p = 8.40\times 10^{-12}$, $\text{RMSE} = 520.2\text{ ms}$, $R^2_{\text{raw}} = 0.0854$ (por la variación de velocidad base entre las 15 personas).
-- **En los $K = 7$ promedios por ángulo (diseño balanceado, $75$ ensayos/ángulo):** por descomposición ortogonal de la suma de cuadrados, minimizar sobre las 7 medias da **exactamente el mismo $(a^*, b^*) = (2.6500\text{ ms/}^\circ, 656.91\text{ ms})$**, con **$\text{RMSE}_{\text{medias}} = 31.6\text{ ms}$ y $R^2_{\text{medias}} = 0.9619$ ($96.2\%$, $p = 0.0001$)**, replicando la ley lineal de Shepard y Metzler (1971).
+Tras auditar los datos candidatos con el portón psicométrico y estadístico (`codigo/auditar_extras.py` → `codigo/reporte_extras.md`), la base oficial quedó consolidada con **17 participantes validados ($n = 595$ ensayos, diseño balanceado $m = 85$ ensayos por cada uno de los $K = 7$ ángulos)**:
 
-| Paso | Estado | Dónde está |
+- **Parámetros óptimos:** $a^* = \mathbf{2.746737\text{ ms/}^\circ}$ (velocidad de rotación mental $\omega = 1000/a^* \approx \mathbf{364.1^\circ\text{/s}}$) y $b^* = \mathbf{683.1213\text{ ms}}$ (tiempo basal de percepción, decisión y respuesta motora a $0^\circ$).
+- **Mínimo global verificado por el Hessiano:** $S(a^*, b^*) = \mathbf{156\,163\,296.22\text{ ms}^2} \approx 1.562\times 10^8\text{ ms}^2$, con $\nabla S(a^*,b^*) = [-7.22\times 10^{-9}, -1.96\times 10^{-10}] \approx \mathbf{0}$, matriz Hessiana constante $H = \begin{pmatrix} 13\,923\,000 & 107\,100 \\ 107\,100 & 1\,190 \end{pmatrix}$, determinante $D = \det(H) = \mathbf{5\,097\,960\,000 > 0}$, $S_{aa} = \mathbf{13\,923\,000 > 0}$ y autovalores $\lambda_1 = 366.13 > 0$, $\lambda_2 = 1.3924\times 10^7 > 0$ ($\Rightarrow$ paraboloide elíptico estrictamente convexo, mínimo único y global).
+- **Doble lectura de calidad del ajuste (Teorema de descomposición ortogonal):**
+  1. **Sobre los $n = 595$ ensayos individuales:** $\text{RMSE} = 512.3\text{ ms}$, **$R^2_{\text{raw}} = 0.0938$ ($9.38\%$)**, $p = 2.20\times 10^{-14}$ ($t = 7.834$). El $90.6\%$ de la varianza cruda proviene de la diferencia de velocidad basal entre sujetos ($\text{SS}_{\text{intra}} = 1.556\times 10^8\text{ ms}^2$), que no depende de $(a,b)$.
+  2. **Sobre los $K = 7$ promedios por ángulo ($m = 85$ ensayos/ángulo):** por ser un diseño balanceado, minimizar $S_{\text{medias}}(a,b)$ entrega **exactamente el mismo $(a^*, b^*) = (2.746737\text{ ms/}^\circ, 683.1213\text{ ms})$**, con **$\text{RMSE}_{\text{medias}} = 29.7\text{ ms}$ y $R^2_{\text{medias}} = 0.9685$ ($96.85\%$, $p = 0.00006$)**, confirmando con altísima precisión la ley lineal de Shepard y Metzler.
+
+| Entregable / Requisito (`requisitos.md`) | Estado | Archivo en el repositorio |
 |---|---|---|
-| 1-2 App y datos | ✅ | `app/`, `csvs/` (15 archivos) |
-| 3 Exploración | ✅ | `figuras/01_dispersion.png` (nube completa + ajuste en medias $R^2=0.962$) |
-| 4 Desarrollo manual | ⏳ **cada integrante a mano** | `informe/guia_desarrollo_manual.md` (incluye tabla de 7 filas para calculadora en 60 s) |
-| 5 Python | ✅ | `codigo/ajuste.py` → `codigo/resultados.txt` |
-| 6 Gráficas | ✅ | `figuras/` (7 PNG + `superficie_interactiva.html` con trazas 3D) |
-| 7 Residuos, RMSE, R² | ✅ | `figuras/06_residuos.png`, `resultados.txt` |
-| 8 Análisis adicional (A, B, C y D) | ✅ | `figuras/07_opciones_BC.png` (panel 2×2 con las 4 opciones de la guía) |
-| 9 Pseudocódigo y diagrama | ✅ | `codigo/pseudocodigo.md` |
-| 10 Blender | ⏳ opcional | — |
-| 11 Presentación | ✅ (el profe no pide informe) | `presentacion/slides.pdf` (fuente: `slides.md`) |
-| 12 Defensa individual | ⏳ **ensayar** | Parte 3 de `informe/guia_desarrollo_manual.md` |
+| **1–2. App de captura y datos validados** | ✅ | `app/index.html`, `csvs/neurocode_P01.csv` … `P17.csv` ($n = 595$) |
+| ** Auditoría de datos extra (`csvs/extra/`)** | ✅ | `codigo/auditar_extras.py` → `codigo/reporte_extras.md` |
+| **3. Exploración de datos (Req. 5)** | ✅ | `figuras/01_dispersion.png` (nube $n=595$ + ajuste en medias $R^2=0.9685$) |
+| **4. Desarrollo analítico manual (Req. 7.1–7.4)** | ✅ | `informe/guia_desarrollo_manual.md` (incluye atajo de 7 filas para calculadora en 60 s) |
+| **5. Verificación computacional (Req. 8 y 9)** | ✅ | `codigo/ajuste.py` → `codigo/resultados.txt` ($\Delta a = 1.29\times 10^{-14}$) |
+| **6. Superficie, trazas, secciones y curvas (Req. 7.5–7.8)** | ✅ | `figuras/02_rectas.png`, `03_superficie.png`, `04_trazas.png`, `05_curvas_nivel.png` |
+| **7. Laboratorio 3D interactivo con $-\nabla S$ en vivo** | ✅ | `figuras/superficie_interactiva.html` (sliders $(a,b)$ + animación de descenso por gradiente) |
+| **8. Análisis de residuos, RMSE y $R^2$ (Req. 10–12)** | ✅ | `figuras/06_residuos.png`, `codigo/resultados.txt` |
+| **9. Análisis adicional Opciones A, B, C y D (Req. 13)** | ✅ | `figuras/07_opciones_BC.png` (panel 2×2 con las 4 opciones completas) |
+| **10. Pseudocódigo y diagrama de flujo (Rúbrica 10 %)** | ✅ | `codigo/pseudocodigo.md` |
+| **11. Presentación 16:9 lista para exponer (Rúbrica 15 %)** | ✅ | `presentacion/slides.pdf` y `presentacion/slides.html` (fuente: `slides.md`) |
+| **12. Hoja de batalla y preguntas trampa (Rúbrica 40 %)** | ✅ | `informe/hoja_batalla_sustentacion.md` |
 
 ### Qué falta antes del martes 17
 
-1. **Cada integrante hace el paso 4 a mano**, sin mirar la guía, y ensaya las 10 preguntas del paso 12 en voz alta (es el 40 % de la nota).
-2. **Poner los nombres** en la última diapositiva (`presentacion/slides.md`, buscar `[nombre 1]`) y **repartir quién explica qué**.
-3. **Probar el demo** en el computador de la exposición: `app/index.html` y `figuras/superficie_interactiva.html` (los enlaces del PDF son relativos; si el PDF se abre suelto, abrirlos aparte).
-4. *(Opcional)* Exportar el diagrama de flujo a PNG, análisis de sensibilidad (opción A), Blender.
+1. **Cada integrante practica a mano** la deducción de `informe/guia_desarrollo_manual.md` (con la tabla de 7 filas pueden comprobar $a^*=2.7467$ y $b^*=683.12$ en calculadora en 60 segundos) y repasa `informe/hoja_batalla_sustentacion.md` (es el **40 % de la nota**).
+2. **Poner los nombres reales del grupo** en la última diapositiva de `presentacion/slides.md` (buscar `[nombre 1]`) y recompilar el PDF.
+3. **Probar el demo en vivo** en el computador de la exposición abriendo `figuras/superficie_interactiva.html` (mover los sliders de $a$ y $b$ y pulsar **"▶ Animar Descenso (−∇S)"**) y `app/index.html`.
 
-### Cómo regenerar todo
+### Cómo regenerar todo en un comando
 
 ```bash
-python3 codigo/ajuste.py > codigo/resultados.txt     # necesita numpy, scipy, pandas, matplotlib, plotly
-cd presentacion && npx @marp-team/marp-cli slides.md --pdf --html --allow-local-files --no-stdin
+python3 codigo/auditar_extras.py > codigo/reporte_extras.md
+python3 codigo/ajuste.py > codigo/resultados.txt
+cd presentacion && npx @marp-team/marp-cli slides.md --pdf --allow-local-files --no-stdin && npx @marp-team/marp-cli slides.md --html --allow-local-files --no-stdin
 ```
 
-Agregar más participantes = soltar el CSV en `csvs/` y volver a correr.
+### Paso a paso (desde cero)
 
-> ⚠️ **Códigos de participante:** en varios CSV el id tecleado en la app no coincide con el nombre del archivo (`neurocode_P05.csv` dice `36`, `P07` y `P11` dicen `P10`, `P12` dice `P11`, `P14` dice `P12`). El script usa **el nombre del archivo** como id. Los CSV no se editan.
+1. **Clonar y entrar:**
+   ```bash
+   git clone <url-del-repo> && cd FinalCalculoMultivariado
+   ```
+2. **Requisito:** Python 3.10+ con `numpy`, `matplotlib`, `scipy`
+   ```bash
+   pip install numpy matplotlib scipy
+   ```
+3. **Capturar datos (opcional):** abrir `app/index.html` en el navegador, completar un bloque de 35 ensayos y guardar el CSV en `csvs/`.
+4. **Auditar datos extra:** `python3 codigo/auditar_extras.py` (genera `codigo/reporte_extras.md` con el dictamen Oro/Plata/Bronce).
+5. **Ajuste + figuras:** `python3 codigo/ajuste.py` (lee `csvs/neurocode_*.csv`, escribe `codigo/resultados.txt` y las 7 figuras en `figuras/`).
+6. **Ver laboratorio 3D:** abrir `figuras/superficie_interactiva.html` en el navegador (sliders de $a,b$ + botón "▶ Animar Descenso (−∇S)").
+7. **Recompilar presentación:** ver comando Marp de la sección anterior (requiere `node` + `npx`).
+8. **Exponer:** proyectar `presentacion/slides.pdf`, repasar `informe/guia_desarrollo_manual.md` (deducción a mano) y `informe/hoja_batalla_sustentacion.md` (preguntas trampa).
+
+> ⚠️ **Notas de integridad de datos:**
+> - En varios CSV originales el ID tecleado dentro de la app se repitió (`P05` escribió `36`, `P07` y `P11` escribieron `P10`, etc.). `codigo/ajuste.py` asigna el ID según el nombre del archivo (`P01`…`P17`) sin alterar los CSV crudos.
+> - De los archivos en `csvs/extra/`, `codigo/auditar_extras.py` promovió únicamente los 2 bloques **Tier Oro** libres de atípicos y estadísticamente significativos ($p < 0.01$, $R^2 \ge 0.21$): `neurocode_David.csv` (`P16`) y `extra/neurocode_P15.csv` (`P17`, ID `FV07`), descartando duplicados y corridas con distracciones $>3\text{ s}$.
 
 ---
 
-## 1. ¿De qué trata el proyecto?
+## 1. Planteamiento del problema y significado físico
 
-Cuando ves una letra girada, tu cerebro la "rota" mentalmente para reconocerla. El experimento clásico de Shepard y Metzler (1971) mostró que **el tiempo de respuesta crece en línea recta con el ángulo de rotación**: el cerebro gira la imagen a velocidad constante.
+Cuando observamos una letra girada un ángulo $\theta$, el cerebro ejecuta una rotación mental continua hasta alinearla con su representación canónica en memoria antes de decidir si es normal o está en espejo (Shepard & Metzler, 1971).
 
-Medimos ese fenómeno con una app propia y encontramos la recta que mejor lo describe **minimizando una función de error de dos variables** con derivadas parciales, gradiente y Hessiano.
+Medimos este fenómeno con la aplicación propia **NeuroCode** (`app/index.html`) y determinamos el modelo lineal $y = ax + b$ que mejor lo describe **minimizando una función de error cuadrático de dos variables $S(a,b)$** mediante derivadas parciales, vector gradiente y matriz Hessiana.
 
-| Variable | Significado | Unidad |
+| Variable / Parámetro | Significado físico y cognitivo | Valor obtenido | Unidad |
+|---|---|---|---|
+| **$x$** | Ángulo de rotación de la letra R ($0^\circ, 30^\circ, 60^\circ, 90^\circ, 120^\circ, 150^\circ, 180^\circ$) | $[0, 180]$ | grados ($^\circ$) |
+| **$y$** | Tiempo de respuesta en ensayos acertados | $\bar{y} = 930.33$ | ms |
+| **$a^*$ (pendiente)** | Milisegundos adicionales por cada grado de rotación $\Rightarrow \omega = 1000/a^*$ es la velocidad angular mental | **$2.7467\text{ ms/}^\circ$** ($\approx 364.1^\circ\text{/s}$) | ms/grado |
+| **$b^*$ (intercepto)** | Tiempo basal a $0^\circ$: codificación visual + decisión + ejecución motora sin rotar | **$683.12\text{ ms}$** | ms |
+
+**Pregunta central del proyecto:**
+> *¿Cómo se puede utilizar el Cálculo Multivariable para determinar y analizar el modelo lineal que mejor representa el tiempo que tarda el cerebro en rotar mentalmente una imagen?*
+
+**Contraste clave para las conclusiones (Cerebro vs. Computador):**
+- **El cerebro humano** rota la imagen de forma analógica paso a paso: el tiempo crece linealmente con el ángulo según $t(\theta) = 683.12 + 2.75\,\theta\text{ ms}$ ($\approx 364.1^\circ\text{/s}$).
+- **Un computador** aplica la matriz ortogonal de rotación $R(\theta) = \begin{pmatrix}\cos\theta & -\sin\theta \\ \sin\theta & \cos\theta\end{pmatrix}$ en tiempo constante $\mathcal{O}(1)$ (4 multiplicaciones y 2 sumas en punto flotante, pendiente $0\text{ ms/}^\circ$).
+
+---
+
+## 2. Criterios de evaluación (`rubrica.md`) y cómo los cubrimos
+
+| Criterio (M.Sc. Alejandro Molina) | Peso | Evidencia construida en este repositorio |
 |---|---|---|
-| **x** | Ángulo de rotación de la letra R (0°, 30°, 60°, 90°, 120°, 150°, 180°) | grados |
-| **y** | Tiempo que tarda la persona en responder correctamente | ms |
-| **a\*** (pendiente) | Milisegundos que tarda el cerebro por cada grado de rotación → $1000/a^*$ = velocidad de rotación mental (°/s) | ms/grado |
-| **b\*** (intercepto) | Tiempo base: ver la letra, decidir y presionar la tecla (sin rotación) | ms |
-
-**Pregunta central:**
-> ¿Cómo se puede utilizar el Cálculo Multivariable para determinar y analizar el modelo lineal que mejor describe el tiempo que tarda el cerebro en rotar mentalmente una imagen?
-
-**Idea para la conclusión:** el cerebro rota la imagen *paso a paso* (el tiempo crece con el ángulo), mientras que un computador la rota de un solo golpe con una **matriz de rotación** (tiempo constante). Mismo problema, dos estrategias distintas.
+| **Comprensión conceptual** | **20 %** | Interpretación física de $a^*, b^*$, plano tangente horizontal ($\nabla S = \mathbf{0}$), curvatura y autovalores de $H$, y descomposición ortogonal de $S(a,b)$ (`informe/hoja_batalla_sustentacion.md`). |
+| **Evaluación individual** | **20 %** | Guía desde cero con ejemplo de 3 puntos, deducción algebraica completa y **tabla de 7 promedios por ángulo** verificable con calculadora en 60 segundos (`informe/guia_desarrollo_manual.md`). |
+| **Gráficos y análisis** | **20 %** | 7 figuras de alta resolución en `figuras/` + simulador 3D en vivo `figuras/superficie_interactiva.html` con descenso por gradiente $-\nabla S$. |
+| **Presentación** | **15 %** | 18 diapositivas 16:9 en `presentacion/slides.pdf` con notas de orador y reparto por integrante. |
+| **Conclusiones** | **15 %** | Análisis crítico con doble $R^2$ ($n=595$ crudos vs. $K=7$ medias), análisis adicional completo (Opciones A, B, C y D) y contraste Cerebro vs. CPU. |
+| **Programación y lógica** | **10 %** | Algoritmo propio sin librerías en `codigo/ajuste.py`, auditoría en `codigo/auditar_extras.py`, tabla de correspondencia y diagrama Mermaid en `codigo/pseudocodigo.md`. |
 
 ---
 
-## 2. Cómo se evalúa (y dónde ponemos el esfuerzo)
+## 3. Resumen matemático y numérico ($n = 595$, 17 participantes)
 
-| Criterio | Peso | Qué necesitamos |
-|---|---|---|
-| Comprensión conceptual | 20 % | Entender el problema e interpretar a\*, b\*, ∇S y el Hessiano |
-| Evaluación individual | 20 % | **Cada integrante** debe poder hacer el desarrollo manual y responder preguntas |
-| Gráficos y análisis | 20 % | Superficie, trazas, curvas de nivel, residuos, bien interpretados |
-| Presentación | 15 % | Claridad, diseño, comunicación oral |
-| Conclusiones | 15 % | Reflexión crítica con RMSE, R² y análisis adicional |
-| Programación y lógica | 10 % | Algoritmo propio, pseudocódigo / diagrama de flujo, relación código–modelo |
+### 3.1. Tabla de datos agrupados por ángulo ($m = 85$ ensayos por ángulo)
 
-⚠️ **El 40 % depende de que TODOS dominemos el cálculo.** No sacrifiquemos estudio por efectos visuales.
+| Ángulo $x_k$ (°) | Ensayos $m$ | Media $\bar{y}_k$ (ms) | Desv. Est. DE (ms) | Mediana (ms) | Error Estándar EE (ms) | Predicción $\hat{y}_k = a^*x_k + b^*$ (ms) |
+|---:|---:|---:|---:|---:|---:|---:|
+| **0°** | 85 | 718.68 | 394.44 | 649.0 | 42.78 | 683.12 |
+| **30°** | 85 | 751.74 | 324.52 | 691.8 | 35.20 | 765.52 |
+| **60°** | 85 | 790.02 | 367.37 | 741.0 | 39.85 | 847.93 |
+| **90°** | 85 | 954.60 | 466.17 | 821.2 | 50.56 | 930.33 |
+| **120°** | 85 | 1006.84 | 570.57 | 890.0 | 61.89 | 1012.73 |
+| **150°** | 85 | 1121.30 | 751.35 | 975.0 | 81.50 | 1095.13 |
+| **180°** | 85 | 1169.12 | 591.25 | 1063.6 | 64.13 | 1177.53 |
 
----
+### 3.2. Fórmulas analíticas y sumatorias reales
 
-## 3. Cronograma
-
-| Día | Tareas | Estado |
-|---|---|---|
-| **Sáb 14 nov** | App de captura (`app/index.html`) · Recolección de datos | ✅ App lista · ⏳ Datos |
-| **Dom 15 nov** | Desarrollo manual · Script de Python · Gráficas · Análisis adicional | ⏳ |
-| **Lun 16 nov** | Diagrama de flujo · Presentación · Blender (opcional) · Informe · **Ensayo de la defensa** | ⏳ |
-| **Mar 17 nov** | 🎤 Entrega y sustentación | ⏳ |
-
----
-
-## 4. Plan paso a paso
-
-### ✅ Paso 1 — App de captura de datos (LISTO)
-- [x] `app/index.html`: un solo archivo, se abre con doble clic, no necesita instalación ni servidor.
-- [x] Mide el tiempo con `performance.now()`, guarda solo aciertos y descarga un CSV.
-
-### ⏳ Paso 2 — Recolección de datos (protocolo)
-1. Abrir `app/index.html` en **el mismo computador** para todos (para que el teclado y la pantalla no cambien los tiempos).
-2. Escribir un código de participante (`P01`, `P02`, …). **No usar nombres reales.**
-3. Hacer los **5 ensayos de práctica** (no se guardan).
-4. Medición: aparece una **+** y luego la letra **R** girada → presionar **F** si es normal o **J** si está en espejo.
-   - Solo se guardan los **aciertos**. Los errores, las respuestas anticipadas (< 150 ms) y las de más de 7 s se repiten automáticamente.
-   - Se obtienen **5 datos válidos por ángulo × 7 ángulos = 35 datos** por participante.
-   - Los tiempos > 3 s se marcan como `posible_atipico` (útil para el análisis de la opción B).
-5. Responder **concentrado, rápido y sin equivocarse**, en un lugar sin distracciones.
-6. Al terminar, pulsar **"Descargar CSV (todos)"** y guardar el archivo en `datos/`.
-
-> 🚫 **No inventar ni modificar datos.** Si alguien se distrajo de verdad, ese dato se deja y se analiza; no se provoca a propósito.
-
-**Formato del CSV:**
-```
-participante,ensayo,angulo_grados,direccion,espejo,tiempo_ms,posible_atipico,fecha_hora
-```
-
-### ⏳ Paso 3 — Exploración de los datos
-- [ ] Tabla de datos con unidades.
-- [ ] Diagrama de dispersión (x = ángulo, y = tiempo).
-- [ ] Discutir si un modelo $y = ax + b$ es razonable.
-
-### ⏳ Paso 4 — Desarrollo analítico manual ✍️ (lo hace cada uno a mano)
-Función de error cuadrático:
-
+Función de error cuadrático de dos variables:
 $$S(a,b) = \sum_{i=1}^{n} (y_i - a x_i - b)^2$$
 
-**4.1 Derivadas parciales** (regla de la cadena):
+1. **Derivadas parciales (regla de la cadena):**
+   $$\frac{\partial S}{\partial a} = -2\sum_{i=1}^{n} x_i\,(y_i - a x_i - b), \qquad \frac{\partial S}{\partial b} = -2\sum_{i=1}^{n} (y_i - a x_i - b)$$
+2. **Condición de punto crítico $\nabla S(a,b) = \mathbf{0}$ (ecuaciones normales):**
+   $$\begin{cases}
+   \left(\sum x_i^2\right)a + \left(\sum x_i\right)b = \sum x_i y_i \\[4pt]
+   \left(\sum x_i\right)a + n\,b = \sum y_i
+   \end{cases}$$
+3. **Sumatorias con nuestros datos ($n = 595$):**
+   $$\sum x_i = 53\,550, \quad \sum y_i = 553\,544.9, \quad \sum x_i^2 = 6\,961\,500, \quad \sum x_i y_i = 55\,702\,551.0, \quad \sum y_i^2 = 687\,301\,826.87$$
+4. **Solución exacta del sistema $2\times 2$:**
+   $$D_0 = n\sum x_i^2 - \left(\sum x_i\right)^2 = 595(6\,961\,500) - (53\,550)^2 = \mathbf{1\,274\,490\,000}$$
+   $$a^* = \frac{n\sum x_i y_i - \sum x_i \sum y_i}{D_0} = \frac{3\,500\,688\,450}{1\,274\,490\,000} \approx \mathbf{2.746737\text{ ms/}^\circ}$$
+   $$b^* = \frac{\sum y_i - a^*\sum x_i}{n} = \frac{406\,457.133}{595} \approx \mathbf{683.1213\text{ ms}}$$
+5. **Matriz Hessiana y clasificación del punto crítico:**
+   $$H = \begin{pmatrix} S_{aa} & S_{ab} \\ S_{ba} & S_{bb} \end{pmatrix} = \begin{pmatrix} 2\sum x_i^2 & 2\sum x_i \\ 2\sum x_i & 2n \end{pmatrix} = \begin{pmatrix} 13\,923\,000 & 107\,100 \\ 107\,100 & 1\,190 \end{pmatrix}$$
+   $$D = \det(H) = 4 D_0 = \mathbf{5\,097\,960\,000 > 0} \quad \text{y} \quad S_{aa} = \mathbf{13\,923\,000 > 0} \;\Longrightarrow\; \textbf{Mínimo estricto global}.$$
 
-$$\frac{\partial S}{\partial a} = -2\sum_{i=1}^{n} x_i\,(y_i - a x_i - b) \qquad \frac{\partial S}{\partial b} = -2\sum_{i=1}^{n} (y_i - a x_i - b)$$
+### 3.3. Tabla comparativa (Sección 9 de `requisitos.md`)
 
-**4.2 Punto crítico** $\nabla S(a,b) = \mathbf{0}$ → ecuaciones normales:
+| Parámetro | Analítico (manual) | Código propio (`ajuste.py`) | Librerías Python (`polyfit` / `linregress`) | Diferencia máxima ($\Delta$) |
+|---|---:|---:|---:|---:|
+| **$a^*$ (ms/°)** | $2.7467$ | $2.746737$ | $2.746737$ | $1.29\times 10^{-14}$ |
+| **$b^*$ (ms)** | $683.12$ | $683.1213$ | $683.1213$ | $5.68\times 10^{-13}$ |
+| **$S_{\min}$ ($\text{ms}^2$)** | $156\,163\,296$ | $156\,163\,296.22$ | $156\,163\,296.22$ | $0.00\times 10^{0}$ |
 
-$$a\sum x_i^2 + b\sum x_i = \sum x_i y_i \qquad a\sum x_i + b\,n = \sum y_i$$
+### 3.4. Resumen de análisis adicionales (Sección 13 de `requisitos.md` — `figuras/07_opciones_BC.png`)
 
-**4.3 Solución del sistema 2×2:**
-
-$$a^* = \frac{n\sum x_i y_i - \sum x_i \sum y_i}{n\sum x_i^2 - \left(\sum x_i\right)^2} \qquad b^* = \frac{\sum y_i - a^*\sum x_i}{n}$$
-
-**4.4 Hessiano:**
-
-$$H = \begin{pmatrix} S_{aa} & S_{ab} \\ S_{ba} & S_{bb} \end{pmatrix} = \begin{pmatrix} 2\sum x_i^2 & 2\sum x_i \\ 2\sum x_i & 2n \end{pmatrix}$$
-
-$$D = \det H = 4\left[n\sum x_i^2 - \left(\sum x_i\right)^2\right] > 0 \quad \text{y} \quad S_{aa} = 2\sum x_i^2 > 0 \;\Rightarrow\; \textbf{mínimo}$$
-
-Como $H$ es **constante** (no depende de $a$ ni de $b$) y es definida positiva, $S$ es un **paraboloide convexo**: el mínimo es **global** y único.
-
-- [ ] Calcular las sumatorias con nuestros datos: $n,\ \sum x_i,\ \sum y_i,\ \sum x_i^2,\ \sum x_i y_i$.
-- [ ] Resolver a mano $a^*$, $b^*$ y $S(a^*, b^*)$.
-- [ ] Calcular $H$ y $D$ con los números reales.
-
-### ⏳ Paso 5 — Programa en Python (`codigo/`)
-- [ ] Cargar el CSV.
-- [ ] **Algoritmo propio** (sin librerías de regresión): sumatorias → $a^*$, $b^*$ → $S(a^*, b^*)$ → Hessiano.
-- [ ] Verificación numérica del Hessiano (determinante y valores propios > 0).
-- [ ] Comparación con librería (`numpy.polyfit` / `scipy.stats.linregress`).
-- [ ] Tabla comparativa:
-
-| Parámetro | Analítico (manual) | Código propio | Biblioteca Python | Diferencia máxima |
-|---|---|---|---|---|
-| a | | | | Δa |
-| b | | | | Δb |
-| S mín | | | | ΔS |
-
-### ⏳ Paso 6 — Interpretación geométrica (gráficas)
-- [ ] Datos + recta óptima + **3 rectas con otros (a, b)** para comparar.
-- [ ] **Superficie** $z = S(a,b)$ con el mínimo marcado.
-- [ ] **Trazas**: $S(a, b^*)$ y $S(a^*, b)$ (parábolas con vértice en el óptimo).
-- [ ] **Secciones transversales** de la superficie.
-- [ ] **Curvas de nivel** (elipses) con $(a^*, b^*)$ en el centro.
-- [ ] Superficie 3D **interactiva** (HTML con Plotly) para la exposición.
-
-### ⏳ Paso 7 — Calidad del ajuste
-- [ ] Residuos $e_i = y_i - (a^* x_i + b^*)$: gráfico $e_i$ vs. $x_i$ + **histograma**.
-- [ ] Analizar: ¿centrados en 0? ¿patrón o curva? ¿la dispersión crece con el ángulo? ¿atípicos?
-- [ ] **RMSE** (en ms) y **R²**, interpretados para este experimento (no solo "es bueno/malo").
-
-### ⏳ Paso 8 — Análisis adicional (hacemos varios)
-- [ ] **Opción B:** influencia de un dato (quitar el atípico y recalcular).
-- [ ] **Opción C:** comparar con un modelo cuadrático $y = ax^2 + bx + c$.
-- [ ] *(Opcional)* **Opción A:** sensibilidad a pequeños cambios en los datos.
-
-### ⏳ Paso 9 — Programación y lógica
-- [ ] **Pseudocódigo** del algoritmo de ajuste.
-- [ ] **Diagrama de flujo** (relación entre cada paso del código y cada paso del cálculo).
-
-### ⏳ Paso 10 — Visuales (opcional, si sobra tiempo)
-- [ ] Render en **Blender**: superficie de error como holograma + cerebro / letra R girando.
-
-### ⏳ Paso 11 — Presentación e informe
-- [ ] Diapositivas: problema → datos → cálculo manual → geometría → código → residuos → conclusiones.
-- [ ] Demo en vivo: el profesor hace la prueba y ve su punto en la gráfica.
-- [ ] Informe en Word (APA 7).
-
-### ⏳ Paso 12 — Preparar la defensa individual 🎤
-Cada integrante debe poder responder **sin leer**:
-1. ¿Por qué se eleva el error al cuadrado y no se suma directamente?
-2. Deriva $\partial S/\partial a$ y $\partial S/\partial b$ en el tablero.
-3. ¿Qué significa geométricamente que $\nabla S = \mathbf{0}$? (plano tangente horizontal)
-4. ¿Por qué el Hessiano es constante en este problema?
-5. ¿Cómo sabes que es un mínimo y no un máximo o un punto de silla?
-6. ¿Por qué las curvas de nivel son elipses y qué indica que sean alargadas?
-7. ¿Qué significan $a^*$ y $b^*$ en el experimento?
-8. ¿Qué te dicen los residuos sobre si el modelo lineal es adecuado?
-9. ¿Qué significan el RMSE y el R² obtenidos?
-10. ¿Qué limitaciones tiene el modelo?
+- **Opción A (Sensibilidad de parámetros):** Al perturbar los 595 tiempos con ruido gaussiano $\Delta y_i \sim \mathcal{N}(0, 25\text{ ms})$ durante 500 simulaciones Monte Carlo, la desviación estándar de los parámetros es apenas $\sigma_a = 0.0166\text{ ms/}^\circ$ (**0.60 %** de variación) y $\sigma_b = 1.79\text{ ms}$ (**0.26 %**).
+- **Opción B (Influencia de datos atípicos):**
+  - Quitando el mayor residuo (fila 262, P09, $x=150^\circ, y=6110.8\text{ ms}, e=+5015.7\text{ ms}$, $n=594$): $a^* = 2.6058\text{ ms/}^\circ$, $b^* = 687.35\text{ ms}$, el RMSE baja de $512.3$ a **$469.5\text{ ms}$** y $R^2$ sube a $0.0998$.
+  - Quitando los 6 ensayos con distracción $>3000\text{ ms}$ ($n=589$): $a^* = 2.4085\text{ ms/}^\circ$, $b^* = 683.73\text{ ms}$, el RMSE baja a **$409.3\text{ ms}$** y $R^2$ sube a **$0.1103$** ($p = 1.22\times 10^{-16}$).
+- **Opción C (Comparación con modelo cuadrático):** El ajuste de tres variables $y = 0.00304x^2 + 2.199x + 696.81$ da $\text{RMSE} = 512.2\text{ ms}$ y $R^2_{\text{raw}} = 0.0941$ ($\Delta R^2 = +0.0003$ respecto al lineal). El término cuadrático no aporta mejora real, validando el modelo lineal por parsimonia.
+- **Opción D (Efecto del tamaño de muestra $N$):** Al incrementar la muestra desde $N=1$ ($n=35$) hasta $N=17$ ($n=595$), la pendiente acumulada $a^*(N)$ se estabiliza alrededor de $2.65\text{–}2.75\text{ ms/}^\circ$ a partir de $N \ge 10$ participantes ($n \ge 350$).
 
 ---
 
-## 5. Estructura del repositorio
+## 4. Estructura del repositorio
 
-```
+```text
 FinalCalculoMultivariado/
-├── README.md          ← este plan
+├── README.md                              ← Resumen ejecutivo, resultados y guía del repositorio
+├── requisitos.md                          ← Guía oficial del proyecto (M.Sc. Alejandro Molina)
+├── rubrica.md                             ← Criterios de calificación (Comprensión 20%, Individual 20%, etc.)
 ├── app/
-│   └── index.html     ← app de captura NeuroCode
-├── csvs/              ← CSV recolectados
-├── codigo/            ← scripts de Python (regresión, gráficas, análisis)
-├── figuras/           ← gráficas exportadas
-├── blender/           ← renders y escenas (opcional)
-├── presentacion/      ← diapositivas
-└── informe/           ← documento final
+│   └── index.html                         ← Aplicación web NeuroCode (captura de tiempos con performance.now())
+├── csvs/
+│   ├── neurocode_P01.csv … P17.csv        ← 17 participantes validados (35 ensayos c/u, n = 595)
+│   ├── extra/                             ← Archivos adicionales auditados por codigo/auditar_extras.py
+│   └── txt/                               ← Respaldos en texto de WhatsApp
+├── codigo/
+│   ├── ajuste.py                          ← Algoritmo propio MCO, Hessiano, opciones A–D y generación de figuras
+│   ├── auditar_extras.py                  ← Auditoría psicométrica/estadística (G1–G4) de CSV candidatos
+│   ├── resultados.txt                     ← Salida numérica completa (n = 595, K = 7 medias y por sujeto)
+│   ├── reporte_extras.md                  ← Dictamen de deduplicación y filtrado de datos extra
+│   └── pseudocodigo.md                    ← Trazabilidad código↔modelo, pseudocódigo y diagrama de flujo
+├── figuras/
+│   ├── 01_dispersion.png                  ← Dispersión total (n=595) + ajuste lineal en medias (R²=0.9685)
+│   ├── 02_rectas.png                      ← Atípicos más alejados + comparación con 3 rectas candidatas
+│   ├── 03_superficie.png                  ← Paraboloide 3D z = S(a,b) con curvas proyectadas y mínimo global
+│   ├── 04_trazas.png                      ← Trazas óptimas S(a,b*), S(a*,b) y familia de secciones transversales
+│   ├── 05_curvas_nivel.png                ← Curvas de nivel elípticas, campo −∇S y eje del valle
+│   ├── 06_residuos.png                    ← Residuos vs. ángulo (banda ±1 DE) e histograma con curva normal
+│   ├── 07_opciones_BC.png                 ← Panel 2×2 con las Opciones A, B, C y D de la Sección 13
+│   └── superficie_interactiva.html        ← Simulador 3D en vivo con sliders (a,b) y animación de descenso −∇S
+├── presentacion/
+│   ├── slides.md                          ← Fuente Marp de las 18 diapositivas con notas de orador
+│   ├── slides.pdf                         ← Presentación lista para proyectar (16:9)
+│   └── slides.html                        ← Versión web de las diapositivas
+└── informe/
+    ├── guia_desarrollo_manual.md          ← Deducción paso a paso + tabla de 7 filas para calculadora en 60 s
+    └── hoja_batalla_sustentacion.md       ← Reparto de diapos para 4 integrantes y 5 preguntas trampa resueltas
 ```
-
----
-
-## 6. Reparto de tareas
-
-| Tarea | Responsable |
-|---|---|
-| App de captura | ✅ Hecha |
-| Recolección de datos | Todos |
-| Desarrollo manual | **Todos** (cada uno lo debe saber hacer) |
-| Python y gráficas | Por asignar |
-| Diagrama de flujo y pseudocódigo | Por asignar |
-| Blender | Por asignar |
-| Presentación e informe | Por asignar |
 
 ---
 

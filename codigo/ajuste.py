@@ -223,10 +223,10 @@ def main():
     axs[0].set(
         xlabel="Ángulo de rotación x (°)",
         ylabel="Tiempo de respuesta y (ms)",
-        title="A. Dispersión total (n = 525 ensayos, 15 personas)",
+        title=f"A. Dispersión total (n = {len(x)} ensayos, {len(parts)} personas)",
         xticks=ang_vals,
     )
-    axs[0].legend(ncol=4, fontsize=7.5, loc="upper left", framealpha=0.92)
+    axs[0].legend(ncol=5, fontsize=7.2, loc="upper left", framealpha=0.92)
 
     axs[1].errorbar(
         ang_vals,
@@ -237,7 +237,7 @@ def main():
         ms=7.5,
         lw=1.8,
         capsize=4,
-        label="Media observada $\\bar{y}_k \\pm$ EE (n=75/ángulo)",
+        label=f"Media observada $\\bar{{y}}_k \\pm$ EE (m={m_per_angle}/ángulo)",
         zorder=5,
     )
     axs[1].plot(ang_vals, med_vals, "s--", color=TEAL, ms=5.5, lw=1.3, alpha=0.85, label="Mediana por ángulo")
@@ -255,7 +255,7 @@ def main():
         ylabel="Tiempo promedio de respuesta (ms)",
         title="B. Tendencia lineal en promedios por ángulo (K = 7)",
         xticks=ang_vals,
-        ylim=(540, 1250),
+        ylim=(540, 1280),
     )
     axs[1].legend(fontsize=8.5, loc="upper left", framealpha=0.94)
     fig.tight_layout()
@@ -271,7 +271,7 @@ def main():
         (a + 3.0, b - 300, "#16a34a", "Candidata 3"),
     ]
     fig, axs = plt.subplots(1, 2, figsize=(12.2, 4.8), gridspec_kw={"width_ratios": [1, 1.1]})
-    axs[0].scatter(x, y, s=18, color="#94a3b8", alpha=0.55, label="Datos observados (n = 525)")
+    axs[0].scatter(x, y, s=18, color="#94a3b8", alpha=0.55, label=f"Datos observados (n = {len(x)})")
     axs[0].plot(xs, a * xs + b, color=INK, lw=2.6, label=f"Óptima: $y = {a:.2f}x + {b:.1f}$")
     # Highlight top 3 largest residuals as requested by Section 10
     top3_idx = np.argsort(np.abs(r["e"]))[-3:][::-1]
@@ -537,8 +537,8 @@ def main():
     # Top-left: Option B & C zoomed clearly on the angle means
     ax_bc = axs[0, 0]
     ax_bc.errorbar(ang_vals, mean_vals, yerr=sem_vals, fmt="o", color=INK, ms=6.5, capsize=3.5, label="Medias observadas $\\bar{y}_k \\pm$ EE", zorder=6)
-    ax_bc.plot(xs, a * xs + b, color=INK, lw=2.5, label=f"Lineal todos (n=525): $a^*={a:.2f}$, RMSE={r['rmse']:.0f}")
-    ax_bc.plot(xs, rb["a"] * xs + rb["b"], "--", color=ACCENT, lw=2.2, label=f"Opción B1 sin fila 262 (n=524): $a^*={rb['a']:.2f}$, RMSE={rb['rmse']:.0f}")
+    ax_bc.plot(xs, a * xs + b, color=INK, lw=2.5, label=f"Lineal todos (n={len(x)}): $a^*={a:.2f}$, RMSE={r['rmse']:.0f}")
+    ax_bc.plot(xs, rb["a"] * xs + rb["b"], "--", color=ACCENT, lw=2.2, label=f"Opción B1 sin fila {i} (n={len(x)-1}): $a^*={rb['a']:.2f}$, RMSE={rb['rmse']:.0f}")
     ax_bc.plot(
         xs,
         rb_clean["a"] * xs + rb_clean["b"],
@@ -560,7 +560,7 @@ def main():
         ylabel="Tiempo de respuesta y (ms)",
         title="A. Opciones B y C: atípicos vs. cuadrático",
         xticks=ang_vals,
-        ylim=(540, 1240),
+        ylim=(540, 1280),
     )
     ax_bc.legend(fontsize=7.6, loc="upper left")
 
@@ -579,7 +579,7 @@ def main():
     ax_n = axs[1, 0]
     part_counts = np.arange(1, len(parts) + 1)
     ax_n.plot(part_counts, a_cum, "o-", color=INK, lw=2.2, ms=6, label="Pendiente acumulada $a^*(N)$")
-    ax_n.axhline(a, color=ACCENT, ls="--", lw=1.6, label=f"Valor final (15 personas, n=525): $a^*={a:.2f}$ ms/°")
+    ax_n.axhline(a, color=ACCENT, ls="--", lw=1.6, label=f"Valor final ({len(parts)} personas, n={len(x)}): $a^*={a:.2f}$ ms/°")
     ax_n.set(
         xlabel="Número de participantes incluidos N (n = 35·N ensayos)",
         ylabel="Pendiente estimada a* (ms/°)",
@@ -588,7 +588,7 @@ def main():
     )
     ax_n.legend(fontsize=8.0, loc="upper left")
 
-    # Bottom-right: Individual participant lines explaining why R^2_raw = 0.085 vs R^2_means = 0.962
+    # Bottom-right: Individual participant lines explaining why R^2_raw vs R^2_means
     ax_ind = axs[1, 1]
     for idx, row_p in p_df.iterrows():
         ax_ind.plot(xs, row_p["a"] * xs + row_p["b"], lw=1.2, alpha=0.55, color=cmap_p(idx % 20))
@@ -612,7 +612,7 @@ def main():
     ax_ind.set(
         xlabel="Ángulo de rotación x (°)",
         ylabel="Recta ajustada por participante y (ms)",
-        title="D. Heterogeneidad individual (15 rectas)",
+        title=f"D. Heterogeneidad individual ({len(parts)} rectas)",
         xticks=ang_vals,
     )
     ax_ind.legend(fontsize=8.0, loc="upper left")
@@ -622,9 +622,10 @@ def main():
     plt.close(fig)
 
     # -------------------------------------------------------------------------
-    # Interactive 3D HTML with surface + minimum + 3D trace parabolas + candidates
+    # Interactive 3D HTML with surface + minimum + 3D trace parabolas + live sliders & gradient descent
     # -------------------------------------------------------------------------
     try:
+        import json
         import plotly.graph_objects as go
 
         pf = go.Figure()
@@ -632,10 +633,10 @@ def main():
             go.Surface(
                 x=a_grid,
                 y=b_grid,
-                z=Z,
+                z=Z_e8,
                 colorscale="Viridis",
-                opacity=0.88,
-                name="S(a, b)",
+                opacity=0.86,
+                name="S(a, b) [10⁸ ms²]",
                 contours=dict(
                     z=dict(show=True, usecolormap=True, highlightcolor="white", project_z=True)
                 ),
@@ -646,7 +647,7 @@ def main():
             go.Scatter3d(
                 x=a_grid,
                 y=np.full_like(a_grid, b),
-                z=[S(av, b, x, y) for av in a_grid],
+                z=[S(av, b, x, y) / 1e8 for av in a_grid],
                 mode="lines",
                 line=dict(color="#ef4444", width=6),
                 name=f"Traza b = b* ({b:.1f} ms)",
@@ -657,18 +658,18 @@ def main():
             go.Scatter3d(
                 x=np.full_like(b_grid, a),
                 y=b_grid,
-                z=[S(a, bv, x, y) for bv in b_grid],
+                z=[S(a, bv, x, y) / 1e8 for bv in b_grid],
                 mode="lines",
                 line=dict(color="#38bdf8", width=6),
                 name=f"Traza a = a* ({a:.2f} ms/°)",
             )
         )
-        # Global minimum point
+        # Global minimum point (trace index 3)
         pf.add_trace(
             go.Scatter3d(
                 x=[a],
                 y=[b],
-                z=[r["smin"]],
+                z=[smin_e8],
                 mode="markers+text",
                 marker=dict(size=8, color="#f97316", symbol="diamond"),
                 text=[f"Mínimo ({a:.2f}, {b:.1f})"],
@@ -676,17 +677,238 @@ def main():
                 name="Mínimo global (a*, b*)",
             )
         )
+        # Live movable probe point (trace index 4)
+        a_init, b_init = round(a + 2.2, 2), round(b - 260.0, 1)
+        s_init_e8 = S(a_init, b_init, x, y) / 1e8
+        pf.add_trace(
+            go.Scatter3d(
+                x=[a_init],
+                y=[b_init],
+                z=[s_init_e8],
+                mode="markers+text",
+                marker=dict(size=9, color="#22c55e", symbol="circle", line=dict(color="white", width=2)),
+                text=[f"Punto actual ({a_init:.2f}, {b_init:.0f})"],
+                textposition="top center",
+                name="Punto explorado (a, b)",
+            )
+        )
+        # Trajectory path for gradient descent (trace index 5)
+        pf.add_trace(
+            go.Scatter3d(
+                x=[a_init],
+                y=[b_init],
+                z=[s_init_e8],
+                mode="lines",
+                line=dict(color="#22c55e", width=6),
+                name="Trayectoria −∇S",
+            )
+        )
         pf.update_layout(
-            title=f"NeuroCode · Superficie de error cuadrático S(a,b) y trazas óptimas (n = {len(x)})",
+            title=f"NeuroCode · Laboratorio 3D de S(a,b), Gradiente ∇S y Trazas (n = {len(x)})",
             template="plotly_dark",
+            paper_bgcolor="#0b1324",
+            plot_bgcolor="#0b1324",
             scene=dict(
                 xaxis_title="Pendiente a (ms/°)",
                 yaxis_title="Intercepto b (ms)",
-                zaxis_title="Error cuadrático S(a,b) [ms²]",
+                zaxis_title="S(a,b) [10⁸ ms²]",
             ),
-            margin=dict(l=0, r=0, b=0, t=50),
+            margin=dict(l=0, r=0, b=0, t=48),
+            legend=dict(x=0.01, y=0.98, bgcolor="rgba(15,23,42,0.75)"),
         )
-        pf.write_html(f"{FIG}/superficie_interactiva.html")
+        plot_div = pf.to_html(full_html=False, include_plotlyjs="cdn", div_id="plot3d")
+        meta = dict(
+            n=int(r["sums"]["n"]),
+            sx=float(r["sums"]["sx"]),
+            sy=float(r["sums"]["sy"]),
+            sxx=float(r["sums"]["sxx"]),
+            sxy=float(r["sums"]["sxy"]),
+            syy=float((y * y).sum()),
+            astar=float(a),
+            bstar=float(b),
+            smin=float(r["smin"]),
+            angles=ang_vals.tolist(),
+            means=mean_vals.tolist(),
+        )
+        html_doc = f"""<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NeuroCode · Laboratorio Geométrico de Cálculo Multivariable</title>
+<style>
+  :root {{ --bg:#0b1324; --card:#111c33; --border:#233554; --accent:#f97316; --green:#22c55e; --text:#e2e8f0; --muted:#94a3b8; }}
+  * {{ box-sizing:border-box; }}
+  body {{ margin:0; font-family:Inter,system-ui,sans-serif; background:var(--bg); color:var(--text); }}
+  header {{ padding:12px 22px; background:#070d19; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; }}
+  header h1 {{ margin:0; font-size:18px; font-weight:800; color:#fff; }}
+  header .sub {{ font-size:13px; color:var(--muted); }}
+  .grid {{ display:grid; grid-template-columns:390px 1fr; height:calc(100vh - 54px); }}
+  @media (max-width:980px) {{ .grid {{ grid-template-columns:1fr; height:auto; }} }}
+  .panel {{ padding:16px; background:var(--card); border-right:1px solid var(--border); overflow-y:auto; display:flex; flex-direction:column; gap:12px; }}
+  .box {{ background:rgba(15,23,42,0.75); border:1px solid var(--border); border-radius:10px; padding:12px; }}
+  .box h2 {{ margin:0 0 8px 0; font-size:13px; text-transform:uppercase; letter-spacing:0.04em; color:var(--accent); }}
+  .row {{ display:flex; justify-content:space-between; align-items:center; font-size:13px; margin:6px 0; }}
+  input[type=range] {{ width:100%; accent-color:var(--accent); cursor:pointer; }}
+  .btns {{ display:flex; gap:8px; flex-wrap:wrap; margin-top:6px; }}
+  button {{ flex:1; padding:8px 10px; border-radius:8px; border:1px solid var(--border); background:#1e293b; color:#fff; font-weight:700; font-size:12px; cursor:pointer; }}
+  button.primary {{ background:var(--accent); border-color:var(--accent); color:#fff; }}
+  button.green {{ background:#15803d; border-color:#22c55e; }}
+  .kpi {{ font-family:monospace; font-size:13px; color:#38bdf8; font-weight:700; }}
+  canvas {{ width:100%; height:190px; background:#070d19; border-radius:8px; border:1px solid var(--border); }}
+  #plot3d {{ width:100%; height:100%; min-height:540px; }}
+</style>
+</head>
+<body>
+<header>
+  <h1>🧠 NeuroCode · Simulador en Vivo de S(a,b), Gradiente ∇S y Hessiano</h1>
+  <div class="sub">Mínimo global analítico: <b>a* = {a:.4f} ms/°</b> · <b>b* = {b:.2f} ms</b> · <b>S_min = {smin_e8:.4f}×10⁸ ms²</b></div>
+</header>
+<div class="grid">
+  <div class="panel">
+    <div class="box">
+      <h2>1. Explora los parámetros (a, b)</h2>
+      <div class="row"><span>Pendiente <b>a</b> (ms/°):</span><span id="lblA" class="kpi"></span></div>
+      <input id="slA" type="range" min="{a-3.0:.2f}" max="{a+3.0:.2f}" step="0.01" value="{a_init:.2f}">
+      <div class="row"><span>Intercepto <b>b</b> (ms):</span><span id="lblB" class="kpi"></span></div>
+      <input id="slB" type="range" min="{b-400:.0f}" max="{b+400:.0f}" step="1" value="{b_init:.0f}">
+      <div class="btns">
+        <button class="green" id="btnAnim">▶ Animar Descenso (−∇S)</button>
+        <button class="primary" id="btnOpt">★ Ir al Óptimo (∇S = 0)</button>
+      </div>
+    </div>
+    <div class="box">
+      <h2>2. Estado del Cálculo en (a, b)</h2>
+      <div class="row"><span>Error S(a,b):</span><span id="lblS" class="kpi"></span></div>
+      <div class="row"><span>Exceso ΔS vs S_min:</span><span id="lblDS" class="kpi"></span></div>
+      <div class="row"><span>∂S/∂a (pendiente traza a):</span><span id="lblGa" class="kpi"></span></div>
+      <div class="row"><span>∂S/∂b (pendiente traza b):</span><span id="lblGb" class="kpi"></span></div>
+      <div class="row"><span>Norma ‖∇S(a,b)‖:</span><span id="lblGnorm" class="kpi"></span></div>
+    </div>
+    <div class="box">
+      <h2>3. Recta actual y = a·x + b vs. Medias (K=7)</h2>
+      <canvas id="cvLine" width="350" height="190"></canvas>
+      <div class="row" style="font-size:11.5px;color:var(--muted);">
+        <span>🟠 Recta óptima (R²_medias = 0.9619)</span>
+        <span>🟢 Recta explorada (a, b)</span>
+      </div>
+    </div>
+  </div>
+  <div>{plot_div}</div>
+</div>
+<script>
+const M = {json.dumps(meta)};
+const slA = document.getElementById('slA'), slB = document.getElementById('slB');
+const cv = document.getElementById('cvLine'), ctx = cv.getContext('2d');
+let animId = null, pathA = [], pathB = [], pathZ = [];
+
+function evalS(a, b) {{
+  return M.syy - 2*a*M.sxy - 2*b*M.sy + a*a*M.sxx + 2*a*b*M.sx + M.n*b*b;
+}}
+function evalGrad(a, b) {{
+  return [2*M.sxx*a + 2*M.sx*b - 2*M.sxy, 2*M.sx*a + 2*M.n*b - 2*M.sy];
+}}
+
+function draw2D(a, b) {{
+  const W = cv.width, H = cv.height;
+  ctx.clearRect(0, 0, W, H);
+  const padL = 38, padR = 14, padT = 14, padB = 26;
+  const xToPx = x => padL + (x / 180) * (W - padL - padR);
+  const yToPy = y => H - padB - ((y - 350) / (1450 - 350)) * (H - padT - padB);
+
+  // Axes
+  ctx.strokeStyle = '#334155'; ctx.lineWidth = 1;
+  ctx.beginPath(); ctx.moveTo(padL, padT); ctx.lineTo(padL, H-padB); ctx.lineTo(W-padR, H-padB); ctx.stroke();
+
+  // Optimal line
+  ctx.strokeStyle = '#f97316'; ctx.lineWidth = 2.2; ctx.setLineDash([5, 4]);
+  ctx.beginPath();
+  ctx.moveTo(xToPx(0), yToPy(M.bstar));
+  ctx.lineTo(xToPx(180), yToPy(M.astar*180 + M.bstar));
+  ctx.stroke(); ctx.setLineDash([]);
+
+  // Current candidate line + residual segments on means
+  for (let i=0; i<M.angles.length; i++) {{
+    const ang = M.angles[i], ym = M.means[i], ypred = a*ang + b;
+    ctx.strokeStyle = 'rgba(34,197,94,0.45)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(xToPx(ang), yToPy(ym)); ctx.lineTo(xToPx(ang), yToPy(ypred)); ctx.stroke();
+  }}
+  ctx.strokeStyle = '#22c55e'; ctx.lineWidth = 2.6;
+  ctx.beginPath();
+  ctx.moveTo(xToPx(0), yToPy(b));
+  ctx.lineTo(xToPx(180), yToPy(a*180 + b));
+  ctx.stroke();
+
+  // Angle mean points
+  for (let i=0; i<M.angles.length; i++) {{
+    const px = xToPx(M.angles[i]), py = yToPy(M.means[i]);
+    ctx.fillStyle = '#f8fafc';
+    ctx.beginPath(); ctx.arc(px, py, 4, 0, Math.PI*2); ctx.fill();
+  }}
+}}
+
+function update(resetPath=false) {{
+  const a = parseFloat(slA.value), b = parseFloat(slB.value);
+  const s = evalS(a, b), [ga, gb] = evalGrad(a, b);
+  const s_e8 = s / 1e8, ds_pct = ((s - M.smin) / M.smin) * 100;
+  document.getElementById('lblA').textContent = a.toFixed(3) + ' ms/°';
+  document.getElementById('lblB').textContent = b.toFixed(1) + ' ms';
+  document.getElementById('lblS').textContent = s_e8.toFixed(4) + ' ×10⁸ ms²';
+  document.getElementById('lblDS').textContent = '+' + Math.max(0, ds_pct).toFixed(2) + ' %';
+  document.getElementById('lblGa').textContent = ga.toExponential(2);
+  document.getElementById('lblGb').textContent = gb.toExponential(2);
+  document.getElementById('lblGnorm').textContent = Math.hypot(ga, gb).toExponential(2);
+  draw2D(a, b);
+  if (resetPath) {{ pathA = [a]; pathB = [b]; pathZ = [s_e8]; }}
+  else {{ pathA.push(a); pathB.push(b); pathZ.push(s_e8); }}
+  if (window.Plotly) {{
+    Plotly.restyle('plot3d', {{
+      x: [[a]], y: [[b]], z: [[s_e8]],
+      text: [[`Actual (${{a.toFixed(2)}}, ${{b.toFixed(0)}})`]]
+    }}, [4]);
+    Plotly.restyle('plot3d', {{ x: [pathA], y: [pathB], z: [pathZ] }}, [5]);
+  }}
+}}
+
+slA.addEventListener('input', () => {{ if (animId) {{ cancelAnimationFrame(animId); animId=null; }} update(true); }});
+slB.addEventListener('input', () => {{ if (animId) {{ cancelAnimationFrame(animId); animId=null; }} update(true); }});
+
+document.getElementById('btnOpt').onclick = () => {{
+  if (animId) {{ cancelAnimationFrame(animId); animId=null; }}
+  slA.value = M.astar.toFixed(2); slB.value = M.bstar.toFixed(0);
+  pathA.push(M.astar); pathB.push(M.bstar); pathZ.push(M.smin/1e8);
+  update(false);
+}};
+
+document.getElementById('btnAnim').onclick = () => {{
+  if (animId) {{ cancelAnimationFrame(animId); animId=null; return; }}
+  let a = parseFloat(slA.value), b = parseFloat(slB.value);
+  if (Math.hypot(a - M.astar, (b - M.bstar)/100) < 0.08) {{
+    a = M.astar + 2.4; b = M.bstar - 310;
+  }}
+  pathA = [a]; pathB = [b]; pathZ = [evalS(a,b)/1e8];
+  function step() {{
+    const [ga, gb] = evalGrad(a, b);
+    // Preconditioned gradient descent step (scaled by diagonal of H)
+    a -= 0.12 * (ga / (2 * M.sxx));
+    b -= 0.12 * (gb / (2 * M.n));
+    slA.value = a; slB.value = b;
+    update(false);
+    if (Math.hypot(a - M.astar, (b - M.bstar)/120) > 0.015) {{
+      animId = requestAnimationFrame(step);
+    }} else {{
+      slA.value = M.astar; slB.value = M.bstar; update(false); animId = null;
+    }}
+  }}
+  animId = requestAnimationFrame(step);
+}};
+
+window.addEventListener('load', () => update(true));
+</script>
+</body>
+</html>"""
+        with open(f"{FIG}/superficie_interactiva.html", "w", encoding="utf-8") as fh:
+            fh.write(html_doc)
     except ImportError:
         print("plotly missing, interactive surface skipped", file=sys.stderr)
 

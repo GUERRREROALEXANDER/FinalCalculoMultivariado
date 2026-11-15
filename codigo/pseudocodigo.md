@@ -6,16 +6,16 @@ Cada paso del código (`codigo/ajuste.py`) corresponde exactamente a una etapa d
 
 | Paso | Expresión matemática (Cálculo Multivariable) | Función / Línea en `codigo/ajuste.py` |
 |---|---|---|
-| **1. Datos** | Pares $(x_i, y_i)_{i=1}^n$, con $x_i \in \{0,30,\dots,180\}^\circ$ y $y_i$ en ms | `load()` → une los 15 CSV ($n = 525$) |
+| **1. Datos** | Pares $(x_i, y_i)_{i=1}^n$, con $x_i \in \{0,30,\dots,180\}^\circ$ y $y_i$ en ms | `load()` → une los 17 CSV ($n = 595$) |
 | **2. Sumatorias** | $S_x = \sum x_i,\; S_y = \sum y_i,\; S_{xx} = \sum x_i^2,\; S_{xy} = \sum x_i y_i$ | `fit(x, y)` → acumula sumas sin librerías de regresión |
 | **3. Punto crítico** | $\nabla S(a,b) = (0,0) \implies D_0 = nS_{xx} - S_x^2$ | `d = n * sxx - sx**2` |
 | **4. Óptimo $(a^*, b^*)$** | $a^* = \frac{nS_{xy} - S_x S_y}{D_0},\quad b^* = \frac{S_y - a^* S_x}{n}$ | `a = (n * sxy - sx * sy) / d`, `b = (sy - a * sx) / n` |
 | **5. Error mínimo** | $S(a^*, b^*) = \sum_{i=1}^n (y_i - a^* x_i - b^*)^2$ | `S(a, b, x, y)` y verificación $\|\nabla S(a^*,b^*)\| \approx 0$ (`grad_S`) |
 | **6. Matriz Hessiana** | $H = \begin{pmatrix} 2S_{xx} & 2S_x \\ 2S_x & 2n \end{pmatrix},\quad \det(H) = 4D_0$ | `hessian(x)`, `np.linalg.det(H)`, `np.linalg.eigvalsh(H)` |
 | **7. Criterio 2ª derivada** | $S_{aa} > 0 \;\wedge\; \det(H) > 0 \;\wedge\; \lambda_1, \lambda_2 > 0 \implies$ Mínimo global | Impresión y validación en `report()` |
-| **8. Equivalencia en medias** | $S(a,b) = \text{SS}_{\text{intra}} + m\,S_{\text{medias}}(a,b)$ ($m=75$, $K=7$) | `report(means_df, ...)` → mismo $(a^*, b^*)$ con $R^2_{\text{medias}} = 0.9619$ |
+| **8. Equivalencia en medias** | $S(a,b) = \text{SS}_{\text{intra}} + m\,S_{\text{medias}}(a,b)$ ($m=85$, $K=7$) | `report(means_df, ...)` → mismo $(a^*, b^*)$ con $R^2_{\text{medias}} = 0.9685$ |
 | **9. Calidad y residuos** | $e_i = y_i - \hat{y}_i,\quad \text{RMSE} = \sqrt{S_{\min}/n},\quad R^2 = 1 - \frac{S_{\min}}{\sum (y_i - \bar{y})^2}$ | `metrics(x, y, a, b)` |
-| **10. Validación externa** | Comparación contra `numpy.polyfit` y `scipy.stats.linregress` | $\Delta a = 3.55\times 10^{-15},\; \Delta b = 0,\; \Delta S = 0$ |
+| **10. Validación externa** | Comparación contra `numpy.polyfit` y `scipy.stats.linregress` | $\Delta a = 1.29\times 10^{-14},\; \Delta b = 5.68\times 10^{-13},\; \Delta S = 0$ |
 
 ## 2. Pseudocódigo estructurado
 

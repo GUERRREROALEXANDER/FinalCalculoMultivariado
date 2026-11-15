@@ -95,8 +95,8 @@ Buenas. Medimos cuánto tarda el cerebro en girar una letra R en la mente y busc
 | **x** | ángulo de la letra R | grados |
 | **y** | tiempo de respuesta (aciertos) | ms |
 
-<span class="badge hot">n = 525</span> 15 sujetos × 7 ángulos × 5 ensayos
-<span class="badge">m = 75 / ángulo</span>
+<span class="badge hot">n = 595</span> 17 sujetos × 7 ángulos × 5 ensayos
+<span class="badge">m = 85 / ángulo</span>
 
 Diseño balanceado: cada ángulo pesa igual.
 
@@ -105,21 +105,21 @@ Diseño balanceado: cada ángulo pesa igual.
 
 | $\theta$ | $\bar y$ (ms) |
 |---|---|
-| $0^\circ$ | **696.8** |
-| $30^\circ$ | **727.1** |
-| $60^\circ$ | **752.8** |
-| $90^\circ$ | **904.9** |
-| $120^\circ$ | **973.5** |
-| $150^\circ$ | **1088.6** |
-| $180^\circ$ | **1124.2** |
+| $0^\circ$ | **718.7** |
+| $30^\circ$ | **751.7** |
+| $60^\circ$ | **790.0** |
+| $90^\circ$ | **954.6** |
+| $120^\circ$ | **1006.8** |
+| $150^\circ$ | **1121.3** |
+| $180^\circ$ | **1169.1** |
 
-<p class="tiny center">Medias por ángulo · m = 75 ensayos c/u</p>
+<p class="tiny center">Medias por ángulo · m = 85 ensayos c/u</p>
 
 </div>
 </div>
 
 <!--
-Cada participante vio una R girada 0, 30, 60, 90, 120, 150 o 180° y respondió si era normal o espejo. Solo aciertos: 5 datos por ángulo, 35 por persona, 525 total. La tabla muestra medias crecientes con el ángulo, indicio de tendencia lineal.
+Cada participante vio una R girada 0, 30, 60, 90, 120, 150 o 180° y respondió si era normal o espejo. Solo aciertos: 5 datos por ángulo, 35 por persona, 595 en total (17 sujetos validados). La tabla muestra medias crecientes con el ángulo, indicio claro de tendencia lineal.
 -->
 
 ---
@@ -128,17 +128,17 @@ Cada participante vio una R girada 0, 30, 60, 90, 120, 150 o 180° y respondió 
 
 ![h:360](../figuras/01_dispersion.png)
 
-Media **696.8 ms** a $0^\circ$ → **1124.2 ms** a $180^\circ$ · gran dispersión, tendencia creciente ⇒ modelo $y=ax+b$ razonable.
+Media **718.7 ms** a $0^\circ$ → **1169.1 ms** a $180^\circ$ · en las medias por ángulo, **$R^2_{\text{medias}}=0.9685$** ⇒ modelo $y=ax+b$ sólido.
 
 <!--
-Cada punto es un ensayo. La media sube de 696.8 a 1124.2 ms. Hay mucha dispersión entre personas, pero la tendencia creciente es clara, así que probamos y = a·x + b.
+Cada punto es un ensayo. La media sube de 718.7 a 1169.1 ms. Aunque hay dispersión entre personas, en los promedios por ángulo la tendencia lineal explica el 96.85%, así que probamos y = a·x + b.
 -->
 
 ---
 
 # Medimos qué tan mala es cada recta: S(a, b)
 
-$$S(a,b)=\sum_{i=1}^{525}\big(y_i-\textcolor{#d9480f}{a}\,x_i-\textcolor{#d9480f}{b}\big)^2$$
+$$S(a,b)=\sum_{i=1}^{595}\big(y_i-\textcolor{#d9480f}{a}\,x_i-\textcolor{#d9480f}{b}\big)^2$$
 
 ![h:330](../figuras/02_rectas.png)
 
@@ -164,25 +164,25 @@ Derivamos con regla de la cadena tratando la otra variable como constante. Igual
 
 ---
 
-# Resultado: a\* = 2.65 ms/° y b\* = 656.91 ms
+# Resultado: a\* = 2.75 ms/° y b\* = 683.12 ms
 
-<p class="tiny center">n = 525 · Σx = 47 250 · Σy = 470 089.6 · Σx² = 6 142 500 · Σxy = 47 316 603</p>
+<p class="tiny center">n = 595 · Σx = 53 550 · Σy = 553 544.9 · Σx² = 6 961 500 · Σxy = 55 702 551</p>
 
-$$a^*=\frac{n\sum xy-\sum x\sum y}{n\sum x^2-(\sum x)^2}=\frac{2\,629\,482\,975}{992\,250\,000}\approx\textcolor{#d9480f}{2.6500}$$
+$$a^*=\frac{n\sum xy-\sum x\sum y}{n\sum x^2-(\sum x)^2}=\frac{3\,500\,688\,450}{1\,274\,490\,000}\approx\textcolor{#d9480f}{2.7467}$$
 
-$$b^*=\frac{\sum y-a^*\sum x}{n}\approx\textcolor{#d9480f}{656.91}\qquad S_{\min}\approx 142\,057\,260$$
+$$b^*=\frac{\sum y-a^*\sum x}{n}\approx\textcolor{#d9480f}{683.12}\qquad S_{\min}\approx 156\,163\,296$$
 
 <!--
-Sumatorias reales verificables con calculadora. Pendiente 2.65 ms por grado, intercepto 656.91 ms o tiempo base sin rotación. Error mínimo ≈ 142 millones de ms².
+Sumatorias reales verificables con calculadora (y también en 60 segundos con las 7 medias por ángulo). Pendiente 2.7467 ms por grado, intercepto 683.12 ms o tiempo base sin rotación. Error mínimo ≈ 156.16 millones de ms².
 -->
 
 ---
 
 # El Hessiano confirma: mínimo global
 
-$$\nabla S(a^*,b^*)=[1.86\times 10^{-9},\,7.28\times 10^{-12}]\approx\mathbf{0}\qquad H=\begin{pmatrix}12\,285\,000 & 94\,500\\ 94\,500 & 1\,050\end{pmatrix}$$
+$$\nabla S(a^*,b^*)=[-7.22\times 10^{-9},\,-1.96\times 10^{-10}]\approx\mathbf{0}\qquad H=\begin{pmatrix}13\,923\,000 & 107\,100\\ 107\,100 & 1\,190\end{pmatrix}$$
 
-$$D=\det H=3.969\times 10^9>0 \quad S_{aa}=1.2285\times 10^7>0 \quad \lambda_1=323.06>0,\;\lambda_2=1.2286\times 10^7>0$$
+$$D=\det H=5.098\times 10^9>0 \quad S_{aa}=1.3923\times 10^7>0 \quad \lambda_1=366.13>0,\;\lambda_2=1.3924\times 10^7>0$$
 
 **H constante** ⇒ S es paraboloide convexo: mínimo único y global.
 
@@ -207,7 +207,7 @@ Verificación numérica del gradiente casi cero. D>0 y S_aa>0 más ambos valores
 </div>
 </div>
 
-Elipses **inclinadas** ($S_{ab}=2\Sigma x=94\,500>0$) y **alargadas** ($\lambda_2/\lambda_1\approx 38\,029$); $-\nabla S$ apunta al mínimo.
+Elipses **inclinadas** ($S_{ab}=2\Sigma x=107\,100>0$) y **alargadas** ($\lambda_2/\lambda_1\approx 38\,029$); $-\nabla S$ apunta al mínimo.
 
 <!--
 Izquierda: superficie z=S(a,b) con mínimo marcado. Derecha: curvas de nivel elípticas centradas en (a*,b*) con campo −gradiente apuntando al centro. Se inclinan por el término cruzado positivo y se alargan porque la superficie es ~38 mil veces más empinada en a que en b.
@@ -252,14 +252,14 @@ Diagrama de codigo/ajuste.py: cada caja es un paso del desarrollo manual. Primer
 
 | Parámetro | Manual | Código propio | polyfit / linregress | Δ máx |
 |---|---|---|---|---|
-| a | 2.6500 | 2.650021 | 2.650021 | 3.55e-15 |
-| b | 656.91 | 656.9069 | 656.9069 | 0.00e+00 |
-| S mín | 142 057 260 | 142 057 259.72 | 142 057 259.72 | 0.00e+00 |
+| a | 2.7467 | 2.746737 | 2.746737 | 1.29e-14 |
+| b | 683.12 | 683.1213 | 683.1213 | 5.68e-13 |
+| S mín | 156 163 296 | 156 163 296.22 | 156 163 296.22 | 0.00e+00 |
 
 Tres vías, mismo punto: validación exacta a nivel de redondeo.
 
 <!--
-Manual, algoritmo propio y numpy/scipy coinciden hasta 1e-15. La diferencia máxima es ruido de punto flotante: el cálculo analítico queda verificado.
+Manual, algoritmo propio y numpy/scipy coinciden hasta 1e-13. La diferencia máxima es ruido de punto flotante: el cálculo analítico queda verificado.
 -->
 
 ---
@@ -268,7 +268,7 @@ Manual, algoritmo propio y numpy/scipy coinciden hasta 1e-15. La diferencia máx
 
 ![h:380](../figuras/06_residuos.png)
 
-Media $e\approx -1.4\times 10^{-14}\approx 0$ · mayor residuo fila 262 ($x=150^\circ$, $e=\mathbf{5056.4}$ ms) · leve abanico: heterocedasticidad.
+Media $\bar e\approx 1.9\times 10^{-13}\approx 0$ · mayor residuo fila 262 ($x=150^\circ$, $e=\mathbf{5015.7}$ ms) · leve abanico: heterocedasticidad.
 
 <!--
 Residuos centrados en cero, mayoría entre −1000 y 1000 ms con cola alta. La dispersión crece con el ángulo y el extremo es la fila 262. No hay patrón curvo sistemático: el lineal es aceptable.
@@ -281,28 +281,28 @@ Residuos centrados en cero, mayoría entre −1000 y 1000 ms con cola alta. La d
 <div class="cols">
 <div class="card hot">
 
-## Ensayos crudos · n = 525
+## Ensayos crudos · n = 595
 
-**RMSE = 520.2 ms**
-**$R^2 = 0.0854$** ($p=8.4\times 10^{-12}$)
+**RMSE = 512.3 ms**
+**$R^2 = 0.0938$** ($p=2.2\times 10^{-14}$)
 
-Pendiente real pero solo 8.5 %: heterogeneidad basal entre 15 sujetos.
+Pendiente altamente significativa; 9.4 % crudo por variación basal entre 17 sujetos.
 
 </div>
 <div class="card">
 
-## Promedios · K = 7 (m = 75)
+## Promedios · K = 7 (m = 85)
 
-**Mismos** $a^*=2.6500$, $b^*=656.91$
-**RMSE = 31.6 ms · $R^2 = 0.9619$** ($p=0.0001$)
+**Mismos** $a^*=2.7467$, $b^*=683.12$
+**RMSE = 29.7 ms · $R^2 = 0.9685$** ($p=0.00006$)
 
-96.2 % de la tendencia media: la recta describe el efecto rotación.
+96.85 % de la tendencia media: la recta describe el efecto rotación.
 
 </div>
 </div>
 
 <!--
-Misma recta en ambas escalas por diseño balanceado. En ensayos el ruido entre personas hunde R² aunque p es diminuta; en medias el ruido se promedia y R² llega a 96.2 %. Por eso el efecto es real y la recta es correcta para la tendencia.
+Misma recta en ambas escalas por diseño balanceado. En ensayos el ruido entre personas baja R² aunque p es 2.2e-14; en medias el ruido se promedia y R² llega a 96.85 %. Por eso el efecto es real y la recta es excelente para la tendencia.
 -->
 
 ---
@@ -317,16 +317,16 @@ Misma recta en ambas escalas por diseño balanceado. En ensayos el ruido entre p
 </div>
 <div>
 
-**A Sensib.:** ±25 ms ⇒ $\sigma_a=0.019$ (0.72 %).
-**B Atípicos:** sin f.262 $a^*=2.49$, RMSE 471; sin >3 s (n=519) $a^*=2.26$, $R^2=0.1024$.
-**C Cuadr.:** $y=0.0041x^2+1.92x+675.2$, $R^2=0.0860$ ($\Delta=+0.0006$).
+**A Sensib.:** ±25 ms ⇒ $\sigma_a=0.017$ (0.60 %).
+**B Atípicos:** sin f.262 $a^*=2.61$, RMSE 469; sin >3 s (n=589) $a^*=2.41$, $R^2=0.1103$.
+**C Cuadr.:** $y=0.0030x^2+2.20x+696.8$, $R^2=0.0941$ ($\Delta=+0.0003$).
 **D N:** $a^*(N)$ converge desde $N\ge 10$ ($n\ge 350$).
 
 </div>
 </div>
 
 <!--
-Las cuatro opciones confirman la recta: A muestra baja sensibilidad, B que un atípico mueve poco, C que el cuadrático no aporta y D que con 10+ participantes el ajuste se estabiliza.
+Las cuatro opciones confirman la recta: A muestra bajísima sensibilidad (0.6%), B que un atípico mueve poco, C que el cuadrático no aporta (+0.0003) y D que desde 10 participantes el ajuste se estabiliza.
 -->
 
 ---
@@ -338,9 +338,9 @@ Las cuatro opciones confirman la recta: A muestra baja sensibilidad, B que un at
 
 ## Cerebro
 
-$$t=\textcolor{#d9480f}{656.91}+\textcolor{#d9480f}{2.65}\,\theta$$
+$$t=\textcolor{#d9480f}{683.12}+\textcolor{#d9480f}{2.75}\,\theta$$
 
-≈ **377 °/s**: gira la imagen mental por etapas (Shepard–Metzler).
+≈ **364 °/s**: gira la imagen mental por etapas (Shepard–Metzler).
 
 </div>
 <div class="card">
@@ -355,34 +355,34 @@ Tiempo **constante**: multiplica la matriz, sin costo por ángulo.
 </div>
 
 <!--
-El cerebro tarda 2.65 ms más por grado, unos 377 °/s: rota paso a paso. Un computador aplica la matriz y tarda lo mismo siempre. Mismo problema, dos estrategias.
+El cerebro tarda 2.75 ms más por grado, unos 364 °/s: rota paso a paso. Un computador aplica la matriz y tarda lo mismo siempre. Mismo problema, dos estrategias.
 -->
 
 ---
 
-# Limitaciones: pocas personas y mucha variación
+# Limitaciones: variación entre personas y atípicos
 
-- Solo **15** participantes: no generalizable.
+- **17** participantes validados ($n=595$): muestra universitaria acotada.
 - Pendiente por persona de **−0.08** (P01, sin efecto) a **8.95 ms/°** (P09).
-- Atípicos por distracción (fila 262: 5056 ms).
-- $R^2_{\text{raw}}=0.0854$: falta modelar el nivel basal por sujeto.
+- Atípicos por distracción (fila 262: +5015.7 ms).
+- $R^2_{\text{raw}}=0.0938$ vs. $R^2_{\text{medias}}=0.9685$: falta intercepto aleatorio por sujeto.
 
 <!--
-Con 15 personas y pendientes tan dispares el modelo global es promedio. Los atípicos y el R² bajo piden un modelo mixto por sujeto en trabajo futuro.
+Con 17 personas y pendientes dispares el modelo global mide la tendencia media. Los atípicos y la diferencia de velocidad basal motivan un modelo multinivel por sujeto en trabajo futuro.
 -->
 
 ---
 
 <!-- _class: demo -->
 
-# Demo en vivo
+# Demo en vivo: Laboratorio de Cálculo Multivariable
 
-Abre la superficie interactiva: [`figuras/superficie_interactiva.html`](../figuras/superficie_interactiva.html)
+Abre el simulador 3D con descenso por gradiente en vivo: [`figuras/superficie_interactiva.html`](../figuras/superficie_interactiva.html)
 
 O prueba la app de captura: [`app/index.html`](../app/index.html)
 
 <!--
-Giramos la superficie en el navegador hasta ver el fondo del valle en (a*,b*). Si el profesor quiere, hacemos la prueba en la app NeuroCode con doble clic.
+Abrimos el simulador interactivo: movemos los sliders de (a,b) y pulsamos Animar Descenso (−∇S) para ver en vivo cómo la bola baja por el paraboloide hasta (a*, b*).
 -->
 
 ---
