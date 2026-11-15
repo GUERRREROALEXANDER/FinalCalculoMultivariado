@@ -7,6 +7,44 @@
 
 ---
 
+## 0. Estado y pasos a seguir (actualizado 14 nov)
+
+**Resultado con los 15 participantes (n = 525):** a\* = 2.65 ms/° (≈ 377 °/s), b\* = 656.91 ms, S_min ≈ 1.42·10⁸, Hessiano definido positivo → mínimo global. p < 0.0001, pero R² ≈ 0.085 y RMSE ≈ 520 ms: el efecto es real y el ruido entre personas es grande (se defiende en limitaciones).
+
+| Paso | Estado | Dónde está |
+|---|---|---|
+| 1-2 App y datos | ✅ | `app/`, `csvs/` (15 archivos) |
+| 3 Exploración | ✅ | `figuras/01_dispersion.png` |
+| 4 Desarrollo manual | ⏳ **cada integrante a mano** | `informe/guia_desarrollo_manual.md` |
+| 5 Python | ✅ | `codigo/ajuste.py` → `codigo/resultados.txt` |
+| 6 Gráficas | ✅ | `figuras/` (7 PNG + `superficie_interactiva.html`) |
+| 7 Residuos, RMSE, R² | ✅ | `figuras/06_residuos.png`, `resultados.txt` |
+| 8 Análisis adicional (B y C) | ✅ | `figuras/07_opciones_BC.png` |
+| 9 Pseudocódigo y diagrama | ✅ | `codigo/pseudocodigo.md` |
+| 10 Blender | ⏳ opcional | — |
+| 11 Presentación | ✅ (el profe no pide informe) | `presentacion/slides.pdf` (fuente: `slides.md`) |
+| 12 Defensa individual | ⏳ **ensayar** | Parte 3 de la guía |
+
+### Qué falta antes del martes 17
+
+1. **Cada integrante hace el paso 4 a mano**, sin mirar la guía, y ensaya las 10 preguntas del paso 12 en voz alta (es el 40 % de la nota).
+2. **Poner los nombres** en la última diapositiva (`presentacion/slides.md`, buscar `[nombre 1]`) y **repartir quién explica qué**.
+3. **Probar el demo** en el computador de la exposición: `app/index.html` y `figuras/superficie_interactiva.html` (los enlaces del PDF son relativos; si el PDF se abre suelto, abrirlos aparte).
+4. *(Opcional)* Exportar el diagrama de flujo a PNG, análisis de sensibilidad (opción A), Blender.
+
+### Cómo regenerar todo
+
+```bash
+python3 codigo/ajuste.py > codigo/resultados.txt     # necesita numpy, scipy, pandas, matplotlib, plotly
+cd presentacion && npx @marp-team/marp-cli slides.md --pdf --html --allow-local-files --no-stdin
+```
+
+Agregar más participantes = soltar el CSV en `csvs/` y volver a correr.
+
+> ⚠️ **Códigos de participante:** en varios CSV el id tecleado en la app no coincide con el nombre del archivo (`neurocode_P05.csv` dice `36`, `P07` y `P11` dicen `P10`, `P12` dice `P11`, `P14` dice `P12`). El script usa **el nombre del archivo** como id. Los CSV no se editan.
+
+---
+
 ## 1. ¿De qué trata el proyecto?
 
 Cuando ves una letra girada, tu cerebro la "rota" mentalmente para reconocerla. El experimento clásico de Shepard y Metzler (1971) mostró que **el tiempo de respuesta crece en línea recta con el ángulo de rotación**: el cerebro gira la imagen a velocidad constante.
@@ -176,7 +214,7 @@ FinalCalculoMultivariado/
 ├── README.md          ← este plan
 ├── app/
 │   └── index.html     ← app de captura NeuroCode
-├── datos/             ← CSV recolectados
+├── csvs/              ← CSV recolectados
 ├── codigo/            ← scripts de Python (regresión, gráficas, análisis)
 ├── figuras/           ← gráficas exportadas
 ├── blender/           ← renders y escenas (opcional)
