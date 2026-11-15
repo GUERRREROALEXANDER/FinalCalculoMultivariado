@@ -32,10 +32,13 @@ MUTED = "#64748b"
 plt.rcParams.update(
     {
         "font.family": "sans-serif",
-        "font.size": 10.5,
-        "axes.titlesize": 12,
+        "font.size": 13,
+        "axes.titlesize": 15,
         "axes.titleweight": "bold",
-        "axes.labelsize": 10.5,
+        "axes.labelsize": 13.5,
+        "xtick.labelsize": 12.5,
+        "ytick.labelsize": 12.5,
+        "legend.fontsize": 11,
         "axes.edgecolor": "#cbd5e1",
         "axes.grid": True,
         "grid.alpha": 0.28,
@@ -44,6 +47,19 @@ plt.rcParams.update(
         "axes.facecolor": "white",
     }
 )
+
+
+def save_panels(fig, axs, name, dpi=220):
+    """Guarda la figura completa (`name.png`) y cada panel por separado (`name_A.png`, `_B`, ...).
+
+    Los paneles sueltos se proyectan mucho mas grandes en las diapositivas.
+    """
+    fig.savefig(f"{FIG}/{name}.png", dpi=dpi)
+    fig.canvas.draw()
+    rend = fig.canvas.get_renderer()
+    for k, ax in enumerate(np.ravel(axs)):
+        bb = ax.get_tightbbox(rend).transformed(fig.dpi_scale_trans.inverted()).padded(0.08)
+        fig.savefig(f"{FIG}/{name}_{chr(65 + k)}.png", dpi=dpi, bbox_inches=bb)
 
 
 def load():
@@ -256,10 +272,11 @@ def main():
     axs[0].set(
         xlabel="Ángulo de rotación x (°)",
         ylabel="Tiempo de respuesta y (ms)",
-        title=f"A. Dispersión total (n = {len(x)} ensayos, {len(parts)} personas)",
+        title=f"A. Los {len(x)} ensayos ({len(parts)} personas)",
         xticks=ang_vals,
     )
-    axs[0].legend(ncol=5, fontsize=7.2, loc="upper left", framealpha=0.92)
+    axs[0].set_ylim(0, 7900)
+    axs[0].legend(ncol=6, fontsize=9.5, loc="upper left", framealpha=0.92, columnspacing=0.8, handletextpad=0.2)
 
     axs[1].errorbar(
         ang_vals,
@@ -282,17 +299,17 @@ def main():
         label=f"Recta MCO: $y = {a:.2f}x + {b:.1f}$\n($R^2_{{\\mathrm{{medias}}}} = {rm['r2']:.4f}$, $p = 0.0001$)",
     )
     for xv, mv in zip(ang_vals, mean_vals):
-        axs[1].annotate(f"{mv:.0f}", (xv, mv), textcoords="offset points", xytext=(0, 9), ha="center", fontsize=8.5, color=INK, fontweight="bold")
+        axs[1].annotate(f"{mv:.0f}", (xv, mv), textcoords="offset points", xytext=(0, 9), ha="center", fontsize=11.5, color=INK, fontweight="bold")
     axs[1].set(
         xlabel="Ángulo de rotación x (°)",
         ylabel="Tiempo promedio de respuesta (ms)",
-        title="B. Tendencia lineal en promedios por ángulo (K = 7)",
+        title="B. Promedios por ángulo (K = 7)",
         xticks=ang_vals,
         ylim=(540, 1280),
     )
-    axs[1].legend(fontsize=8.5, loc="upper left", framealpha=0.94)
+    axs[1].legend(fontsize=11.5, loc="lower right", framealpha=0.94)
     fig.tight_layout()
-    fig.savefig(f"{FIG}/01_dispersion.png", dpi=220)
+    save_panels(fig, axs, "01_dispersion")
     plt.close(fig)
 
     # -------------------------------------------------------------------------
@@ -317,16 +334,16 @@ def main():
             textcoords="offset points",
             xytext=(-12, -26 if y[idx_pt] > 5000 else 8),
             ha="right" if x[idx_pt] >= 120 else "left",
-            fontsize=7.8,
+            fontsize=10.8,
             bbox=dict(boxstyle="round,pad=0.2", fc="#fff7ed", ec=ACCENT, lw=0.8),
         )
     axs[0].set(
         xlabel="Ángulo de rotación x (°)",
         ylabel="Tiempo de respuesta y (ms)",
-        title="A. Ajuste global y puntos más alejados (Req. 10)",
+        title="A. Ajuste global y atípicos",
         xticks=ang_vals,
     )
-    axs[0].legend(fontsize=8.2, loc="upper left")
+    axs[0].legend(fontsize=10.5, loc="upper center", bbox_to_anchor=(0.5, -0.17), ncol=2, framealpha=0.95)
 
     axs[1].errorbar(
         ang_vals,
@@ -361,13 +378,13 @@ def main():
     axs[1].set(
         xlabel="Ángulo de rotación x (°)",
         ylabel="Tiempo de respuesta y (ms)",
-        title="B. Recta óptima vs. otras rectas (zoom en tendencia)",
+        title="B. Recta óptima vs. otras rectas",
         xticks=ang_vals,
         ylim=(320, 1480),
     )
-    axs[1].legend(fontsize=8.0, loc="upper left", framealpha=0.95)
+    axs[1].legend(fontsize=11.0, loc="upper left", framealpha=0.95)
     fig.tight_layout()
-    fig.savefig(f"{FIG}/02_rectas.png", dpi=220)
+    save_panels(fig, axs, "02_rectas")
     plt.close(fig)
 
     # -------------------------------------------------------------------------
@@ -413,7 +430,7 @@ def main():
     ax.set_zlabel("S(a, b) [$10^8$ ms²]", labelpad=10)
     ax.set_title("Superficie de error S(a,b): paraboloide elíptico convexo", pad=12)
     fig.colorbar(surf, ax=ax, shrink=0.56, pad=0.12, label="S(a, b) [$10^8$ ms²]")
-    ax.legend(loc="upper left", fontsize=8.5)
+    ax.legend(loc="upper left", fontsize=11.5)
     fig.tight_layout()
     fig.savefig(f"{FIG}/03_superficie.png", dpi=220)
     plt.close(fig)
@@ -436,16 +453,17 @@ def main():
         (a, smin_e8),
         xytext=(a + 0.55, smin_e8 + 0.15),
         arrowprops=dict(arrowstyle="->", color=ACCENT, lw=1.2),
-        fontsize=8.5,
+        fontsize=11.5,
         fontweight="bold",
         color=INK,
+        bbox=dict(boxstyle="round,pad=0.25", fc="white", ec=ACCENT, lw=1.0),
     )
     axs[0].set(
         xlabel="Pendiente a (ms/°)",
         ylabel="S(a, b₀) [$10^8$ ms²]",
         title="A. Traza óptima S(a, b*) y secciones b = b₀",
     )
-    axs[0].legend(fontsize=7.8, loc="upper right")
+    axs[0].legend(fontsize=10.8, loc="upper right")
 
     a_shifts = [(-2.0, "#94a3b8", "--"), (-1.0, "#64748b", "-."), (0.0, ACCENT, "-"), (1.0, "#2563eb", "-."), (2.0, "#0f766e", "--")]
     for da_val, col, ls in a_shifts:
@@ -461,18 +479,19 @@ def main():
         (b, smin_e8),
         xytext=(b + 65, smin_e8 + 0.18),
         arrowprops=dict(arrowstyle="->", color=ACCENT, lw=1.2),
-        fontsize=8.5,
+        fontsize=11.5,
         fontweight="bold",
         color=INK,
+        bbox=dict(boxstyle="round,pad=0.25", fc="white", ec=ACCENT, lw=1.0),
     )
     axs[1].set(
         xlabel="Intercepto b (ms)",
         ylabel="S(a₀, b) [$10^8$ ms²]",
         title="B. Traza óptima S(a*, b) y secciones a = a₀",
     )
-    axs[1].legend(fontsize=7.8, loc="upper right")
+    axs[1].legend(fontsize=10.8, loc="upper right")
     fig.tight_layout()
-    fig.savefig(f"{FIG}/04_trazas.png", dpi=220)
+    save_panels(fig, axs, "04_trazas")
     plt.close(fig)
 
     # -------------------------------------------------------------------------
@@ -481,7 +500,7 @@ def main():
     fig, ax = plt.subplots(figsize=(7.8, 5.4))
     cf = ax.contourf(A, B, Z_e8, levels=24, cmap="viridis", alpha=0.85)
     cs = ax.contour(A, B, Z_e8, levels=14, colors="white", linewidths=0.75, alpha=0.85)
-    ax.clabel(cs, fontsize=7.2, fmt="%.2f", colors="white")
+    ax.clabel(cs, fontsize=10.2, fmt="%.2f", colors="white")
     fig.colorbar(cf, ax=ax, pad=0.03, label="S(a, b) [$10^8$ ms²]")
 
     # Trace axes through (a*, b*) and principal valley line (b = bar_y - a * bar_x)
@@ -515,7 +534,13 @@ def main():
     ax.quiver(AQ, BQ, gx / norm * arrow_px / px_a, gy / norm * arrow_px / px_b,
               angles="xy", scale_units="xy", scale=1, color="white", alpha=0.6, width=0.003,
               label="$-\\nabla S$ (perpendicular a las curvas de nivel)")
-    ax.legend(fontsize=7.8, loc="upper right", framealpha=0.92)
+    ax.legend(fontsize=9.5, loc="lower left", framealpha=0.95)
+    ax.annotate(
+        f"MÍNIMO GLOBAL\n$\\nabla S=\\mathbf{{0}}$ en ({a:.2f}, {b:.1f})",
+        (a, b), xytext=(a - 2.9, b + 330), fontsize=13, fontweight="bold", color=INK,
+        arrowprops=dict(arrowstyle="-|>", color=ACCENT, lw=2.2),
+        bbox=dict(boxstyle="round,pad=0.3", fc="white", ec=ACCENT, lw=1.5),
+    )
     fig.savefig(f"{FIG}/05_curvas_nivel.png", dpi=220)
     plt.close(fig)
 
@@ -537,9 +562,9 @@ def main():
     axs[0].annotate(
         f"Atípico máx (fila {i}, P09)\n$x=150^\\circ, e=+{r['e'][i]:.1f}$ ms",
         (x[i], r["e"][i]),
-        xytext=(x[i] - 58, r["e"][i] - 550),
+        xytext=(186, r["e"][i] - 1100), ha="right",
         arrowprops=dict(arrowstyle="->", color=ACCENT, lw=1.2),
-        fontsize=8.2,
+        fontsize=11.2,
         fontweight="bold",
         bbox=dict(boxstyle="round,pad=0.2", fc="#fff7ed", ec=ACCENT, lw=0.8),
     )
@@ -549,7 +574,8 @@ def main():
         title="A. Residuos vs. ángulo (centrados en 0)",
         xticks=ang_vals,
     )
-    axs[0].legend(fontsize=7.8, loc="upper left")
+    axs[0].set_ylim(-1300, 5600)
+    axs[0].legend(fontsize=9.5, loc="upper center", bbox_to_anchor=(0.5, -0.17), ncol=2, framealpha=0.95)
 
     counts, bins, _ = axs[1].hist(r["e"], bins=24, color="#3b82f6", alpha=0.78, edgecolor="white", label="Frecuencia observada")
     bw = bins[1] - bins[0]
@@ -563,9 +589,9 @@ def main():
         ylabel="Número de ensayos",
         title="B. Histograma de residuos y cola derecha",
     )
-    axs[1].legend(fontsize=8.0, loc="upper right")
+    axs[1].legend(fontsize=11.0, loc="upper right")
     fig.tight_layout(pad=1.4, w_pad=2.2)
-    fig.savefig(f"{FIG}/06_residuos.png", dpi=220)
+    save_panels(fig, axs, "06_residuos")
     plt.close(fig)
 
     # -------------------------------------------------------------------------
@@ -601,7 +627,7 @@ def main():
         xticks=ang_vals,
         ylim=(540, 1280),
     )
-    ax_bc.legend(fontsize=7.6, loc="upper left")
+    ax_bc.legend(fontsize=10, loc="lower right")
 
     # Top-right: Option A (Monte Carlo sensitivity of a* and b*)
     ax_sens = axs[0, 1]
@@ -612,7 +638,7 @@ def main():
         ylabel="Intercepto perturbado b* (ms)",
         title=f"B. Opción A (Sensibilidad): $\\sigma_a={a_pert.std():.3f}$ ms/° ({100*a_pert.std()/a:.1f}%)",
     )
-    ax_sens.legend(fontsize=8.0, loc="upper right")
+    ax_sens.legend(fontsize=11.0, loc="upper right")
 
     # Bottom-left: Option D (Sample size N effect on a*)
     ax_n = axs[1, 0]
@@ -625,7 +651,7 @@ def main():
         title="C. Opción D: convergencia según muestra N",
         xticks=part_counts,
     )
-    ax_n.legend(fontsize=8.0, loc="upper left")
+    ax_n.legend(fontsize=11.0, loc="upper left")
 
     # Bottom-right: Individual participant lines explaining why R^2_raw vs R^2_means
     ax_ind = axs[1, 1]
@@ -637,7 +663,7 @@ def main():
         (140, p_df.loc[p_df["p"] == "P09", "a"].values[0] * 140 + p_df.loc[p_df["p"] == "P09", "b"].values[0]),
         xytext=(75, 1980),
         arrowprops=dict(arrowstyle="->", color=ACCENT, lw=1.0),
-        fontsize=8.0,
+        fontsize=11.0,
         fontweight="bold",
     )
     ax_ind.annotate(
@@ -645,7 +671,7 @@ def main():
         (120, p_df.loc[p_df["p"] == "P07", "a"].values[0] * 120 + p_df.loc[p_df["p"] == "P07", "b"].values[0]),
         xytext=(85, 360),
         arrowprops=dict(arrowstyle="->", color=TEAL, lw=1.0),
-        fontsize=8.0,
+        fontsize=11.0,
         fontweight="bold",
     )
     ax_ind.set(
@@ -654,10 +680,107 @@ def main():
         title=f"D. Heterogeneidad individual ({len(parts)} rectas)",
         xticks=ang_vals,
     )
-    ax_ind.legend(fontsize=8.0, loc="upper left")
+    ax_ind.legend(fontsize=11.0, loc="upper left")
 
     fig.tight_layout(pad=1.4, w_pad=2.2, h_pad=2.0)
-    fig.savefig(f"{FIG}/07_opciones_BC.png", dpi=220)
+    save_panels(fig, axs, "07_opciones_BC")
+    plt.close(fig)
+
+    # -------------------------------------------------------------------------
+    # 08_puente.png: bridge between the point (a,b) on the S map and the line y = ax + b
+    # -------------------------------------------------------------------------
+    fig, axs = plt.subplots(1, 2, figsize=(13.4, 5.6))
+    axs[0].contourf(A, B, Z_e8, levels=24, cmap="viridis", alpha=0.85)
+    axs[0].contour(A, B, Z_e8, levels=10, colors="white", linewidths=0.7, alpha=0.8)
+    pts = [(a, b, ACCENT, "Óptima", "*")] + [(ac, bc, col, cname, "o") for ac, bc, col, cname in candidates]
+    for ac, bc, col, cname, mk in pts:
+        axs[0].plot(ac, bc, mk, color=col, ms=19 if mk == "*" else 12, markeredgecolor="white", markeredgewidth=1.5, zorder=9)
+        axs[0].annotate(f"{cname}\nS={S(ac, bc, x, y) / 1e8:.2f}$\\times10^8$", (ac, bc), xytext=(-10, 10) if ac > 5 else (9, 9), textcoords="offset points",
+                        ha="right" if ac > 5 else "left", fontsize=11.5, fontweight="bold", color="white", zorder=10)
+    axs[0].set(xlabel="Pendiente a (ms/°)", ylabel="Intercepto b (ms)", title="A. Un punto (a, b) de la superficie…")
+    axs[1].errorbar(ang_vals, mean_vals, yerr=sem_vals, fmt="o", color=INK, ms=8, capsize=4, zorder=6, label="Medias por ángulo")
+    for ac, bc, col, cname, mk in pts:
+        axs[1].plot(xs, ac * xs + bc, color=col, lw=3.4 if mk == "*" else 2.2, ls="-" if mk == "*" else "--",
+                    label=f"{cname}: $y={ac:.2f}x+{bc:.0f}$")
+    axs[1].set(xlabel="Ángulo de rotación x (°)", ylabel="Tiempo y (ms)", title="B. …es UNA recta y = ax + b", xticks=ang_vals, ylim=(320, 1480))
+    axs[1].legend(fontsize=11, loc="upper left")
+    fig.tight_layout()
+    save_panels(fig, axs, "08_puente")
+    plt.close(fig)
+
+    # -------------------------------------------------------------------------
+    # 09_doble_r2.png: why R2_raw = 0.094 while R2_means = 0.9685 with the SAME line
+    # -------------------------------------------------------------------------
+    ss_reg = r["r2"] * sst
+    ss_lack = m_per_angle * rm["smin"]
+    parts_ss = [("Explicado por\nla recta", ss_reg, ACCENT), ("Falta de ajuste\nde la recta", ss_lack, "#f59e0b"), ("Variación DENTRO\ndel mismo ángulo", ss_within, "#94a3b8")]
+    fig, axs = plt.subplots(1, 2, figsize=(13.4, 5.4), gridspec_kw={"width_ratios": [1.25, 1]})
+    cum = 0.0
+    txt_pos = {0: (1.0, 0.78, "left"), 1: (30.0, 0.78, "left"), 2: (55, 0.0, "center")}
+    for k, (lab, v, col) in enumerate(parts_ss):
+        pct = 100 * v / sst
+        axs[0].barh([0], [pct], left=[cum], color=col, edgecolor="white", height=0.5)
+        tx, ty, ha = txt_pos[k]
+        label = {0: f"Explicado por\nla recta: {pct:.1f} %", 1: f"Falta de ajuste\nde la recta: {pct:.1f} %", 2: f"Dentro del mismo ángulo: {pct:.1f} %"}[k]
+        if k == 2:
+            axs[0].text(tx, ty, label, ha=ha, va="center", fontsize=16, fontweight="bold", color="white")
+        else:
+            axs[0].annotate(label, (cum + pct / 2, 0.25), xytext=(tx, ty), ha=ha, va="center", fontsize=15, fontweight="bold", color=INK,
+                            arrowprops=dict(arrowstyle="-|>", color=col, lw=2.2), bbox=dict(boxstyle="round,pad=0.3", fc="white", ec=col, lw=1.6))
+        cum += pct
+    axs[0].set(xlim=(0, 100), ylim=(-0.4, 1.2), yticks=[], xlabel="% de la variación total SST de los 595 ensayos",
+               title=f"A. $R^2_{{\\mathrm{{raw}}}}={r['r2']:.4f}$: casi todo el error es intra-ángulo")
+    axs[0].grid(False)
+    axs[1].errorbar(ang_vals, mean_vals, yerr=sem_vals, fmt="o", color=INK, ms=9, capsize=4, label="Medias (ruido promediado)", zorder=6)
+    axs[1].plot(xs, a * xs + b, color=ACCENT, lw=3.2, label=f"MISMA recta: $y={a:.2f}x+{b:.0f}$")
+    axs[1].set(xlabel="Ángulo de rotación x (°)", ylabel="Tiempo promedio (ms)", xticks=ang_vals, ylim=(540, 1280),
+               title=f"B. $R^2_{{\\mathrm{{medias}}}}={rm['r2']:.4f}$ con los mismos a*, b*")
+    axs[1].legend(fontsize=11.5, loc="upper left")
+    fig.tight_layout()
+    save_panels(fig, axs, "09_doble_r2")
+    plt.close(fig)
+
+    # -------------------------------------------------------------------------
+    # 10_pendientes.png: the 17 individual slopes vs the global slope
+    # -------------------------------------------------------------------------
+    ps = p_df.sort_values("a").reset_index(drop=True)
+    fig, ax = plt.subplots(figsize=(11.5, 6.0))
+    cols = [ACCENT if v > 0 else "#64748b" for v in ps["a"]]
+    ax.barh(ps["p"], ps["a"], color=cols, edgecolor="white")
+    ax.axvline(a, color=INK, lw=3, ls="--")
+    ax.text(a + 0.08, 0.2, f"Global a* = {a:.2f}", fontsize=14, fontweight="bold", color=INK, va="bottom")
+    ax.axvline(0, color="black", lw=1.2)
+    for yy, (pid, v) in enumerate(zip(ps["p"], ps["a"])):
+        ax.text(v + (0.1 if v >= 0 else -0.1), yy, f"{v:.2f}", va="center", ha="left" if v >= 0 else "right", fontsize=12, bbox=dict(fc="white", ec="none", pad=1.0, alpha=0.85))
+    ax.set(xlabel="Pendiente individual a_j (ms/°)", ylabel="Participante",
+           title=f"{n_pos} de {len(p_df)} personas tienen pendiente positiva (test de signos p = {sign_p:.1e})",
+           xlim=(min(-1.2, ps['a'].min() - 0.6), ps['a'].max() + 1.2))
+    ax.grid(axis="y", alpha=0)
+    fig.tight_layout()
+    fig.savefig(f"{FIG}/10_pendientes.png", dpi=220)
+    plt.close(fig)
+
+    # -------------------------------------------------------------------------
+    # 11_elipses_centradas.png: original vs centered x~ = x - mean(x)  (tilted -> aligned)
+    # -------------------------------------------------------------------------
+    xc_all = x - x.mean()
+    cstar = y.mean()
+    C_grid = np.linspace(cstar - 420, cstar + 420, 140)
+    A2, C2 = np.meshgrid(a_grid, C_grid)
+    Zc = ((y[None, None, :] - A2[..., None] * xc_all - C2[..., None]) ** 2).sum(-1) / 1e8
+    fig, axs = plt.subplots(1, 2, figsize=(13.4, 5.6))
+    for ax_, XX, YY, ZZ, c0, ttl, lab in [
+        (axs[0], A, B, Z_e8, b, f"A. Original: x en grados\n$S_{{ab}}=2\\Sigma x={2 * x.sum():,.0f}\\neq 0$ → INCLINADAS", "Intercepto b (ms)"),
+        (axs[1], A2, C2, Zc, cstar, "B. Centrado: $\\tilde{x}=x-90^\\circ$\n$S_{a\\tilde{b}}=2\\Sigma\\tilde{x}=0$ → ENDEREZADAS", "Intercepto centrado $\\tilde{b}$ (ms)"),
+    ]:
+        ax_.contourf(XX, YY, ZZ, levels=24, cmap="viridis", alpha=0.85)
+        ax_.contour(XX, YY, ZZ, levels=10, colors="white", linewidths=0.8, alpha=0.9)
+        ax_.plot(a, c0, "*", color=ACCENT, ms=20, markeredgecolor="white", markeredgewidth=1.4, zorder=9)
+        ax_.set(xlabel="Pendiente a (ms/°)", ylabel=lab, title=ttl)
+    axs[0].annotate(f"$b^*={b:.0f}$", (a, b), xytext=(a + 0.6, b + 250), color="white", fontsize=13, fontweight="bold", arrowprops=dict(arrowstyle="->", color="white", lw=1.6))
+    axs[1].annotate(f"$\\tilde{{b}}^*=\\bar{{y}}={cstar:.0f}$", (a, cstar), xytext=(a + 0.6, cstar + 250), color="white", fontsize=13, fontweight="bold", arrowprops=dict(arrowstyle="->", color="white", lw=1.6))
+    fig.tight_layout()
+    save_panels(fig, axs, "11_elipses_centradas")
     plt.close(fig)
 
     # -------------------------------------------------------------------------
