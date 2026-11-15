@@ -14,169 +14,229 @@ P12    35
 P13    35
 P14    35
 P15    35
-               count    mean    std  median
-angulo_grados                              
-0                 75   696.8  401.9   626.2
-30                75   727.1  321.7   639.0
-60                75   752.8  359.7   685.1
-90                75   904.9  413.9   818.7
-120               75   973.5  596.7   828.0
-150               75  1088.5  786.5   901.2
-180               75  1124.2  610.2  1002.4
+               count     mean     std  median    sem
+angulo_grados                                       
+0                 75   696.78  401.87   626.2  46.40
+30                75   727.10  321.67   639.0  37.14
+60                75   752.79  359.73   685.1  41.54
+90                75   904.89  413.85   818.7  47.79
+120               75   973.51  596.66   828.0  68.90
+150               75  1088.55  786.50   901.2  90.82
+180               75  1124.24  610.21  1002.4  70.46
 
-=== ALL DATA (n=525) ===
+=== ALL DATA (RAW TRIALS) (n=525) ===
 sums: n=525 Sx=47250.0 Sy=470089.6 Sxx=6142500.0 Sxy=47316603.0
 a*=2.650021 ms/deg  b*=656.9069 ms  S_min=142057259.72
+grad S(a*,b*) = [1.86e-09, 7.28e-12]
 speed 1000/a* = 377.4 deg/s
 H=[[12285000.0, 94500.0], [94500.0, 1050.0]]  det=3969000000.0  S_aa=12285000.0  eig=[3.23057807e+02 1.22857269e+07]
-polyfit a=2.650021 b=656.9069 | linregress a=2.650021 b=656.9069 p=0.0000
+polyfit a=2.650021 b=656.9069 | linregress a=2.650021 b=656.9069 p=8.3967e-12
 max diff a=3.55e-15 b=0.00e+00 S=0.00e+00
 RMSE=520.2 ms  R2=0.0854  mean(e)=-1.39e-14
+
+=== ANGLE MEANS (K=7, BALANCED DESIGN EQUIVALENCE) (n=7) ===
+sums: n=7 Sx=630.0 Sy=6267.9 Sxx=81900.0 Sxy=630888.0
+a*=2.650021 ms/deg  b*=656.9069 ms  S_min=7010.23
+grad S(a*,b*) = [-2.09e-11, 1.36e-12]
+speed 1000/a* = 377.4 deg/s
+H=[[163800.0, 1260.0], [1260.0, 14.0]]  det=705600.0  S_aa=163800.0  eig=[4.30743742e+00 1.63809693e+05]
+polyfit a=2.650021 b=656.9069 | linregress a=2.650021 b=656.9069 p=9.7563e-05
+max diff a=4.88e-15 b=5.68e-13 S=1.55e-11
+RMSE=31.6 ms  R2=0.9619  mean(e)=-1.14e-13
+
+ Orthogonal decomposition of S(a,b): SS_within=141531492.47 + 75*S_means(a*,b*)=525767.25 = 142057259.72 (exact S_min=142057259.72)
 
 === participant P01 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=25594.2 Sxx=409500.0 Sxy=2293482.0
 a*=-0.079333 ms/deg  b*=738.4029 ms  S_min=1799178.13
+grad S(a*,b*) = [4.78e-10, 4.77e-12]
 a* <= 0 (no rotation effect)
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=-0.079333 b=738.4029 | linregress a=-0.079333 b=738.4029 p=0.9047
+polyfit a=-0.079333 b=738.4029 | linregress a=-0.079333 b=738.4029 p=9.0474e-01
 max diff a=1.05e-15 b=1.14e-13 S=2.33e-10
 RMSE=226.7 ms  R2=0.0004  mean(e)=-7.47e-14
 
 === participant P02 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=17913.4 Sxx=409500.0 Sxy=1722003.0
 a*=0.871405 ms/deg  b*=433.3850 ms  S_min=779151.29
+grad S(a*,b*) = [6.55e-11, 1.01e-11]
 speed 1000/a* = 1147.6 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=0.871405 b=433.3850 | linregress a=0.871405 b=433.3850 p=0.0523
+polyfit a=0.871405 b=433.3850 | linregress a=0.871405 b=433.3850 p=5.2328e-02
 max diff a=3.44e-15 b=4.55e-13 S=0.00e+00
 RMSE=149.2 ms  R2=0.1094  mean(e)=-1.32e-13
 
 === participant P03 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=29165.4 Sxx=409500.0 Sxy=2651859.0
 a*=0.214071 ms/deg  b*=814.0307 ms  S_min=2896211.82
+grad S(a*,b*) = [-4.80e-10, -5.23e-12]
 speed 1000/a* = 4671.3 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=0.214071 b=814.0307 | linregress a=0.214071 b=814.0307 p=0.7992
+polyfit a=0.214071 b=814.0307 | linregress a=0.214071 b=814.0307 p=7.9916e-01
 max diff a=3.55e-15 b=1.14e-13 S=4.66e-10
 RMSE=287.7 ms  R2=0.0020  mean(e)=7.80e-14
 
 === participant P04 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=24397.0 Sxx=409500.0 Sxy=2507730.0
 a*=2.476190 ms/deg  b*=474.2000 ms  S_min=1941006.46
+grad S(a*,b*) = [5.82e-11, 4.55e-13]
 speed 1000/a* = 403.8 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=2.476190 b=474.2000 | linregress a=2.476190 b=474.2000 p=0.0010
+polyfit a=2.476190 b=474.2000 | linregress a=2.476190 b=474.2000 p=9.6401e-04
 max diff a=4.44e-16 b=1.71e-13 S=2.33e-10
 RMSE=235.5 ms  R2=0.2847  mean(e)=1.62e-14
 
 === participant P05 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=45636.0 Sxx=409500.0 Sxy=5013660.0
 a*=7.193810 ms/deg  b*=656.4429 ms  S_min=5446366.71
+grad S(a*,b*) = [1.75e-10, 2.05e-12]
 speed 1000/a* = 139.0 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=7.193810 b=656.4429 | linregress a=7.193810 b=656.4429 p=0.0000
+polyfit a=7.193810 b=656.4429 | linregress a=7.193810 b=656.4429 p=4.1727e-07
 max diff a=8.88e-16 b=3.41e-13 S=9.31e-10
 RMSE=394.5 ms  R2=0.5449  mean(e)=-4.22e-14
 
 === participant P06 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=24525.0 Sxx=409500.0 Sxy=2566110.0
 a*=2.848095 ms/deg  b*=444.3857 ms  S_min=1600575.69
+grad S(a*,b*) = [8.73e-11, 7.96e-13]
 speed 1000/a* = 351.1 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=2.848095 b=444.3857 | linregress a=2.848095 b=444.3857 p=0.0001
+polyfit a=2.848095 b=444.3857 | linregress a=2.848095 b=444.3857 p=6.1329e-05
 max diff a=0.00e+00 b=2.84e-13 S=2.33e-10
 RMSE=213.8 ms  R2=0.3897  mean(e)=-2.44e-14
 
 === participant P07 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=16547.1 Sxx=409500.0 Sxy=1613643.0
 a*=0.987333 ms/deg  b*=383.9143 ms  S_min=408351.05
+grad S(a*,b*) = [-2.91e-11, -5.23e-12]
 speed 1000/a* = 1012.8 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=0.987333 b=383.9143 | linregress a=0.987333 b=383.9143 p=0.0035
+polyfit a=0.987333 b=383.9143 | linregress a=0.987333 b=383.9143 p=3.4543e-03
 max diff a=2.55e-15 b=1.71e-13 S=0.00e+00
 RMSE=108.0 ms  R2=0.2312  mean(e)=6.82e-14
 
 === participant P08 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=30650.1 Sxx=409500.0 Sxy=2981709.0
 a*=1.771429 ms/deg  b*=716.2886 ms  S_min=9318912.79
+grad S(a*,b*) = [-6.55e-10, -6.82e-12]
 speed 1000/a* = 564.5 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=1.771429 b=716.2886 | linregress a=1.771429 b=716.2886 p=0.2452
+polyfit a=1.771429 b=716.2886 | linregress a=1.771429 b=716.2886 p=2.4516e-01
 max diff a=4.44e-16 b=1.14e-13 S=0.00e+00
 RMSE=516.0 ms  R2=0.0407  mean(e)=1.09e-13
 
 === participant P09 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=51894.0 Sxx=409500.0 Sxy=5798577.0
 a*=8.953310 ms/deg  b*=676.8879 ms  S_min=26302684.52
+grad S(a*,b*) = [1.02e-10, -6.82e-13]
 speed 1000/a* = 111.7 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=8.953310 b=676.8879 | linregress a=8.953310 b=676.8879 p=0.0012
+polyfit a=8.953310 b=676.8879 | linregress a=8.953310 b=676.8879 p=1.1509e-03
 max diff a=1.78e-15 b=0.00e+00 S=0.00e+00
 RMSE=866.9 ms  R2=0.2775  mean(e)=3.57e-14
 
 === participant P10 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=44997.9 Sxx=409500.0 Sxy=4198392.0
 a*=1.179214 ms/deg  b*=1179.5250 ms  S_min=20261867.31
+grad S(a*,b*) = [4.07e-10, -1.46e-11]
 speed 1000/a* = 848.0 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=1.179214 b=1179.5250 | linregress a=1.179214 b=1179.5250 p=0.5968
+polyfit a=1.179214 b=1179.5250 | linregress a=1.179214 b=1179.5250 p=5.9679e-01
 max diff a=9.10e-15 b=4.55e-13 S=3.73e-09
 RMSE=760.9 ms  R2=0.0086  mean(e)=2.08e-13
 
 === participant P11 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=42059.5 Sxx=409500.0 Sxy=4258800.0
 a*=3.757500 ms/deg  b*=863.5250 ms  S_min=6032470.51
+grad S(a*,b*) = [-5.97e-10, 2.23e-11]
 speed 1000/a* = 266.1 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=3.757500 b=863.5250 | linregress a=3.757500 b=863.5250 p=0.0037
+polyfit a=3.757500 b=863.5250 | linregress a=3.757500 b=863.5250 p=3.7464e-03
 max diff a=9.33e-15 b=7.96e-13 S=0.00e+00
 RMSE=415.2 ms  R2=0.2277  mean(e)=-2.92e-13
 
 === participant P12 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=33509.3 Sxx=409500.0 Sxy=3495945.0
 a*=3.810381 ms/deg  b*=614.4743 ms  S_min=2244983.65
+grad S(a*,b*) = [-3.80e-10, -1.39e-11]
 speed 1000/a* = 262.4 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=3.810381 b=614.4743 | linregress a=3.810381 b=614.4743 p=0.0000
+polyfit a=3.810381 b=614.4743 | linregress a=3.810381 b=614.4743 p=1.0669e-05
 max diff a=6.66e-15 b=5.68e-13 S=0.00e+00
 RMSE=253.3 ms  R2=0.4490  mean(e)=2.47e-13
 
 === participant P13 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=23841.0 Sxx=409500.0 Sxy=2338920.0
 a*=1.533571 ms/deg  b*=543.1500 ms  S_min=3458866.96
+grad S(a*,b*) = [-8.37e-11, -1.48e-12]
 speed 1000/a* = 652.1 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=1.533571 b=543.1500 | linregress a=1.533571 b=543.1500 p=0.1021
+polyfit a=1.533571 b=543.1500 | linregress a=1.533571 b=543.1500 p=1.0212e-01
 max diff a=2.00e-15 b=2.27e-13 S=1.40e-09
 RMSE=314.4 ms  R2=0.0789  mean(e)=9.74e-15
 
 === participant P14 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=28733.7 Sxx=409500.0 Sxy=2907513.0
 a*=2.551429 ms/deg  b*=591.3343 ms  S_min=1924634.84
+grad S(a*,b*) = [2.67e-10, -6.48e-12]
 speed 1000/a* = 391.9 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=2.551429 b=591.3343 | linregress a=2.551429 b=591.3343 p=0.0007
+polyfit a=2.551429 b=591.3343 | linregress a=2.551429 b=591.3343 p=6.7968e-04
 max diff a=3.55e-15 b=4.55e-13 S=4.66e-10
 RMSE=234.5 ms  R2=0.2988  mean(e)=8.28e-14
 
 === participant P15 (n=35) ===
 sums: n=35 Sx=3150.0 Sy=30626.0 Sxx=409500.0 Sxy=2968260.0
 a*=1.681905 ms/deg  b*=723.6571 ms  S_min=2950533.71
+grad S(a*,b*) = [2.62e-10, 1.14e-12]
 speed 1000/a* = 594.6 deg/s
 H=[[819000.0, 6300.0], [6300.0, 70.0]]  det=17640000.0  S_aa=819000.0  eig=[2.15371871e+01 8.19048463e+05]
-polyfit a=1.681905 b=723.6571 | linregress a=1.681905 b=723.6571 p=0.0542
+polyfit a=1.681905 b=723.6571 | linregress a=1.681905 b=723.6571 p=5.4171e-02
 max diff a=1.33e-15 b=2.27e-13 S=4.66e-10
 RMSE=290.3 ms  R2=0.1078  mean(e)=-1.62e-14
 
-Largest residual: row 262, x=150, y=6110.8, e=5056.4
+=== OPTION A: sensitivity to +/-25 ms perturbation (500 runs) ===
+a*: mean=2.6512 std=0.0190 ms/deg (rel change 0.72%)
+b*: mean=656.79 std=2.11 ms (rel change 0.32%)
 
-=== OPTION B: without the largest-residual point (n=524) ===
+Largest residual: row 262 (P09), x=150, y=6110.8, e=5056.4
+
+=== OPTION B1: without the largest-residual point (n=524) ===
 sums: n=524 Sx=47100.0 Sy=463978.8 Sxx=6120000.0 Sxy=46399983.0
 a*=2.488886 ms/deg  b*=661.7409 ms  S_min=116392409.03
+grad S(a*,b*) = [-9.31e-10, -1.89e-10]
 speed 1000/a* = 401.8 deg/s
 H=[[12240000.0, 94200.0], [94200.0, 1048.0]]  det=3953880000.0  S_aa=12240000.0  eig=[3.23010279e+02 1.22407250e+07]
-polyfit a=2.488886 b=661.7409 | linregress a=2.488886 b=661.7409 p=0.0000
+polyfit a=2.488886 b=661.7409 | linregress a=2.488886 b=661.7409 p=1.6240e-12
 max diff a=3.11e-15 b=4.55e-13 S=1.49e-08
 RMSE=471.3 ms  R2=0.0912  mean(e)=1.81e-13
 
-=== OPTION C quadratic === y=4.056e-03x^2+1.9199x+675.16  RMSE=520.0  R2=0.0860
+=== OPTION B2: without all posible_atipico (>3000 ms) (n=519) ===
+sums: n=519 Sx=46470.0 Sy=446358.9 Sxx=6018300.0 Sxy=44162193.0
+a*=2.259125 ms/deg  b*=657.7598 ms  S_min=83059927.10
+grad S(a*,b*) = [1.02e-08, 1.16e-10]
+speed 1000/a* = 442.6 deg/s
+H=[[12036600.0, 92940.0], [92940.0, 1038.0]]  det=3856147200.0  S_aa=12036600.0  eig=[3.20349376e+02 1.20373177e+07]
+polyfit a=2.259125 b=657.7598 | linregress a=2.259125 b=657.7598 p=7.9317e-14
+max diff a=4.44e-15 b=3.41e-13 S=0.00e+00
+RMSE=400.0 ms  R2=0.1024  mean(e)=-1.12e-13
+
+=== OPTION C quadratic === y=4.056e-03x^2+1.9199x+675.16  RMSE=520.0  R2_raw=0.0860  R2_means=0.9680
+
+=== OPTION D: sample size convergence ===
+k= 1 participants (n= 35): a*=-0.0793 ms/deg, b*=738.40 ms
+k= 2 participants (n= 70): a*=0.3960 ms/deg, b*=585.89 ms
+k= 3 participants (n=105): a*=0.3354 ms/deg, b*=661.94 ms
+k= 4 participants (n=140): a*=0.8706 ms/deg, b*=615.00 ms
+k= 5 participants (n=175): a*=2.1352 ms/deg, b*=623.29 ms
+k= 6 participants (n=210): a*=2.2540 ms/deg, b*=593.47 ms
+k= 7 participants (n=245): a*=2.0731 ms/deg, b*=563.54 ms
+k= 8 participants (n=280): a*=2.0354 ms/deg, b*=582.63 ms
+k= 9 participants (n=315): a*=2.8040 ms/deg, b*=593.10 ms
+k=10 participants (n=350): a*=2.6416 ms/deg, b*=651.75 ms
+k=11 participants (n=385): a*=2.7430 ms/deg, b*=671.00 ms
+k=12 participants (n=420): a*=2.8320 ms/deg, b*=666.29 ms
+k=13 participants (n=455): a*=2.7321 ms/deg, b*=656.82 ms
+k=14 participants (n=490): a*=2.7192 ms/deg, b*=652.14 ms
+k=15 participants (n=525): a*=2.6500 ms/deg, b*=656.91 ms

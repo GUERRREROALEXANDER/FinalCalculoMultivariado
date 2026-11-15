@@ -10,51 +10,64 @@ style: |
   :root {
     --ink: #14213d;
     --accent: #d9480f;
-    --muted: #4a5568;
+    --accent2: #1864ab;
+    --muted: #5b6472;
     --soft: #f1f3f7;
+    --line: #e2e6ec;
   }
   section {
-    font-family: 'Inter', 'Noto Sans', 'DejaVu Sans', sans-serif;
-    background: #ffffff;
+    font-family: 'Inter','Noto Sans','DejaVu Sans',sans-serif;
+    background: linear-gradient(to bottom, #ffffff 0%, #ffffff 88%, #f6f7f9 100%);
     color: var(--ink);
-    font-size: 36px;
-    padding: 48px 64px 56px 64px;
+    font-size: 26px;
+    line-height: 1.32;
+    padding: 36px 56px 46px 56px;
     justify-content: flex-start;
   }
-  section h1 {
-    font-size: 46px;
-    line-height: 1.15;
-    color: var(--ink);
-    border-left: 10px solid var(--accent);
-    padding-left: 20px;
-    margin: 0 0 28px 0;
-    font-weight: 800;
+  section::before {
+    content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px;
+    background: linear-gradient(90deg, var(--accent) 0 32%, var(--ink) 32% 100%);
   }
+  section::after { color: var(--muted); font-size: 17px; }
+  section h1 {
+    font-size: 36px; line-height: 1.15; color: var(--ink);
+    border-left: 9px solid var(--accent); padding-left: 16px;
+    margin: 0 0 14px 0; font-weight: 800;
+  }
+  section h2 { font-size: 27px; margin: 0 0 6px 0; }
+  section p, section li { font-size: 26px; margin: 4px 0; }
+  section ul, section ol { margin: 6px 0 6px 24px; padding: 0; }
+  section li { margin: 2px 0; }
   section strong { color: var(--accent); }
   section em { color: var(--muted); font-style: normal; }
-  section a { color: var(--accent); font-weight: 700; }
-  section::after { color: var(--muted); font-size: 20px; }
-  section.lead { justify-content: center; }
-  section.lead h1 { font-size: 68px; border-left-width: 14px; }
-  section.lead p { font-size: 34px; }
-  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; align-items: center; }
-  .cols.wide-left { grid-template-columns: 1.25fr 1fr; }
+  .cols { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: start; }
+  .cols.mid { align-items: center; }
+  .cols.wide-left { grid-template-columns: 1.28fr 1fr; }
   .center { text-align: center; }
-  .big { font-size: 110px; font-weight: 800; color: var(--accent); line-height: 1.05; }
-  .kpi { font-size: 28px; color: var(--muted); }
-  .src { position: absolute; left: 64px; bottom: 22px; font-size: 18px; color: var(--muted); }
+  .big { font-size: 64px; font-weight: 800; color: var(--accent); line-height: 1; }
+  .big.blue { color: var(--accent2); }
+  .kpi { font-size: 21px; color: var(--muted); }
+  .badge { display: inline-block; font-size: 20px; font-weight: 700; color: #fff; background: var(--ink); border-radius: 999px; padding: 2px 14px; margin-right: 8px; }
+  .badge.hot { background: var(--accent); }
+  .badge.cool { background: var(--accent2); }
+  .card { border: 2px solid var(--line); border-left: 8px solid var(--accent2); border-radius: 12px; padding: 10px 16px; background: #fbfcfd; }
+  .card.hot { border-left-color: var(--accent); background: #fff6f0; }
+  .card h2 { font-size: 24px; margin: 0 0 4px 0; color: var(--ink); }
   img { display: block; margin: 0 auto; }
-  table { font-size: 29px; margin: 0 auto; border-collapse: collapse; }
-  th { background: var(--ink); color: #fff; padding: 8px 18px; }
-  td { padding: 8px 18px; border-bottom: 2px solid var(--soft); }
-  .flow { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 22px 12px; font-size: 32px; margin-top: 30px; }
-  .box { border: 3px solid var(--ink); border-radius: 12px; padding: 10px 16px; background: var(--soft); text-align: center; }
+  table { font-size: 21px; margin: 8px auto; border-collapse: collapse; line-height: 1.25; }
+  th { background: var(--ink); color: #fff; padding: 5px 12px; font-size: 20px; }
+  td { padding: 5px 12px; border-bottom: 2px solid var(--soft); text-align: center; }
+  td:first-child, th:first-child { text-align: left; }
+  .flow { display: flex; flex-wrap: wrap; align-items: center; justify-content: center; gap: 14px 8px; font-size: 22px; margin-top: 14px; }
+  .box { border: 2px solid var(--ink); border-radius: 10px; padding: 6px 12px; background: var(--soft); text-align: center; }
   .box.key { border-color: var(--accent); background: #fff3ec; font-weight: 700; }
-  .arr { color: var(--accent); font-size: 32px; font-weight: 800; }
-  .card { border: 3px solid var(--ink); border-radius: 14px; padding: 18px 24px; }
-  .card.hot { border-color: var(--accent); }
-  .card h2 { font-size: 30px; margin: 0 0 8px 0; color: var(--accent); }
-  section.demo p { font-size: 34px; }
+  .arr { color: var(--accent); font-size: 22px; font-weight: 800; }
+  .tiny { font-size: 20px; color: var(--muted); }
+  .two { columns: 2; column-gap: 28px; }
+  section.lead { justify-content: center; text-align: left; }
+  section.lead h1 { font-size: 60px; border-left-width: 12px; }
+  section.lead p { font-size: 28px; }
+  section.demo p { font-size: 27px; }
 ---
 
 <!-- _class: lead -->
@@ -67,151 +80,170 @@ style: |
 *Proyecto final de Cálculo Multivariable · Universidad Cooperativa de Colombia (Pasto) · 17 de noviembre de 2026*
 
 <!--
-Buenas. Medimos cuánto tarda el cerebro en girar una letra en la mente y buscamos la recta que mejor lo describe.
-La herramienta es el cálculo de varias variables: derivadas parciales, gradiente y Hessiano.
+Buenas. Medimos cuánto tarda el cerebro en girar una letra R en la mente y buscamos la recta que mejor lo describe. La herramienta es cálculo de varias variables: parciales, gradiente y Hessiano. Todo con datos reales, nada inventado.
 -->
 
 ---
 
-# 525 ensayos, 15 personas: ángulo contra tiempo
+# Datos reales: ángulo contra tiempo
+
+<div class="cols mid">
+<div>
 
 | Variable | Significado | Unidad |
 |---|---|---|
 | **x** | ángulo de la letra R | grados |
-| **y** | tiempo de respuesta | ms |
+| **y** | tiempo de respuesta (aciertos) | ms |
 
-**n = 525** = 15 × 7 ángulos × 5
+<span class="badge hot">n = 525</span> 15 sujetos × 7 ángulos × 5 ensayos
+<span class="badge">m = 75 / ángulo</span>
+
+Diseño balanceado: cada ángulo pesa igual.
+
+</div>
+<div>
+
+| $\theta$ | $\bar y$ (ms) |
+|---|---|
+| $0^\circ$ | **696.8** |
+| $30^\circ$ | **727.1** |
+| $60^\circ$ | **752.8** |
+| $90^\circ$ | **904.9** |
+| $120^\circ$ | **973.5** |
+| $150^\circ$ | **1088.6** |
+| $180^\circ$ | **1124.2** |
+
+<p class="tiny center">Medias por ángulo · m = 75 ensayos c/u</p>
+
+</div>
+</div>
 
 <!--
-Cada participante vio una letra R girada 0, 30, 60, 90, 120, 150 o 180 grados y respondió si era normal o en espejo.
-Solo se guardan aciertos: 5 datos por ángulo, 35 por persona, 525 en total. Nada se inventó ni se modificó.
+Cada participante vio una R girada 0, 30, 60, 90, 120, 150 o 180° y respondió si era normal o espejo. Solo aciertos: 5 datos por ángulo, 35 por persona, 525 total. La tabla muestra medias crecientes con el ángulo, indicio de tendencia lineal.
 -->
 
 ---
 
 # El tiempo sube con el ángulo: la recta sirve
 
-![h:400](../figuras/01_dispersion.png)
+![h:360](../figuras/01_dispersion.png)
 
-Media: **696.8 ms** a 0° → **1124.2 ms** a 180°
+Media **696.8 ms** a $0^\circ$ → **1124.2 ms** a $180^\circ$ · gran dispersión, tendencia creciente ⇒ modelo $y=ax+b$ razonable.
 
 <!--
-Cada punto es un ensayo. La media pasa de 696.8 ms sin giro a 1124.2 ms con 180 grados.
-Hay mucha dispersión, pero la tendencia creciente es clara, así que probamos y = a·x + b.
+Cada punto es un ensayo. La media sube de 696.8 a 1124.2 ms. Hay mucha dispersión entre personas, pero la tendencia creciente es clara, así que probamos y = a·x + b.
 -->
 
 ---
 
 # Medimos qué tan mala es cada recta: S(a, b)
 
-$$S(a,b)=\sum_{i=1}^{n}\big(y_i-\textcolor{#d9480f}{a}\,x_i-\textcolor{#d9480f}{b}\big)^2$$
+$$S(a,b)=\sum_{i=1}^{525}\big(y_i-\textcolor{#d9480f}{a}\,x_i-\textcolor{#d9480f}{b}\big)^2$$
 
-![h:320](../figuras/02_rectas.png)
+![h:330](../figuras/02_rectas.png)
 
-Al cuadrado: sin cancelaciones y castiga errores grandes.
+Al cuadrado: sin cancelaciones, castiga errores grandes y es derivable.
 
 <!--
-Cada pareja (a, b) es una recta distinta, y S mide su error total. Se eleva al cuadrado para que positivos y negativos no se cancelen, para castigar los errores grandes y para poder derivar.
-Las rectas punteadas tienen S mayor que la recta óptima.
+Cada pareja (a,b) es una recta distinta y S mide su error total. El cuadrado evita cancelaciones, castiga errores grandes y permite derivar. Las rectas punteadas tienen S mayor que la óptima.
 -->
 
 ---
 
 # En el mínimo, el gradiente es cero
 
-$$\frac{\partial S}{\partial a}=-2\sum x_i\,(y_i-a x_i-b)\qquad \frac{\partial S}{\partial b}=-2\sum (y_i-a x_i-b)$$
+$$\frac{\partial S}{\partial a}=-2\sum x_i\,(y_i-a x_i-b) \qquad \frac{\partial S}{\partial b}=-2\sum (y_i-a x_i-b)$$
 
-$$\nabla S=\mathbf{0}\;\Rightarrow\;\begin{cases}\textcolor{#d9480f}{a}\sum x_i^2+\textcolor{#d9480f}{b}\sum x_i=\sum x_i y_i\\[2pt]\textcolor{#d9480f}{a}\sum x_i+\textcolor{#d9480f}{b}\,n=\sum y_i\end{cases}$$
+$$\nabla S=\mathbf{0}\Rightarrow\begin{cases}\textcolor{#d9480f}{a}\sum x_i^2+\textcolor{#d9480f}{b}\sum x_i=\sum x_i y_i\\\textcolor{#d9480f}{a}\sum x_i+\textcolor{#d9480f}{b}\,n=\sum y_i\end{cases}$$
 
-*Plano tangente horizontal: no se puede bajar más.*
+Plano tangente **horizontal**: no se puede bajar más.
 
 <!--
-Derivamos respecto de a tratando b como constante, y al revés, con la regla de la cadena.
-Igualar el gradiente a cero da las ecuaciones normales: dos ecuaciones y dos incógnitas. Geométricamente, el plano tangente es horizontal.
+Derivamos con regla de la cadena tratando la otra variable como constante. Igualar el gradiente a cero da las ecuaciones normales: 2 ecuaciones, 2 incógnitas. Geométricamente, el plano tangente a z=S(a,b) es horizontal.
 -->
 
 ---
 
-# Resultado: a* = 2.65 ms/° y b* = 656.91 ms
+# Resultado: a\* = 2.65 ms/° y b\* = 656.91 ms
 
-<span style="font-size:25px">*n = 525 · Σx = 47 250 · Σy = 470 089.6 · Σx² = 6 142 500 · Σxy = 47 316 603*</span>
+<p class="tiny center">n = 525 · Σx = 47 250 · Σy = 470 089.6 · Σx² = 6 142 500 · Σxy = 47 316 603</p>
 
 $$a^*=\frac{n\sum xy-\sum x\sum y}{n\sum x^2-(\sum x)^2}=\frac{2\,629\,482\,975}{992\,250\,000}\approx\textcolor{#d9480f}{2.6500}$$
 
 $$b^*=\frac{\sum y-a^*\sum x}{n}\approx\textcolor{#d9480f}{656.91}\qquad S_{\min}\approx 142\,057\,260$$
 
 <!--
-Estas son las sumatorias reales del experimento y se pueden verificar con calculadora.
-La pendiente es 2.65 milisegundos por grado y el intercepto 656.91 ms, el tiempo base sin rotación. El error mínimo es unos 142 millones de ms cuadrados.
+Sumatorias reales verificables con calculadora. Pendiente 2.65 ms por grado, intercepto 656.91 ms o tiempo base sin rotación. Error mínimo ≈ 142 millones de ms².
 -->
 
 ---
 
 # El Hessiano confirma: mínimo global
 
-$$H=\begin{pmatrix}12\,285\,000 & 94\,500\\ 94\,500 & 1\,050\end{pmatrix}$$
+$$\nabla S(a^*,b^*)=[1.86\times 10^{-9},\,7.28\times 10^{-12}]\approx\mathbf{0}\qquad H=\begin{pmatrix}12\,285\,000 & 94\,500\\ 94\,500 & 1\,050\end{pmatrix}$$
 
-$$\textcolor{#d9480f}{D}=3\,969\,000\,000>0\quad\text{y}\quad \textcolor{#d9480f}{S_{aa}}=12\,285\,000>0$$
+$$D=\det H=3.969\times 10^9>0 \quad S_{aa}=1.2285\times 10^7>0 \quad \lambda_1=323.06>0,\;\lambda_2=1.2286\times 10^7>0$$
 
-**H** es constante: S es un paraboloide convexo.
+**H constante** ⇒ S es paraboloide convexo: mínimo único y global.
 
 <!--
-Derivamos otra vez. D mayor que cero y S_aa mayor que cero implican mínimo.
-Como H no depende de a ni de b, S es un paraboloide: el mínimo es único y global, no puede ser máximo ni punto de silla.
+Verificación numérica del gradiente casi cero. D>0 y S_aa>0 más ambos valores propios positivos confirman mínimo. Como H no depende de a ni b, es global: imposible máximo o silla.
 -->
 
 ---
 
 # S es un valle con un solo fondo
 
-<div class="cols">
+<div class="cols mid">
+<div>
 
-![h:470](../figuras/03_superficie.png)
-
-![h:470](../figuras/05_curvas_nivel.png)
+![h:410](../figuras/03_superficie.png)
 
 </div>
+<div>
 
-Cortes horizontales: **elipses** alargadas.
+![h:410](../figuras/05_curvas_nivel.png)
+
+</div>
+</div>
+
+Elipses **inclinadas** ($S_{ab}=2\Sigma x=94\,500>0$) y **alargadas** ($\lambda_2/\lambda_1\approx 38\,029$); $-\nabla S$ apunta al mínimo.
 
 <!--
-A la izquierda la superficie z = S(a,b) con el mínimo marcado. A la derecha, las curvas de nivel son elipses con (a*, b*) en el centro.
-Son alargadas porque la superficie es mucho más empinada en a que en b: los valores propios del Hessiano son 3.23057807e+02 y 1.22857269e+07, ambos positivos.
+Izquierda: superficie z=S(a,b) con mínimo marcado. Derecha: curvas de nivel elípticas centradas en (a*,b*) con campo −gradiente apuntando al centro. Se inclinan por el término cruzado positivo y se alargan porque la superficie es ~38 mil veces más empinada en a que en b.
 -->
 
 ---
 
 # Cada corte por el óptimo es una parábola
 
-![w:1100](../figuras/04_trazas.png)
+![h:380](../figuras/04_trazas.png)
 
-*S(a, b\*) y S(a\*, b): vértice en el óptimo.*
+**Trazas óptimas** $S(a,b^*)$, $S(a^*,b)$ con vértice en el óptimo · **Secciones** $S(a,b_0)$, $S(a_0,b)$ paralelas desplazadas hacia arriba.
 
 <!--
-Si fijamos b en su valor óptimo y movemos solo a, obtenemos una parábola con vértice en a*. Igual al fijar a.
-Es la razón visual por la que el mínimo es único: no hay otro valle.
+Fijar b en b* y mover a da parábola con vértice en a*, igual para a*. Las secciones con b0 o a0 fijos son parábolas paralelas más altas. Visualmente prueba que el fondo es único.
 -->
 
 ---
 
-# El código sigue paso a paso el cálculo a mano
+# El código replica el cálculo a mano
 
 <div class="flow">
 <div class="box">Cargar CSV</div><span class="arr">→</span>
 <div class="box">n, Σx, Σy, Σx², Σxy</div><span class="arr">→</span>
 <div class="box key">a*, b*</div><span class="arr">→</span>
 <div class="box">S<sub>mín</sub></div><span class="arr">→</span>
-<div class="box">H, det H = 4D</div><span class="arr">→</span>
-<div class="box key">¿det H &gt; 0 y S<sub>aa</sub> &gt; 0?</div><span class="arr">→</span>
+<div class="box">H, det H</div><span class="arr">→</span>
+<div class="box key">¿det H > 0 y S<sub>aa</sub> > 0?</div><span class="arr">→</span>
 <div class="box">Residuos, RMSE, R²</div><span class="arr">→</span>
-<div class="box">Comparar con librerías</div>
+<div class="box">vs. librerías</div>
 </div>
 
-*Algoritmo propio, sin librerías de regresión.*
+Algoritmo propio **sin regresión de librería**; `polyfit` / `linregress` solo verifican.
 
 <!--
-Este es el diagrama de flujo de codigo/ajuste.py: cada caja corresponde a un paso del desarrollo manual.
-Primero sumatorias, luego a* y b*, el error mínimo, el Hessiano y el criterio de la segunda derivada. Al final se compara con numpy y scipy.
+Diagrama de codigo/ajuste.py: cada caja es un paso del desarrollo manual. Primero sumatorias, luego a* y b*, error mínimo, Hessiano y criterio de segunda derivada, residuos y comparación con numpy y scipy.
 -->
 
 ---
@@ -224,65 +256,82 @@ Primero sumatorias, luego a* y b*, el error mínimo, el Hessiano y el criterio d
 | b | 656.91 | 656.9069 | 656.9069 | 0.00e+00 |
 | S mín | 142 057 260 | 142 057 259.72 | 142 057 259.72 | 0.00e+00 |
 
+Tres vías, mismo punto: validación exacta a nivel de redondeo.
+
 <!--
-Tres resultados: a mano, con nuestro algoritmo y con numpy.polyfit y scipy.stats.linregress.
-Las diferencias máximas son del orden de 1e-15: la validación numérica coincide con el cálculo analítico.
+Manual, algoritmo propio y numpy/scipy coinciden hasta 1e-15. La diferencia máxima es ruido de punto flotante: el cálculo analítico queda verificado.
 -->
 
 ---
 
 # Residuos centrados en 0, más dispersos con el ángulo
 
-![h:430](../figuras/06_residuos.png)
+![h:380](../figuras/06_residuos.png)
 
-Mayor residuo: fila 262, x = 150°, e = **5056.4 ms**.
+Media $e\approx -1.4\times 10^{-14}\approx 0$ · mayor residuo fila 262 ($x=150^\circ$, $e=\mathbf{5056.4}$ ms) · leve abanico: heterocedasticidad.
 
 <!--
-Los residuos están centrados en cero, con media de -1.39e-14. La mayoría quedan entre -1000 y 1000 ms, pero hay una cola larga hacia arriba.
-Se abre un poco con el ángulo: a ángulos grandes hay más ruido, y el punto más extremo es la fila 262 con 5056.4 ms.
+Residuos centrados en cero, mayoría entre −1000 y 1000 ms con cola alta. La dispersión crece con el ángulo y el extremo es la fila 262. No hay patrón curvo sistemático: el lineal es aceptable.
 -->
 
 ---
 
-# El efecto es real, pero explica poco
+# Calidad: dos caras de la misma recta
 
-<div class="cols center">
-<div><div class="big">520.2 ms</div><div class="kpi">RMSE: error típico</div></div>
-<div><div class="big">0.0854</div><div class="kpi">R²: el ángulo explica ~8.5 %</div></div>
+<div class="cols">
+<div class="card hot">
+
+## Ensayos crudos · n = 525
+
+**RMSE = 520.2 ms**
+**$R^2 = 0.0854$** ($p=8.4\times 10^{-12}$)
+
+Pendiente real pero solo 8.5 %: heterogeneidad basal entre 15 sujetos.
+
+</div>
+<div class="card">
+
+## Promedios · K = 7 (m = 75)
+
+**Mismos** $a^*=2.6500$, $b^*=656.91$
+**RMSE = 31.6 ms · $R^2 = 0.9619$** ($p=0.0001$)
+
+96.2 % de la tendencia media: la recta describe el efecto rotación.
+
+</div>
 </div>
 
-Pendiente significativa (**p < 0.0001**); hay mucho ruido entre personas.
-
 <!--
-El RMSE de 520.2 ms es el error típico de predecir un ensayo con la recta. El R² de 0.0854 dice que el ángulo explica cerca del 8.5 por ciento de la variación.
-El efecto es real y significativo, pero cada persona responde distinto: hay mucho ruido que el ángulo no explica.
+Misma recta en ambas escalas por diseño balanceado. En ensayos el ruido entre personas hunde R² aunque p es diminuta; en medias el ruido se promedia y R² llega a 96.2 %. Por eso el efecto es real y la recta es correcta para la tendencia.
 -->
 
 ---
 
-# Un atípico mueve poco; la curva no aporta
+# Robustez: sensible, estable y lineal basta
 
 <div class="cols wide-left">
-
-![w:720](../figuras/07_opciones_BC.png)
-
 <div>
 
-**B:** sin fila 262, a* = 2.488886; R² = 0.0912
+![h:440](../figuras/07_opciones_BC.png)
 
-**C:** cuadrático, R² = 0.0860 contra 0.0854
+</div>
+<div>
+
+**A Sensib.:** ±25 ms ⇒ $\sigma_a=0.019$ (0.72 %).
+**B Atípicos:** sin f.262 $a^*=2.49$, RMSE 471; sin >3 s (n=519) $a^*=2.26$, $R^2=0.1024$.
+**C Cuadr.:** $y=0.0041x^2+1.92x+675.2$, $R^2=0.0860$ ($\Delta=+0.0006$).
+**D N:** $a^*(N)$ converge desde $N\ge 10$ ($n\ge 350$).
 
 </div>
 </div>
 
 <!--
-Opción B: quitamos el punto de mayor residuo y recalculamos. La pendiente pasa de 2.650021 a 2.488886, es decir 401.8 grados por segundo, y R² sube a 0.0912.
-Opción C: un modelo cuadrático da R² de 0.0860, casi igual a 0.0854. La curva no mejora de forma real, así que la recta basta.
+Las cuatro opciones confirman la recta: A muestra baja sensibilidad, B que un atípico mueve poco, C que el cuadrático no aporta y D que con 10+ participantes el ajuste se estabiliza.
 -->
 
 ---
 
-# Cerebro: paso a paso. Computador: de golpe
+# Cerebro: paso a paso · Computador: de golpe
 
 <div class="cols">
 <div class="card hot">
@@ -291,7 +340,7 @@ Opción C: un modelo cuadrático da R² de 0.0860, casi igual a 0.0854. La curva
 
 $$t=\textcolor{#d9480f}{656.91}+\textcolor{#d9480f}{2.65}\,\theta$$
 
-≈ **377 °/s**
+≈ **377 °/s**: gira la imagen mental por etapas (Shepard–Metzler).
 
 </div>
 <div class="card">
@@ -300,28 +349,26 @@ $$t=\textcolor{#d9480f}{656.91}+\textcolor{#d9480f}{2.65}\,\theta$$
 
 $$R(\theta)=\begin{pmatrix}\cos\theta&-\sin\theta\\\sin\theta&\cos\theta\end{pmatrix}$$
 
-Tiempo constante.
+Tiempo **constante**: multiplica la matriz, sin costo por ángulo.
 
 </div>
 </div>
 
 <!--
-El tiempo crece con el ángulo: unos 2.65 ms por grado, o 377 grados por segundo. Eso es girar la imagen mental paso a paso, como describieron Shepard y Metzler.
-Un computador aplica una matriz de rotación y tarda lo mismo con cualquier ángulo. Mismo problema, dos estrategias.
+El cerebro tarda 2.65 ms más por grado, unos 377 °/s: rota paso a paso. Un computador aplica la matriz y tarda lo mismo siempre. Mismo problema, dos estrategias.
 -->
 
 ---
 
 # Limitaciones: pocas personas y mucha variación
 
-- Solo **15** participantes
-- Pendiente por persona: de **−0.079333** a **8.953310** ms/°
-- Atípicos por distracción
-- R² bajo: falta explicar el ruido
+- Solo **15** participantes: no generalizable.
+- Pendiente por persona de **−0.08** (P01, sin efecto) a **8.95 ms/°** (P09).
+- Atípicos por distracción (fila 262: 5056 ms).
+- $R^2_{\text{raw}}=0.0854$: falta modelar el nivel basal por sujeto.
 
 <!--
-Con 15 personas no generalizamos. La pendiente individual va de -0.079333 en P01, sin efecto de rotación, a 8.953310 en P09.
-Hay atípicos por distracción y el ángulo explica solo 8.5 por ciento. Un modelo mejor necesitaría variables por persona.
+Con 15 personas y pendientes tan dispares el modelo global es promedio. Los atípicos y el R² bajo piden un modelo mixto por sujeto en trabajo futuro.
 -->
 
 ---
@@ -330,13 +377,12 @@ Hay atípicos por distracción y el ángulo explica solo 8.5 por ciento. Un mode
 
 # Demo en vivo
 
-Abre la superficie interactiva en el navegador: [`figuras/superficie_interactiva.html`](../figuras/superficie_interactiva.html)
+Abre la superficie interactiva: [`figuras/superficie_interactiva.html`](../figuras/superficie_interactiva.html)
 
 O prueba la app de captura: [`app/index.html`](../app/index.html)
 
 <!--
-Abrimos el archivo HTML en el navegador y giramos la superficie: el fondo del valle es (a*, b*).
-Si el profesor quiere, también puede hacer la prueba en la app NeuroCode, que se abre con doble clic.
+Giramos la superficie en el navegador hasta ver el fondo del valle en (a*,b*). Si el profesor quiere, hacemos la prueba en la app NeuroCode con doble clic.
 -->
 
 ---
@@ -348,6 +394,5 @@ Si el profesor quiere, también puede hacer la prueba en la app NeuroCode, que s
 Integrantes: **[nombre 1] · [nombre 2] · [nombre 3] · [nombre 4]**
 
 <!--
-Agradecemos al profesor. Cada integrante puede derivar las parciales y calcular el Hessiano en el tablero.
-Quedamos atentos a las preguntas.
+Agradecemos al profesor. Cada integrante puede derivar las parciales y el Hessiano en el tablero. Quedamos atentos a preguntas.
 -->

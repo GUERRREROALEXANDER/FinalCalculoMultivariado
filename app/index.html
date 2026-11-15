@@ -55,6 +55,10 @@
   summary{cursor:pointer;color:var(--suave);font-size:14px}
   .config{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:12px}
   .config input{font-size:15px;padding:10px 12px}
+  .whats{margin-top:18px;border:1px solid rgba(52,211,153,.3);border-radius:14px;padding:14px;background:rgba(52,211,153,.05)}
+  .whats p{margin-bottom:10px;font-size:14px}
+  .whats .fila{margin-top:12px}
+  .whats input{font-size:15px;padding:10px 12px}
   .ejemplos{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin:18px 0}
   .ejemplo{border:1px solid var(--borde);border-radius:16px;padding:16px;text-align:center;background:rgba(2,8,16,.5)}
   .ejemplo .letra{font:900 84px Arial,Helvetica,sans-serif;color:var(--cian2);line-height:1.1;
@@ -191,6 +195,13 @@
       </div>
       <svg id="grafica" viewBox="0 0 820 420"></svg>
       <p class="nota" id="notaVel"></p>
+      <div class="whats">
+        <p>📲 <strong>Enviar por WhatsApp:</strong> abre el chat del familiar con el resumen y <strong>todos los datos del CSV como texto</strong> (listos para copiar a Excel o procesar). El número destino está configurado en el código.</p>
+        <div class="fila">
+          <button class="primario" id="btnWhatsUno">WhatsApp (este participante)</button>
+          <button id="btnWhatsTodos">WhatsApp (todos)</button>
+        </div>
+      </div>
       <div class="fila">
         <button class="primario" id="btnCsvTodos">Descargar CSV (todos)</button>
         <button id="btnCsvUno">Descargar CSV (este participante)</button>
@@ -205,6 +216,9 @@
 /* ===================== Configuración y estado ===================== */
 const ANGULOS = [0, 30, 60, 90, 120, 150, 180];
 const CLAVE_STORAGE = "neurocode_rotacion_v1";
+// ⚙️ EDITA AQUÍ el número de WhatsApp destino: código país + número, solo dígitos, sin "+" ni espacios.
+// Ejemplo Colombia: "573001234567". No se muestra en la página.
+const NUMERO_WHATSAPP = "573105421367";
 const ANTICIPACION_MS = 150, TIMEOUT_MS = 7000, FIJACION_MS = 500, FEEDBACK_MS = 450, ITI_MS = 350;
 
 let cfg = { reps: 5, warm: 5, umbral: 3000 };
@@ -257,6 +271,11 @@ $("btnNuevo").onclick = () => { $("codigo").value = ""; mostrar("pInicio"); $("c
 $("btnVerDatos").onclick = () => { ses = null; mostrarResultados(); };
 $("btnCsvTodos").onclick = () => descargarCSV(todos, "neurocode_todos.csv");
 $("btnCsvUno").onclick = () => ses && descargarCSV(todos.filter(d => d.participante === ses.participante), `neurocode_${ses.participante}.csv`);
+$("btnWhatsUno").onclick = () => {
+  if (!ses) return;
+  enviarWhats(todos.filter(d => d.participante === ses.participante), `Resultados ${ses.participante}`);
+};
+$("btnWhatsTodos").onclick = () => enviarWhats(todos, "Resultados todos los participantes");
 $("btnBorrar").onclick = () => {
   if (confirm("¿Borrar TODOS los datos guardados en este navegador? Descarga primero el CSV si los necesitas.")){
     todos = []; guardarDatos(); mostrarResultados();
@@ -471,16 +490,66 @@ function dibujarGrafica(datos, r){
     </defs>` + s;
 }
 
-/* ===================== CSV ===================== */
-function descargarCSV(datos, nombre){
-  if (!datos.length) return;
+/* ===================== CSV + WhatsApp ===================== */
+function csvTexto(datos){
   const cols = ["participante","ensayo","angulo_grados","direccion","espejo","tiempo_ms","posible_atipico","fecha_hora"];
   const esc = v => /[",\n]/.test(String(v)) ? `"${String(v).replace(/"/g,'""')}"` : v;
-  const csv = [cols.join(","), ...datos.map(d => cols.map(c => esc(d[c])).join(","))].join("\n");
-  const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+  return [cols.join(","), ...datos.map(d => cols.map(c => esc(d[c])).join(","))].join("\n");
+}
+function descargarCSV(datos, nombre){
+  if (!datos.length){ alert("No hay datos para descargar."); return; }
+  const csv = csvTexto(datos);
+  const url = URL.createObjectURL(new Blob(["\uFEFF" + csv], { type: "text/csv;charset=utf-8" }));
   const a = Object.assign(document.createElement("a"), { href: url, download: nombre });
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(url), 1000);
+}
+
+function numeroWhats(){
+  const num = String(NUMERO_WHATSAPP || "").replace(/\D/g, "");
+  if (!/^\d{7,15}$/.test(num)){
+    alert("El NUMERO_WHATSAPP del código no es válido. Edítalo arriba en el <script> (código país + número, solo dígitos).");
+    return null;
+  }
+  return num;
+}
+
+function enviarWhats(datos, titulo){
+  if (!datos.length){ alert("No hay datos para enviar."); return; }
+  const num = numeroWhats();
+  if (!num) return;
+  const r = regresion(datos.map(d => d.angulo_grados), datos.map(d => d.tiempo_ms));
+  const med = a => { const v = datos.filter(d => d.angulo_grados === a).map(d => d.tiempo_ms);
+    return v.length ? Math.round(v.reduce((p,c)=>p+c,0)/v.length) : "–"; };
+  // Mensaje largo: resumen + CSV completo como texto (límite WhatsApp ~65 mil caracteres;
+  // si "todos" es muy grande, se recorta solo la tabla de datos, el resumen siempre va).
+  const MAX = 60000;
+  let lineas = [
+    `🧠 *NeuroCode · ${titulo}*`,
+    `n datos válidos: ${datos.length}`,
+    r ? `Recta: y = ${r.a.toFixed(2)}x + ${r.b.toFixed(0)} | R² = ${r.r2.toFixed(3)}` : "Sin recta (pocos datos)",
+    r && r.a > 0 ? `Velocidad estimada: ${Math.round(1000 / r.a)} °/s` : "",
+    `Promedios: ${ANGULOS.map(a => `${a}°=${med(a)}ms`).join("  ")}`,
+    "",
+    "```",
+    csvTexto(datos),
+    "```",
+    "Pega el bloque entre ``` en un .csv o en Excel (Datos > Desde texto, separado por comas)."
+  ].filter(Boolean).join("\n");
+  if (lineas.length > MAX){
+    const csv = csvTexto(datos).split("\n");
+    while (lineas.length > MAX && csv.length > 2) csv.splice(1, 1);
+    lineas = [
+      `🧠 *NeuroCode · ${titulo}* (datos recortados por límite de WhatsApp, descarga el CSV completo)`,
+      `n datos válidos: ${datos.length}`,
+      r ? `Recta: y = ${r.a.toFixed(2)}x + ${r.b.toFixed(0)} | R² = ${r.r2.toFixed(3)}` : "",
+      "",
+      "```",
+      csv.join("\n"),
+      "```"
+    ].filter(Boolean).join("\n");
+  }
+  window.open(`https://wa.me/${num}?text=${encodeURIComponent(lineas)}`, "_blank");
 }
 
 /* ===================== Fondo: red neuronal animada ===================== */

@@ -7,23 +7,25 @@
 
 ---
 
-## 0. Estado y pasos a seguir (actualizado 14 nov)
+## 0. Estado y pasos a seguir (actualizado 15 nov)
 
-**Resultado con los 15 participantes (n = 525):** a\* = 2.65 ms/° (≈ 377 °/s), b\* = 656.91 ms, S_min ≈ 1.42·10⁸, Hessiano definido positivo → mínimo global. p < 0.0001, pero R² ≈ 0.085 y RMSE ≈ 520 ms: el efecto es real y el ruido entre personas es grande (se defiende en limitaciones).
+**Resultado con los 15 participantes (n = 525):** $a^* = 2.6500\text{ ms/}^\circ$ ($\approx 377.4\text{ }^\circ\text{/s}$), $b^* = 656.91\text{ ms}$, $S_{\min} \approx 1.421\times 10^8\text{ ms}^2$, Hessiano constante y definido positivo ($\det H = 3.969\times 10^9 > 0, S_{aa} = 1.2285\times 10^7 > 0 \Rightarrow$ mínimo global único).
+- **En los 525 ensayos crudos:** $p = 8.40\times 10^{-12}$, $\text{RMSE} = 520.2\text{ ms}$, $R^2_{\text{raw}} = 0.0854$ (por la variación de velocidad base entre las 15 personas).
+- **En los $K = 7$ promedios por ángulo (diseño balanceado, $75$ ensayos/ángulo):** por descomposición ortogonal de la suma de cuadrados, minimizar sobre las 7 medias da **exactamente el mismo $(a^*, b^*) = (2.6500\text{ ms/}^\circ, 656.91\text{ ms})$**, con **$\text{RMSE}_{\text{medias}} = 31.6\text{ ms}$ y $R^2_{\text{medias}} = 0.9619$ ($96.2\%$, $p = 0.0001$)**, replicando la ley lineal de Shepard y Metzler (1971).
 
 | Paso | Estado | Dónde está |
 |---|---|---|
 | 1-2 App y datos | ✅ | `app/`, `csvs/` (15 archivos) |
-| 3 Exploración | ✅ | `figuras/01_dispersion.png` |
-| 4 Desarrollo manual | ⏳ **cada integrante a mano** | `informe/guia_desarrollo_manual.md` |
+| 3 Exploración | ✅ | `figuras/01_dispersion.png` (nube completa + ajuste en medias $R^2=0.962$) |
+| 4 Desarrollo manual | ⏳ **cada integrante a mano** | `informe/guia_desarrollo_manual.md` (incluye tabla de 7 filas para calculadora en 60 s) |
 | 5 Python | ✅ | `codigo/ajuste.py` → `codigo/resultados.txt` |
-| 6 Gráficas | ✅ | `figuras/` (7 PNG + `superficie_interactiva.html`) |
+| 6 Gráficas | ✅ | `figuras/` (7 PNG + `superficie_interactiva.html` con trazas 3D) |
 | 7 Residuos, RMSE, R² | ✅ | `figuras/06_residuos.png`, `resultados.txt` |
-| 8 Análisis adicional (B y C) | ✅ | `figuras/07_opciones_BC.png` |
+| 8 Análisis adicional (A, B, C y D) | ✅ | `figuras/07_opciones_BC.png` (panel 2×2 con las 4 opciones de la guía) |
 | 9 Pseudocódigo y diagrama | ✅ | `codigo/pseudocodigo.md` |
 | 10 Blender | ⏳ opcional | — |
 | 11 Presentación | ✅ (el profe no pide informe) | `presentacion/slides.pdf` (fuente: `slides.md`) |
-| 12 Defensa individual | ⏳ **ensayar** | Parte 3 de la guía |
+| 12 Defensa individual | ⏳ **ensayar** | Parte 3 de `informe/guia_desarrollo_manual.md` |
 
 ### Qué falta antes del martes 17
 
