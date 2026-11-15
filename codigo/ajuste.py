@@ -143,6 +143,39 @@ def main():
         p_rows.append(dict(p=p, a=rp["a"], b=rp["b"], r2=rp["r2"], rmse=rp["rmse"], pval=rp["lr"].pvalue))
     p_df = pd.DataFrame(p_rows)
 
+    # --- where does the error come from, and is the slope driven by a few people? ---
+    # Model with one baseline per person: S(a, b_1..b_17) = sum (y_i - a x_i - b_j(i))^2.
+    # grad = 0 gives b_j = mean_j(y) - a mean_j(x) and the slope from within-person deviations.
+    sst = ((y - y.mean()) ** 2).sum()
+    subj_mean_y = df.groupby("participante")["tiempo_ms"].transform("mean").to_numpy(float)
+    subj_mean_x = df.groupby("participante")["angulo_grados"].transform("mean").to_numpy(float)
+    ss_subjects = ((subj_mean_y - y.mean()) ** 2).sum()
+    xc, yc = x - subj_mean_x, y - subj_mean_y
+    a_subj = (xc * yc).sum() / (xc**2).sum()
+    e_subj = yc - a_subj * xc
+    r2_subj = 1 - (e_subj**2).sum() / sst
+    n_pos = int((p_df["a"] > 0).sum())
+    sign_p = stats.binomtest(n_pos, len(p_df)).pvalue
+    t_slopes = stats.ttest_1samp(p_df["a"], 0)
+    loo = []
+    for p in sorted(df["participante"].unique()):
+        s = df[df["participante"] != p]
+        loo.append((fit(s["angulo_grados"].to_numpy(float), s["tiempo_ms"].to_numpy(float))["a"], p))
+    print(
+        f"\n=== ERROR BY SOURCE AND PER-PERSON CHECKS ===\n"
+        f"SST={sst:.2f}  within-angle={ss_within:.2f} ({100*ss_within/sst:.1f}% of SST)\n"
+        f"  of which persistent baseline differences between people={ss_subjects:.2f} "
+        f"({100*ss_subjects/ss_within:.1f}% of within-angle, {100*ss_subjects/sst:.1f}% of SST)\n"
+        f"  and trial-to-trial noise inside each person={ss_within-ss_subjects:.2f} "
+        f"({100*(ss_within-ss_subjects)/ss_within:.1f}% of within-angle)\n"
+        f"One baseline per person (18 parameters): a*={a_subj:.6f} ms/deg  R2={r2_subj:.4f}  "
+        f"RMSE={np.sqrt((e_subj**2).mean()):.1f} ms\n"
+        f"People with positive slope: {n_pos}/{len(p_df)}  sign test p={sign_p:.2e}  "
+        f"t-test on 17 slopes: t={t_slopes.statistic:.3f} p={t_slopes.pvalue:.2e}\n"
+        f"Leave-one-person-out a*: min={min(loo)[0]:.4f} (without {min(loo)[1]})  "
+        f"max={max(loo)[0]:.4f} (without {max(loo)[1]})"
+    )
+
     # --- option A: parameter sensitivity under Monte Carlo measurement perturbations ---
     rng = np.random.default_rng(42)
     a_pert, b_pert = [], []
@@ -451,19 +484,6 @@ def main():
     ax.clabel(cs, fontsize=7.2, fmt="%.2f", colors="white")
     fig.colorbar(cf, ax=ax, pad=0.03, label="S(a, b) [$10^8$ ms²]")
 
-    # Normalized negative gradient arrows (-grad S points toward minimum)
-    ag_q = np.linspace(a - 2.8, a + 2.8, 11)
-    bg_q = np.linspace(b - 360, b + 360, 11)
-    AQ, BQ = np.meshgrid(ag_q, bg_q)
-    # In scaled visual coordinates so arrows align nicely with the plot aspect
-    dS_da = 2 * r["sums"]["sxx"] * (AQ - a) + 2 * r["sums"]["sx"] * (BQ - b)
-    dS_db = 2 * r["sums"]["sx"] * (AQ - a) + 2 * r["sums"]["n"] * (BQ - b)
-    # Scale components to plot units for clean visual descent vectors
-    u = -dS_da / (2 * r["sums"]["sxx"])
-    v = -dS_db / (2 * r["sums"]["n"])
-    norm = np.hypot(u / 6.4, v / 840.0) + 1e-12
-    ax.quiver(AQ, BQ, u / norm * 0.18, v / norm * 24.0, color="white", alpha=0.55, width=0.003, label="Dirección de descenso ($-\\nabla S$)")
-
     # Trace axes through (a*, b*) and principal valley line (b = bar_y - a * bar_x)
     x_bar = x.mean()
     ax.plot(a_grid, b - (a_grid - a) * x_bar, "w--", lw=1.3, alpha=0.9, label=f"Eje del valle ($b = \\bar{{y}} - a\\bar{{x}}$, $\\bar{{x}}={x_bar:.0f}^\\circ$)")
@@ -475,8 +495,27 @@ def main():
         ylabel="Intercepto b (ms)",
         title="Curvas de nivel de S(a,b): elipses inclinadas ($S_{ab} = 2\\Sigma x > 0$)",
     )
-    ax.legend(fontsize=7.8, loc="upper right", framealpha=0.92)
     fig.tight_layout()
+
+    # -grad S arrows. The axes use different scales (1 ms/deg of a spans far more
+    # screen than 1 ms of b), so we take the gradient in the screen variables
+    # X = a*px_a, Y = b*px_b: dS/dX = S_a/px_a, dS/dY = S_b/px_b. That is the same
+    # function in rescaled variables, so its arrows are perpendicular to the
+    # level curves exactly as drawn and point downhill.
+    fig.canvas.draw()
+    bbox = ax.get_window_extent()
+    (xa0, xa1), (yb0, yb1) = ax.get_xlim(), ax.get_ylim()
+    px_a, px_b = bbox.width / (xa1 - xa0), bbox.height / (yb1 - yb0)
+    AQ, BQ = np.meshgrid(np.linspace(a - 2.8, a + 2.8, 11), np.linspace(b - 360, b + 360, 11))
+    dS_da = 2 * r["sums"]["sxx"] * (AQ - a) + 2 * r["sums"]["sx"] * (BQ - b)
+    dS_db = 2 * r["sums"]["sx"] * (AQ - a) + 2 * r["sums"]["n"] * (BQ - b)
+    gx, gy = -dS_da / px_a, -dS_db / px_b
+    norm = np.hypot(gx, gy) + 1e-12
+    arrow_px = 0.045 * bbox.width
+    ax.quiver(AQ, BQ, gx / norm * arrow_px / px_a, gy / norm * arrow_px / px_b,
+              angles="xy", scale_units="xy", scale=1, color="white", alpha=0.6, width=0.003,
+              label="$-\\nabla S$ (perpendicular a las curvas de nivel)")
+    ax.legend(fontsize=7.8, loc="upper right", framealpha=0.92)
     fig.savefig(f"{FIG}/05_curvas_nivel.png", dpi=220)
     plt.close(fig)
 
@@ -773,7 +812,7 @@ def main():
       <div class="row"><span>Intercepto <b>b</b> (ms):</span><span id="lblB" class="kpi"></span></div>
       <input id="slB" type="range" min="{b-400:.0f}" max="{b+400:.0f}" step="1" value="{b_init:.0f}">
       <div class="btns">
-        <button class="green" id="btnAnim">▶ Animar Descenso (−∇S)</button>
+        <button class="green" id="btnAnim">▶ Animar Descenso (−∇S escalado)</button>
         <button class="primary" id="btnOpt">★ Ir al Óptimo (∇S = 0)</button>
       </div>
     </div>

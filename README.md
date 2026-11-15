@@ -9,18 +9,19 @@
 
 ## 0. Estado ejecutivo y resultados principales (actualizado 15 nov)
 
-Tras auditar los datos candidatos con el portón psicométrico y estadístico (`codigo/auditar_extras.py` → `codigo/reporte_extras.md`), la base oficial quedó consolidada con **17 participantes validados ($n = 595$ ensayos, diseño balanceado $m = 85$ ensayos por cada uno de los $K = 7$ ángulos)**:
+La base oficial tiene **17 participantes con sesión completa ($n = 595$ ensayos, diseño balanceado $m = 85$ ensayos por cada uno de los $K = 7$ ángulos)**:
 
 - **Parámetros óptimos:** $a^* = \mathbf{2.746737\text{ ms/}^\circ}$ (velocidad de rotación mental $\omega = 1000/a^* \approx \mathbf{364.1^\circ\text{/s}}$) y $b^* = \mathbf{683.1213\text{ ms}}$ (tiempo basal de percepción, decisión y respuesta motora a $0^\circ$).
 - **Mínimo global verificado por el Hessiano:** $S(a^*, b^*) = \mathbf{156\,163\,296.22\text{ ms}^2} \approx 1.562\times 10^8\text{ ms}^2$, con $\nabla S(a^*,b^*) = [-7.22\times 10^{-9}, -1.96\times 10^{-10}] \approx \mathbf{0}$, matriz Hessiana constante $H = \begin{pmatrix} 13\,923\,000 & 107\,100 \\ 107\,100 & 1\,190 \end{pmatrix}$, determinante $D = \det(H) = \mathbf{5\,097\,960\,000 > 0}$, $S_{aa} = \mathbf{13\,923\,000 > 0}$ y autovalores $\lambda_1 = 366.13 > 0$, $\lambda_2 = 1.3924\times 10^7 > 0$ ($\Rightarrow$ paraboloide elíptico estrictamente convexo, mínimo único y global).
 - **Doble lectura de calidad del ajuste (Teorema de descomposición ortogonal):**
-  1. **Sobre los $n = 595$ ensayos individuales:** $\text{RMSE} = 512.3\text{ ms}$, **$R^2_{\text{raw}} = 0.0938$ ($9.38\%$)**, $p = 2.20\times 10^{-14}$ ($t = 7.834$). El $90.6\%$ de la varianza cruda proviene de la diferencia de velocidad basal entre sujetos ($\text{SS}_{\text{intra}} = 1.556\times 10^8\text{ ms}^2$), que no depende de $(a,b)$.
+  1. **Sobre los $n = 595$ ensayos individuales:** $\text{RMSE} = 512.3\text{ ms}$, **$R^2_{\text{raw}} = 0.0938$ ($9.38\%$)**, $p = 2.20\times 10^{-14}$ ($t = 7.834$). El $90.3\%$ de la varianza cruda es variabilidad **dentro del mismo ángulo** ($\text{SS}_{\text{intra}} = 1.556\times 10^8\text{ ms}^2$), que no depende de $(a,b)$: un tercio ($32\%$) son diferencias de velocidad basal entre personas y dos tercios ($68\%$) son variación de una misma persona de un ensayo a otro. Ningún modelo $y=f(x)$ puede explicarla.
   2. **Sobre los $K = 7$ promedios por ángulo ($m = 85$ ensayos/ángulo):** por ser un diseño balanceado, minimizar $S_{\text{medias}}(a,b)$ entrega **exactamente el mismo $(a^*, b^*) = (2.746737\text{ ms/}^\circ, 683.1213\text{ ms})$**, con **$\text{RMSE}_{\text{medias}} = 29.7\text{ ms}$ y $R^2_{\text{medias}} = 0.9685$ ($96.85\%$, $p = 0.00006$)**, confirmando con altísima precisión la ley lineal de Shepard y Metzler.
+  3. **Persona por persona:** **16 de 17 participantes tienen pendiente positiva** (prueba de signos $p = 0.0003$; prueba $t$ sobre las 17 pendientes $p = 0.0002$). Si a cada persona se le da su propio tiempo base (minimizar $S(a, b_1,\dots,b_{17})$, 18 variables, mismo método $\nabla S = \mathbf{0}$), la pendiente sale **idéntica, $a^* = 2.746737$**, y el $R^2$ sube de $0.094$ a **$0.384$**.
 
 | Entregable / Requisito (`requisitos.md`) | Estado | Archivo en el repositorio |
 |---|---|---|
-| **1–2. App de captura y datos validados** | ✅ | `app/index.html`, `csvs/neurocode_P01.csv` … `P17.csv` ($n = 595$) |
-| ** Auditoría de datos extra (`csvs/extra/`)** | ✅ | `codigo/auditar_extras.py` → `codigo/reporte_extras.md` |
+| **1–2. App de captura y datos validados** | ✅ | `app/index.html`, `csvs/neurocode_p01.csv` … `P17.csv` ($n = 595$) |
+| **Auditoría de datos extra (`csvs/extra/`)** | ✅ | `codigo/auditar_extras.py` → `codigo/reporte_extras.md` |
 | **3. Exploración de datos (Req. 5)** | ✅ | `figuras/01_dispersion.png` (nube $n=595$ + ajuste en medias $R^2=0.9685$) |
 | **4. Desarrollo analítico manual (Req. 7.1–7.4)** | ✅ | `informe/guia_desarrollo_manual.md` (incluye atajo de 7 filas para calculadora en 60 s) |
 | **5. Verificación computacional (Req. 8 y 9)** | ✅ | `codigo/ajuste.py` → `codigo/resultados.txt` ($\Delta a = 1.29\times 10^{-14}$) |
@@ -36,7 +37,7 @@ Tras auditar los datos candidatos con el portón psicométrico y estadístico (`
 
 1. **Cada integrante practica a mano** la deducción de `informe/guia_desarrollo_manual.md` (con la tabla de 7 filas pueden comprobar $a^*=2.7467$ y $b^*=683.12$ en calculadora en 60 segundos) y repasa `informe/hoja_batalla_sustentacion.md` (es el **40 % de la nota**).
 2. **Poner los nombres reales del grupo** en la última diapositiva de `presentacion/slides.md` (buscar `[nombre 1]`) y recompilar el PDF.
-3. **Probar el demo en vivo** en el computador de la exposición abriendo `figuras/superficie_interactiva.html` (mover los sliders de $a$ y $b$ y pulsar **"▶ Animar Descenso (−∇S)"**) y `app/index.html`.
+3. **Probar el demo en vivo** en el computador de la exposición abriendo `figuras/superficie_interactiva.html` (mover los sliders de $a$ y $b$ y pulsar **"▶ Animar Descenso (−∇S escalado)"**) y `app/index.html`.
 
 ### Cómo regenerar todo en un comando
 
@@ -57,15 +58,15 @@ cd presentacion && npx @marp-team/marp-cli slides.md --pdf --allow-local-files -
    pip install numpy matplotlib scipy
    ```
 3. **Capturar datos (opcional):** abrir `app/index.html` en el navegador, completar un bloque de 35 ensayos y guardar el CSV en `csvs/`.
-4. **Auditar datos extra:** `python3 codigo/auditar_extras.py` (genera `codigo/reporte_extras.md` con el dictamen Oro/Plata/Bronce).
+4. **Auditar datos extra:** `python3 codigo/auditar_extras.py` (genera `codigo/reporte_extras.md`: duplicados exactos y métricas de cada bloque candidato).
 5. **Ajuste + figuras:** `python3 codigo/ajuste.py` (lee `csvs/neurocode_*.csv`, escribe `codigo/resultados.txt` y las 7 figuras en `figuras/`).
-6. **Ver laboratorio 3D:** abrir `figuras/superficie_interactiva.html` en el navegador (sliders de $a,b$ + botón "▶ Animar Descenso (−∇S)").
+6. **Ver laboratorio 3D:** abrir `figuras/superficie_interactiva.html` en el navegador (sliders de $a,b$ + botón "▶ Animar Descenso (−∇S escalado)").
 7. **Recompilar presentación:** ver comando Marp de la sección anterior (requiere `node` + `npx`).
 8. **Exponer:** proyectar `presentacion/slides.pdf`, repasar `informe/guia_desarrollo_manual.md` (deducción a mano) y `informe/hoja_batalla_sustentacion.md` (preguntas trampa).
 
 > ⚠️ **Notas de integridad de datos:**
 > - En varios CSV originales el ID tecleado dentro de la app se repitió (`P05` escribió `36`, `P07` y `P11` escribieron `P10`, etc.). `codigo/ajuste.py` asigna el ID según el nombre del archivo (`P01`…`P17`) sin alterar los CSV crudos.
-> - De los archivos en `csvs/extra/`, `codigo/auditar_extras.py` promovió únicamente los 2 bloques **Tier Oro** libres de atípicos y estadísticamente significativos ($p < 0.01$, $R^2 \ge 0.21$): `neurocode_David.csv` (`P16`) y `extra/neurocode_P15.csv` (`P17`, ID `FV07`), descartando duplicados y corridas con distracciones $>3\text{ s}$.
+> - **Cómo se eligieron los datos (dicho con honestidad):** los 15 archivos de `csvs/` son la base recolectada con el protocolo. Después llegaron 13 bloques más (`csvs/extra/`, `csvs/txt/`); se quitaron 3 copias exactas y se sumaron 2 sesiones completas de personas nuevas: `neurocode_David.csv` (`P16`) y `extra/neurocode_P15.csv` (`P17`, ID `FV07`). Esos dos se escogieron mirando su ajuste, y eso favorece el resultado. Por eso reportamos la pendiente con las tres reglas de inclusión posibles (tabla de robustez, sección 3.4): **la conclusión no depende de esa elección.**
 
 ---
 
@@ -148,7 +149,18 @@ $$S(a,b) = \sum_{i=1}^{n} (y_i - a x_i - b)^2$$
 | **$b^*$ (ms)** | $683.12$ | $683.1213$ | $683.1213$ | $5.68\times 10^{-13}$ |
 | **$S_{\min}$ ($\text{ms}^2$)** | $156\,163\,296$ | $156\,163\,296.22$ | $156\,163\,296.22$ | $0.00\times 10^{0}$ |
 
-### 3.4. Resumen de análisis adicionales (Sección 13 de `requisitos.md` — `figuras/07_opciones_BC.png`)
+### 3.4. Robustez frente a la elección de datos
+
+| Regla de inclusión | $n$ | $a^*$ (ms/°) | $R^2_{\text{medias}}$ |
+|---|---:|---:|---:|
+| Solo la base recolectada con el protocolo (15 personas) | 525 | 2.650 | 0.962 |
+| **Base + 2 personas nuevas (oficial, 17)** | **595** | **2.747** | **0.969** |
+| Todo lo recolectado sin copias exactas (incluye sesiones repetidas y con distracciones) | 875 | 2.407 | 0.935 |
+| Quitando una persona cualquiera (17 corridas) | 560 | 2.359 – 2.923 | — |
+
+En todos los casos la pendiente es positiva, de la misma magnitud y significativa.
+
+### 3.5. Resumen de análisis adicionales (Sección 13 de `requisitos.md` — `figuras/07_opciones_BC.png`)
 
 - **Opción A (Sensibilidad de parámetros):** Al perturbar los 595 tiempos con ruido gaussiano $\Delta y_i \sim \mathcal{N}(0, 25\text{ ms})$ durante 500 simulaciones Monte Carlo, la desviación estándar de los parámetros es apenas $\sigma_a = 0.0166\text{ ms/}^\circ$ (**0.60 %** de variación) y $\sigma_b = 1.79\text{ ms}$ (**0.26 %**).
 - **Opción B (Influencia de datos atípicos):**
@@ -169,7 +181,7 @@ FinalCalculoMultivariado/
 ├── app/
 │   └── index.html                         ← Aplicación web NeuroCode (captura de tiempos con performance.now())
 ├── csvs/
-│   ├── neurocode_P01.csv … P17.csv        ← 17 participantes validados (35 ensayos c/u, n = 595)
+│   ├── neurocode_P01.csv … P17.csv        ← 17 participantes con sesión completa (35 ensayos c/u, n = 595)
 │   ├── extra/                             ← Archivos adicionales auditados por codigo/auditar_extras.py
 │   └── txt/                               ← Respaldos en texto de WhatsApp
 ├── codigo/
@@ -193,7 +205,7 @@ FinalCalculoMultivariado/
 │   └── slides.html                        ← Versión web de las diapositivas
 └── informe/
     ├── guia_desarrollo_manual.md          ← Deducción paso a paso + tabla de 7 filas para calculadora en 60 s
-    └── hoja_batalla_sustentacion.md       ← Reparto de diapos para 4 integrantes y 5 preguntas trampa resueltas
+    └── hoja_batalla_sustentacion.md       ← Reparto de diapos para 4 integrantes y 7 preguntas trampa resueltas
 ```
 
 ---

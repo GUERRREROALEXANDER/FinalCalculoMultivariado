@@ -119,7 +119,7 @@ Diseño balanceado: cada ángulo pesa igual.
 </div>
 
 <!--
-Cada participante vio una R girada 0, 30, 60, 90, 120, 150 o 180° y respondió si era normal o espejo. Solo aciertos: 5 datos por ángulo, 35 por persona, 595 en total (17 sujetos validados). La tabla muestra medias crecientes con el ángulo, indicio claro de tendencia lineal.
+Cada participante vio una R girada 0, 30, 60, 90, 120, 150 o 180° y respondió si era normal o espejo. Solo aciertos: 5 datos por ángulo, 35 por persona, 595 en total (17 personas con sesión completa). La tabla muestra medias crecientes con el ángulo, indicio claro de tendencia lineal.
 -->
 
 ---
@@ -207,10 +207,10 @@ Verificación numérica del gradiente casi cero. D>0 y S_aa>0 más ambos valores
 </div>
 </div>
 
-Elipses **inclinadas** ($S_{ab}=2\Sigma x=107\,100>0$) y **alargadas** ($\lambda_2/\lambda_1\approx 38\,029$); $-\nabla S$ apunta al mínimo.
+Elipses **inclinadas** ($S_{ab}=2\Sigma x=107\,100>0$) y **alargadas** ($\lambda_2/\lambda_1\approx 38\,029$, ejes $\approx 195{:}1$); $-\nabla S$ apunta al mínimo.
 
 <!--
-Izquierda: superficie z=S(a,b) con mínimo marcado. Derecha: curvas de nivel elípticas centradas en (a*,b*) con campo −gradiente apuntando al centro. Se inclinan por el término cruzado positivo y se alargan porque la superficie es ~38 mil veces más empinada en a que en b.
+Izquierda: superficie z=S(a,b) con mínimo marcado. Derecha: curvas de nivel elípticas centradas en (a*,b*) con campo −gradiente apuntando al centro. Se inclinan por el término cruzado positivo S_ab. Se alargan porque la curvatura en un eje principal es unas 38 mil veces la del otro, así que la elipse es unas 195 veces más larga que ancha (raíz de 38 029). Las flechas son menos gradiente calculado en la escala del dibujo, por eso se ven perpendiculares a las elipses y apuntan al mínimo.
 -->
 
 ---
@@ -286,7 +286,7 @@ Residuos centrados en cero, mayoría entre −1000 y 1000 ms con cola alta. La d
 **RMSE = 512.3 ms**
 **$R^2 = 0.0938$** ($p=2.2\times 10^{-14}$)
 
-Pendiente altamente significativa; 9.4 % crudo por variación basal entre 17 sujetos.
+El 90 % de la variación es dentro del mismo ángulo (personas distintas + ensayo a ensayo). Aun así, **16 de 17 personas** tienen pendiente > 0.
 
 </div>
 <div class="card">
@@ -302,12 +302,12 @@ Pendiente altamente significativa; 9.4 % crudo por variación basal entre 17 suj
 </div>
 
 <!--
-Misma recta en ambas escalas por diseño balanceado. En ensayos el ruido entre personas baja R² aunque p es 2.2e-14; en medias el ruido se promedia y R² llega a 96.85 %. Por eso el efecto es real y la recta es excelente para la tendencia.
+Misma recta en ambas escalas por diseño balanceado. En ensayos, el 90% de la variación ocurre dentro de un mismo ángulo: un tercio son personas más rápidas o más lentas, dos tercios son variación de una misma persona entre un ensayo y otro. Ningún modelo que solo conozca el ángulo puede predecir eso, por eso R² baja aunque p es 2.2e-14. La prueba más directa: 16 de 17 personas, cada una por separado, tienen pendiente positiva; en medias el ruido se promedia y R² llega a 96.85 %. Por eso el efecto es real y la recta es excelente para la tendencia.
 -->
 
 ---
 
-# Robustez: sensible, estable y lineal basta
+# Robustez: poco sensible, estable y lineal basta
 
 <div class="cols wide-left">
 <div>
@@ -321,6 +321,7 @@ Misma recta en ambas escalas por diseño balanceado. En ensayos el ruido entre p
 **B Atípicos:** sin f.262 $a^*=2.61$, RMSE 469; sin >3 s (n=589) $a^*=2.41$, $R^2=0.1103$.
 **C Cuadr.:** $y=0.0030x^2+2.20x+696.8$, $R^2=0.0941$ ($\Delta=+0.0003$).
 **D N:** $a^*(N)$ converge desde $N\ge 10$ ($n\ge 350$).
+**Datos:** con 15, 17 o todo lo recolectado, $a^*=2.65/2.75/2.41$.
 
 </div>
 </div>
@@ -362,13 +363,14 @@ El cerebro tarda 2.75 ms más por grado, unos 364 °/s: rota paso a paso. Un com
 
 # Limitaciones: variación entre personas y atípicos
 
-- **17** participantes validados ($n=595$): muestra universitaria acotada.
+- **17** participantes con sesión completa ($n=595$): muestra universitaria acotada.
 - Pendiente por persona de **−0.08** (P01, sin efecto) a **8.95 ms/°** (P09).
 - Atípicos por distracción (fila 262: +5015.7 ms).
-- $R^2_{\text{raw}}=0.0938$ vs. $R^2_{\text{medias}}=0.9685$: falta intercepto aleatorio por sujeto.
+- 2 de las 17 personas se sumaron después de ver su ajuste: por eso reportamos también con 15 ($a^*=2.65$).
+- Con un tiempo base por persona (18 variables, $\nabla S=\mathbf{0}$): **mismo** $a^*=2.7467$ y $R^2$ sube a **0.38**.
 
 <!--
-Con 17 personas y pendientes dispares el modelo global mide la tendencia media. Los atípicos y la diferencia de velocidad basal motivan un modelo multinivel por sujeto en trabajo futuro.
+Con 17 personas y pendientes dispares el modelo global mide la tendencia media. Lo decimos de frente: dos participantes se sumaron después de mirar su ajuste; con solo los 15 originales la pendiente es 2.65, la conclusión no cambia. Y si a cada persona le damos su propio tiempo base, minimizando S en 18 variables con el mismo método del gradiente, la pendiente sale exactamente igual y R² sube de 0.09 a 0.38.
 -->
 
 ---
@@ -382,7 +384,7 @@ Abre el simulador 3D con descenso por gradiente en vivo: [`figuras/superficie_in
 O prueba la app de captura: [`app/index.html`](../app/index.html)
 
 <!--
-Abrimos el simulador interactivo: movemos los sliders de (a,b) y pulsamos Animar Descenso (−∇S) para ver en vivo cómo la bola baja por el paraboloide hasta (a*, b*).
+Abrimos el simulador interactivo: movemos los sliders de (a,b) y pulsamos Animar Descenso para ver en vivo cómo la bola baja siguiendo menos gradiente, con cada componente dividida por su curvatura (la diagonal de H), porque con número de condición 38 mil el gradiente puro zigzaguea miles de pasos. Vemos cómo baja por el paraboloide hasta (a*, b*).
 -->
 
 ---
