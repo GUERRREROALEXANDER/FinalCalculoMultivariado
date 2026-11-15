@@ -1,8 +1,8 @@
 """NeuroCode: least-squares fit of response time vs rotation angle.
 
 Own algorithm (sums -> a*, b* -> S -> Hessian), checked against numpy/scipy.
-Also proves the exact equivalence between fitting all n=525 raw trials and fitting
-the K=7 angle means (balanced design: 75 trials per angle), where R^2_means = 0.9619.
+Also proves the exact equivalence between fitting all n=595 raw trials and fitting
+the K=7 angle means (balanced design: 85 trials per angle), where R^2_means = 0.9685.
 Reads every csvs/*.csv, so adding participants only needs a re-run.
 Figure labels are in Spanish for the defense and presentation.
 """
@@ -126,7 +126,7 @@ def main():
     r = report(df, "ALL DATA (RAW TRIALS)")
     x, y, a, b = r["x"], r["y"], r["a"], r["b"]
 
-    # --- Mathematical equivalence on K=7 angle means (balanced design m=75 per angle) ---
+    # --- Mathematical equivalence on K=7 angle means (balanced design m=85 per angle) ---
     means_df = df.groupby("angulo_grados", as_index=False)["tiempo_ms"].mean()
     rm = report(means_df, "ANGLE MEANS (K=7, BALANCED DESIGN EQUIVALENCE)")
     m_per_angle = len(df) // len(means_df)
@@ -233,7 +233,7 @@ def main():
     med_vals = by_angle["median"].to_numpy(float)
 
     # -------------------------------------------------------------------------
-    # 01_dispersion.png: Left = raw 525 trials + angle means; Right = K=7 means
+    # 01_dispersion.png: Left = raw 595 trials + angle means; Right = K=7 means
     # -------------------------------------------------------------------------
     fig, axs = plt.subplots(1, 2, figsize=(12.2, 4.8), gridspec_kw={"width_ratios": [1.15, 1]})
     cmap_p = plt.get_cmap("tab20")
