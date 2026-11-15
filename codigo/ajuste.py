@@ -305,9 +305,9 @@ def main():
         ylabel="Tiempo promedio de respuesta (ms)",
         title="B. Promedios por ángulo (K = 7)",
         xticks=ang_vals,
-        ylim=(540, 1280),
+        ylim=(540, 1520),
     )
-    axs[1].legend(fontsize=11.5, loc="lower right", framealpha=0.94)
+    axs[1].legend(fontsize=10.5, loc="upper left", framealpha=0.94)
     fig.tight_layout()
     save_panels(fig, axs, "01_dispersion")
     plt.close(fig)
@@ -382,7 +382,7 @@ def main():
         xticks=ang_vals,
         ylim=(320, 1480),
     )
-    axs[1].legend(fontsize=11.0, loc="upper left", framealpha=0.95)
+    axs[1].legend(fontsize=10.5, loc="upper center", bbox_to_anchor=(0.5, -0.24), ncol=1, framealpha=0.95)
     fig.tight_layout()
     save_panels(fig, axs, "02_rectas")
     plt.close(fig)
@@ -627,7 +627,7 @@ def main():
         xticks=ang_vals,
         ylim=(540, 1280),
     )
-    ax_bc.legend(fontsize=10, loc="lower right")
+    ax_bc.legend(fontsize=10, loc="upper center", bbox_to_anchor=(0.5, -0.26), ncol=1)
 
     # Top-right: Option A (Monte Carlo sensitivity of a* and b*)
     ax_sens = axs[0, 1]
@@ -651,7 +651,8 @@ def main():
         title="C. Opción D: convergencia según muestra N",
         xticks=part_counts,
     )
-    ax_n.legend(fontsize=11.0, loc="upper left")
+    ax_n.set_ylim(-0.3, 4.6)
+    ax_n.legend(fontsize=10.5, loc="upper left")
 
     # Bottom-right: Individual participant lines explaining why R^2_raw vs R^2_means
     ax_ind = axs[1, 1]
@@ -781,6 +782,24 @@ def main():
     axs[1].annotate(f"$\\tilde{{b}}^*=\\bar{{y}}={cstar:.0f}$", (a, cstar), xytext=(a + 0.6, cstar + 250), color="white", fontsize=13, fontweight="bold", arrowprops=dict(arrowstyle="->", color="white", lw=1.6))
     fig.tight_layout()
     save_panels(fig, axs, "11_elipses_centradas")
+    plt.close(fig)
+
+    # -------------------------------------------------------------------------
+    # 12_cerebro_vs_cpu.png: brain (linear in theta) vs CPU (rotation matrix, O(1)); schematic
+    # -------------------------------------------------------------------------
+    fig, ax = plt.subplots(figsize=(11.5, 5.6))
+    ax.plot(xs, a * xs + b, color=ACCENT, lw=4, label=f"Cerebro: $t={b:.0f}+{a:.2f}\\,\\theta$ ms (medido)")
+    ax.errorbar(ang_vals, mean_vals, yerr=sem_vals, fmt="o", color=INK, ms=8, capsize=4, zorder=6, label="Medias observadas")
+    ax.axhline(b, color=BLUE, lw=4, ls="--", label="CPU: $R(\\theta)\\mathbf{v}$ en tiempo constante, $O(1)$ (esquema)")
+    ax.fill_between(xs, b, a * xs + b, color=ACCENT, alpha=0.12)
+    ax.annotate(f"Costo por rotar: {a:.2f} ms por cada grado\n(≈ {1000 / a:.0f} °/s)", (150, a * 150 + b), xytext=(52, 1130),
+                fontsize=14, fontweight="bold", color=INK, arrowprops=dict(arrowstyle="-|>", color=ACCENT, lw=2.2),
+                bbox=dict(boxstyle="round,pad=0.35", fc="white", ec=ACCENT, lw=1.6))
+    ax.set(xlabel="Ángulo de rotación θ (°)", ylabel="Tiempo (ms)", xticks=ang_vals, ylim=(450, 1300),
+           title="Cerebro: analógico, crece con θ · CPU: matriz 2D, no depende de θ")
+    ax.legend(fontsize=12.5, loc="lower right")
+    fig.tight_layout()
+    fig.savefig(f"{FIG}/12_cerebro_vs_cpu.png", dpi=220)
     plt.close(fig)
 
     # -------------------------------------------------------------------------
