@@ -54,7 +54,7 @@ INICIO
            estado <- "No es mínimo estricto (datos degenerados)"
        FIN SI
 
-  6. CALCULAR residuos y calidad del ajuste (datos crudos n=525 y medias K=7):
+  6. CALCULAR residuos y calidad del ajuste (datos crudos n=595 y medias K=7):
        PARA i = 1 HASTA n HACER
            e_i <- y_i - (a* * x_i + b*)
        FIN PARA
@@ -79,7 +79,7 @@ FIN
 
 ```mermaid
 flowchart TD
-    A[Cargar 15 CSV: n = 525 pares x_i, y_i] --> B[Calcular sumatorias: n, Sx, Sy, Sxx, Sxy]
+    A[Cargar 17 CSV: n = 595 pares x_i, y_i] --> B[Calcular sumatorias: n, Sx, Sy, Sxx, Sxy]
     B --> C[Condición ∇S = 0: D₀ = n·Sxx − Sx²]
     C --> D["a* = (n·Sxy − Sx·Sy) / D₀<br/>b* = (Sy − a*·Sx) / n"]
     D --> E["Evaluar S_min = S(a*, b*)<br/>Verificar ‖∇S(a*, b*)‖ ≈ 0"]
@@ -87,7 +87,7 @@ flowchart TD
     F --> G{¿det H > 0 y S_aa > 0?}
     G -- Sí --> H["Confirmado: Mínimo Global Único<br/>(Paraboloide elíptico convexo)"]
     G -- No --> I[Revisar colinealidad de x]
-    H --> J["Calcular residuos e_i, RMSE y R²<br/>(Crudos n=525: R²=0.0854 | Medias K=7: R²=0.9619)"]
+    H --> J["Calcular residuos e_i, RMSE y R²<br/>(Crudos n=595: R²=0.0938 | Medias K=7: R²=0.9685)"]
     J --> K["Validar contra numpy.polyfit / scipy.linregress<br/>(Δa = 3.55e-15, Δb = 0)"]
     K --> L["Análisis adicional Opciones A, B, C y D<br/>+ Generación de 7 gráficas y 3D interactivo"]
 ```

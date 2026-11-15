@@ -26,7 +26,7 @@ La base oficial tiene **17 participantes con sesión completa ($n = 595$ ensayos
 | **4. Desarrollo analítico manual (Req. 7.1–7.4)** | ✅ | `informe/guia_desarrollo_manual.md` (incluye atajo de 7 filas para calculadora en 60 s) |
 | **5. Verificación computacional (Req. 8 y 9)** | ✅ | `codigo/ajuste.py` → `codigo/resultados.txt` ($\Delta a = 1.29\times 10^{-14}$) |
 | **6. Superficie, trazas, secciones y curvas (Req. 7.5–7.8)** | ✅ | `figuras/02_rectas.png`, `03_superficie.png`, `04_trazas.png`, `05_curvas_nivel.png` |
-| **7. Laboratorio 3D interactivo con $-\nabla S$ en vivo** | ✅ | `figuras/superficie_interactiva.html` (sliders $(a,b)$ + animación de descenso por gradiente) |
+| **7. Laboratorio 3D interactivo con $-\nabla S$ en vivo** | ✅ | `figuras/superficie_interactiva.html` (mapa de nivel arrastrable + $-\nabla S$ + recta $y=ax+b$ sincronizada + modo centrado $\tilde x=x-90^\circ$; funciona sin internet) |
 | **8. Análisis de residuos, RMSE y $R^2$ (Req. 10–12)** | ✅ | `figuras/06_residuos.png`, `codigo/resultados.txt` |
 | **9. Análisis adicional Opciones A, B, C y D (Req. 13)** | ✅ | `figuras/07_opciones_BC.png` (panel 2×2 con las 4 opciones completas) |
 | **10. Pseudocódigo y diagrama de flujo (Rúbrica 10 %)** | ✅ | `codigo/pseudocodigo.md` |
@@ -37,7 +37,7 @@ La base oficial tiene **17 participantes con sesión completa ($n = 595$ ensayos
 
 1. **Cada integrante practica a mano** la deducción de `informe/guia_desarrollo_manual.md` (con la tabla de 7 filas pueden comprobar $a^*=2.7467$ y $b^*=683.12$ en calculadora en 60 segundos) y repasa `informe/hoja_batalla_sustentacion.md` (es el **40 % de la nota**).
 2. **Poner los nombres reales del grupo** en la última diapositiva de `presentacion/slides.md` (buscar `[nombre 1]`) y recompilar el PDF.
-3. **Probar el demo en vivo** en el computador de la exposición abriendo `figuras/superficie_interactiva.html` (mover los sliders de $a$ y $b$ y pulsar **"▶ Animar Descenso (−∇S escalado)"**) y `app/index.html`.
+3. **Probar el demo en vivo** en el computador de la exposición abriendo `figuras/superficie_interactiva.html` (mover los sliders de $a$ y $b$ y pulsar **"▶ Animar Descenso (−∇S escalado)"**) y `app/index.html`. Nota: el simulador se regenera con `python3 codigo/ajuste.py` desde `codigo/simulador_template.html`.
 
 ### Cómo regenerar todo en un comando
 
@@ -59,7 +59,7 @@ cd presentacion && npx @marp-team/marp-cli slides.md --pdf --allow-local-files -
    ```
 3. **Capturar datos (opcional):** abrir `app/index.html` en el navegador, completar un bloque de 35 ensayos y guardar el CSV en `csvs/`.
 4. **Auditar datos extra:** `python3 codigo/auditar_extras.py` (genera `codigo/reporte_extras.md`: duplicados exactos y métricas de cada bloque candidato).
-5. **Ajuste + figuras:** `python3 codigo/ajuste.py` (lee `csvs/neurocode_*.csv`, escribe `codigo/resultados.txt` y las 7 figuras en `figuras/`).
+5. **Ajuste + figuras:** `python3 codigo/ajuste.py` (lee `csvs/neurocode_*.csv`, escribe `codigo/resultados.txt` y las figuras `01`–`12` (más los paneles sueltos `NN_*_A/B/…`) en `figuras/`; requiere `pip install numpy matplotlib scipy pandas plotly`).
 6. **Ver laboratorio 3D:** abrir `figuras/superficie_interactiva.html` en el navegador (sliders de $a,b$ + botón "▶ Animar Descenso (−∇S escalado)").
 7. **Recompilar presentación:** ver comando Marp de la sección anterior (requiere `node` + `npx`).
 8. **Exponer:** proyectar `presentacion/slides.pdf`, repasar `informe/guia_desarrollo_manual.md` (deducción a mano) y `informe/hoja_batalla_sustentacion.md` (preguntas trampa).
@@ -98,8 +98,8 @@ Medimos este fenómeno con la aplicación propia **NeuroCode** (`app/index.html`
 |---|---|---|
 | **Comprensión conceptual** | **20 %** | Interpretación física de $a^*, b^*$, plano tangente horizontal ($\nabla S = \mathbf{0}$), curvatura y autovalores de $H$, y descomposición ortogonal de $S(a,b)$ (`informe/hoja_batalla_sustentacion.md`). |
 | **Evaluación individual** | **20 %** | Guía desde cero con ejemplo de 3 puntos, deducción algebraica completa y **tabla de 7 promedios por ángulo** verificable con calculadora en 60 segundos (`informe/guia_desarrollo_manual.md`). |
-| **Gráficos y análisis** | **20 %** | 7 figuras de alta resolución en `figuras/` + simulador 3D en vivo `figuras/superficie_interactiva.html` con descenso por gradiente $-\nabla S$. |
-| **Presentación** | **15 %** | 18 diapositivas 16:9 en `presentacion/slides.pdf` con notas de orador y reparto por integrante. |
+| **Gráficos y análisis** | **20 %** | 12 figuras de alta resolución en `figuras/` (incl. puente 3D↔recta, doble R², 17 pendientes, elipses centradas, cerebro vs CPU) + simulador 3D en vivo `figuras/superficie_interactiva.html` con descenso por gradiente $-\nabla S$. |
+| **Presentación** | **15 %** | 24 diapositivas 16:9 en `presentacion/slides.pdf` con notas de orador y reparto por integrante. |
 | **Conclusiones** | **15 %** | Análisis crítico con doble $R^2$ ($n=595$ crudos vs. $K=7$ medias), análisis adicional completo (Opciones A, B, C y D) y contraste Cerebro vs. CPU. |
 | **Programación y lógica** | **10 %** | Algoritmo propio sin librerías en `codigo/ajuste.py`, auditoría en `codigo/auditar_extras.py`, tabla de correspondencia y diagrama Mermaid en `codigo/pseudocodigo.md`. |
 
@@ -200,7 +200,7 @@ FinalCalculoMultivariado/
 │   ├── 07_opciones_BC.png                 ← Panel 2×2 con las Opciones A, B, C y D de la Sección 13
 │   └── superficie_interactiva.html        ← Simulador 3D en vivo con sliders (a,b) y animación de descenso −∇S
 ├── presentacion/
-│   ├── slides.md                          ← Fuente Marp de las 18 diapositivas con notas de orador
+│   ├── slides.md                          ← Fuente Marp de las 24 diapositivas con notas de orador
 │   ├── slides.pdf                         ← Presentación lista para proyectar (16:9)
 │   └── slides.html                        ← Versión web de las diapositivas
 └── informe/
