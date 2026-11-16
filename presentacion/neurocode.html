@@ -1,0 +1,532 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NeuroCode · Sustentación</title>
+<meta name="description" content="NeuroCode: rotación mental y mínimos cuadrados con Cálculo Multivariable. Proyecto final, UCC Pasto, 2026.">
+<link rel="stylesheet" href="assets/fonts/fonts.css">
+<link rel="stylesheet" href="assets/deck.css">
+<link rel="stylesheet" href="assets/tema-ucc.css">
+</head>
+<body>
+
+<!-- Atmósfera de laboratorio (decorativa) -->
+<div class="atmos" aria-hidden="true">
+  <div class="glow g1"></div><div class="glow g2"></div><div class="glow g3"></div>
+  <div class="grid"></div>
+  <div class="ring"></div><div class="ring r2"></div><div class="ring r3"></div>
+  <div class="dust" id="dust"></div>
+  <div class="grain"></div>
+</div>
+<div class="progress" id="progress"></div>
+
+<main class="deck" id="deck">
+
+<!-- ========================= 01 · PORTADA ========================= -->
+<section class="slide titlepage" data-title="NeuroCode" data-sec="Portada" data-who="Integrante 1">
+  <img class="banner" src="assets/ucc_banner.jpg" alt="Universidad Cooperativa de Colombia">
+  <div class="tp">
+    <h1 class="r d1">NeuroCode: ¿a qué velocidad gira tu cerebro?</h1>
+    <p class="tp-sub r d2">Rotación mental y mínimos cuadrados · Cálculo Multivariable</p>
+    <p class="tp-auth r d3">[Integrante 1] · [Integrante 2] · [Integrante 3] · [Integrante 4]</p>
+    <p class="tp-inst r d4">Ingeniería de Software,<br>Universidad Cooperativa de Colombia,<br>San Juan de Pasto</p>
+    <p class="tp-date r d5">Docente: M.Sc. Alejandro Molina · 17 de noviembre de 2026</p>
+  </div>
+  <template class="notes">Medimos cuánto tarda el cerebro en girar una letra R en la mente y buscamos la recta que mejor lo describe. La herramienta es cálculo de varias variables: parciales, gradiente y Hessiano. Todo con datos reales, inspirado en Shepard y Metzler (1971).</template>
+</section>
+
+<!-- ========================= 02 · EXPERIMENTO ========================= -->
+<section class="slide" data-title="Un experimento real" data-sec="Problema y datos" data-who="Integrante 1">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">El experimento · Shepard y Metzler, 1971</span><span class="num">02</span></div>
+    <div class="body">
+      <div class="split">
+        <div class="stack">
+          <div class="head r d1"><span class="eyebrow">Rotación mental</span><h2>¿La R está <em>normal</em> o en <em>espejo</em>?</h2></div>
+          <p class="lede r d2">La R aparece girada. Para responder, el cerebro la <b>rota mentalmente</b>. Guardamos solo los aciertos.</p>
+          <div class="kpis r d3">
+            <div class="kpi glass"><span class="n">17</span><span class="t">personas</span></div>
+            <div class="kpi glass"><span class="n holo">7</span><span class="t">ángulos · 0° a 180°</span></div>
+            <div class="kpi glass"><span class="n amber">595</span><span class="t">ensayos · 5 × 7 × 17</span></div>
+          </div>
+          <div class="row r d4"><span class="chip"><b class="mono">x</b>&nbsp;ángulo de la R (°)</span><span class="chip"><b class="mono">y</b>&nbsp;tiempo de respuesta (ms)</span></div>
+        </div>
+        <figure class="screen r d3" style="margin:0;height:auto;aspect-ratio:2380/720" data-zoom><img src="../blender/renders/R_lamina_7x2.png" alt="La letra R girada de 0 a 180 grados, normal y en espejo"><span class="zoom">ampliar</span></figure>
+      </div>
+    </div>
+  </div>
+  <template class="notes">Cada participante vio una R girada 0, 30, 60, 90, 120, 150 o 180 grados y respondió si era normal (tecla F) o espejo (tecla J). Solo aciertos: 5 por ángulo, 35 por persona, 17 personas, 595 ensayos. Diseño balanceado: 85 ensayos por ángulo.
+Las R son renders 3D hechos en Blender con la misma fuente y el mismo giro de la app.</template>
+</section>
+
+<!-- ========================= 03 · TENDENCIA ========================= -->
+<section class="slide" data-title="El tiempo sube con el ángulo" data-sec="Problema y datos" data-who="Integrante 1">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Exploración de los datos</span><span class="num">03</span></div>
+    <div class="body">
+      <div class="head center r d1"><h2>El tiempo <em>sube</em> con el ángulo</h2></div>
+      <div class="media r d2"><figure class="screen" style="margin:0" data-zoom><img src="../figuras/01_dispersion.png" alt="Dispersión de los 595 ensayos y medias por ángulo"><span class="zoom">ampliar</span></figure></div>
+      <p class="cap r d3">Media <b>718.7 ms</b> a 0° → <b>1169.1 ms</b> a 180°. &nbsp;¿Cuál es la <span class="amber">mejor recta</span>?</p>
+    </div>
+  </div>
+  <template class="notes">Izquierda: los 595 ensayos, con mucha dispersión entre personas. Derecha: las siete medias por ángulo, que sí siguen una recta casi perfecta. La pregunta es qué recta y = ax + b es la mejor.</template>
+</section>
+
+<!-- ========================= 04 · PUENTE (LABORATORIO) ========================= -->
+<section class="slide" data-title="Un punto (a, b) es una recta" data-sec="Problema y datos" data-who="Integrante 1">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Laboratorio en vivo · arrastra el punto</span><span class="num">04</span></div>
+    <div class="body">
+      <div class="row r d1" style="justify-content:space-between;align-items:flex-end">
+        <div class="head"><span class="eyebrow">La idea central</span><h2>Un punto <em>(a, b)</em> es una recta</h2></div>
+        <div class="readout">
+          <div class="glass"><span class="k">pendiente a</span><span class="v" id="labA">2.747</span></div>
+          <div class="glass"><span class="k">intercepto b</span><span class="v" id="labB">683.1</span></div>
+          <div class="glass"><span class="k">error S(a, b)</span><span class="v amber" id="labS">1.5616×10<sup>8</sup></span></div>
+          <div class="glass"><span class="k">sobre el mínimo</span><span class="v" id="labP">+0.00 %</span></div>
+        </div>
+      </div>
+      <div class="lab r d2">
+        <div class="pane glass">
+          <div class="lbl"><span>mapa de S(a, b)</span><span>a ↔ · b ↕</span></div>
+          <canvas id="labMap" aria-label="Mapa de error S(a,b); arrastre para elegir a y b"></canvas>
+        </div>
+        <div class="pane glass">
+          <div class="lbl"><span>la recta y = a·x + b sobre las 7 medias</span><span>— residuos</span></div>
+          <svg id="labPlot" viewBox="0 0 640 400" preserveAspectRatio="xMidYMid meet" aria-label="Recta sobre las medias por ángulo"></svg>
+        </div>
+      </div>
+      <div class="row center r d3">
+        <button class="btn hot" data-go="opt">Ir al óptimo</button>
+        <button class="btn" data-go="c1">Candidata 1</button>
+        <button class="btn" data-go="c2">Candidata 2</button>
+        <button class="btn" data-go="c3">Candidata 3</button>
+        <span class="chip">S exacto de los 595 ensayos</span>
+      </div>
+    </div>
+  </div>
+  <template class="notes">Esta es la idea central. A la izquierda el plano de parámetros: cada punto (a, b) es un candidato. A la derecha, ese mismo punto dibujado como recta sobre los datos. Arrastren el punto: cerca del fondo del valle la recta se pega a las medias; lejos, se despega. La altura de S es el error de esa recta.
+El S que se muestra es el de los 595 ensayos, exacto: S = 155 637 440 + 85·Σ(ȳ − a·x − b)² (la descomposición ortogonal de la diapositiva 17). Las candidatas son las mismas de la figura 08.</template>
+</section>
+
+<!-- ========================= 05 · S(a,b) ========================= -->
+<section class="slide" data-title="Medimos el error: S(a, b)" data-sec="Problema y datos" data-who="Integrante 1">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Función de dos variables</span><span class="num">05</span></div>
+    <div class="body">
+      <div class="split">
+        <div class="stack">
+          <div class="head r d1"><span class="eyebrow">El error total</span><h2>Medimos el error de <em>cada</em> recta</h2></div>
+          <div class="formula glass r d2"><span class="math">S(<span class="p">a</span>, <span class="p">b</span>) = <span class="sum"><small>595</small><b>Σ</b><small><i>i</i>=1</small></span>(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>)<sup>2</sup></span></div>
+          <div class="cards r d3">
+            <div class="card glass"><span class="tag">01</span><p><b>No se cancelan</b> los errores + y −</p></div>
+            <div class="card glass"><span class="tag">02</span><p><b>Castiga</b> los errores grandes</p></div>
+            <div class="card glass"><span class="tag">03</span><p>Es <b>derivable</b>: podemos buscar el mínimo</p></div>
+          </div>
+        </div>
+        <figure class="screen r d3" style="margin:0" data-zoom><img src="../figuras/02_rectas_B.png" alt="Recta óptima y tres rectas candidatas con su error"><span class="zoom">ampliar</span></figure>
+      </div>
+    </div>
+  </div>
+  <template class="notes">Cada recta tiene un error total S. El cuadrado evita que errores positivos y negativos se cancelen, castiga los errores grandes y permite derivar. Las rectas punteadas tienen S mayor que la óptima, con el porcentaje en la leyenda.</template>
+</section>
+
+<!-- ========================= 06 · ∇S = 0 ========================= -->
+<section class="slide" data-title="Mínimo ⇒ ∇S = 0" data-sec="Gradiente y Hessiano" data-who="Integrante 2">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Derivadas parciales · regla de la cadena</span><span class="num">06</span></div>
+    <div class="body" style="justify-content:center">
+      <div class="head center r d1"><span class="eyebrow">Condición de primer orden</span><h2>En el fondo del valle, <em>∇S = 0</em></h2></div>
+      <div class="row center r d2" style="gap:clamp(1rem,3vw,3rem)">
+        <div class="formula glass"><span class="math"><span class="frac"><span>∂S</span><span>∂<span class="p">a</span></span></span> = −2<span class="sum"><b>Σ</b></span><i>x<sub>i</sub></i>(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>)</span></div>
+        <div class="formula glass"><span class="math"><span class="frac"><span>∂S</span><span>∂<span class="p">b</span></span></span> = −2<span class="sum"><b>Σ</b></span>(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>)</span></div>
+      </div>
+      <div class="row center r d3" style="gap:clamp(1rem,2.4vw,2.4rem)">
+        <span class="math sm muted">∇S = 0 &nbsp;⇒</span>
+        <div class="formula glass" style="border-color:rgba(180,87,31,.35)"><span class="math sm"><span class="sys"><span><span class="p">a</span>Σ<i>x</i><sup>2</sup> + <span class="p">b</span>Σ<i>x</i> = Σ<i>xy</i></span><span><span class="p">a</span>Σ<i>x</i> + <span class="p">b</span>&thinsp;<i>n</i> = Σ<i>y</i></span></span></span></div>
+        <span class="chip hot">plano tangente horizontal</span>
+      </div>
+    </div>
+  </div>
+  <template class="notes">Regla de la cadena tratando la otra variable como constante. Igualar el gradiente a cero da el sistema normal: dos ecuaciones lineales y dos incógnitas. Geométricamente, el plano tangente a z = S(a, b) es horizontal: no se puede bajar más.</template>
+</section>
+
+<!-- ========================= 07 · RESULTADO ========================= -->
+<section class="slide" data-title="Qué significan a* y b*" data-sec="Gradiente y Hessiano" data-who="Integrante 2">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Solución del sistema 2 × 2</span><span class="num">07</span></div>
+    <div class="body" style="justify-content:center">
+      <div class="head r d1"><span class="eyebrow">Resultado</span><h2>Cada grado cuesta <em>2.75 ms</em></h2></div>
+      <div class="kpis r d2">
+        <div class="kpi glass"><span class="n amber">2.7467</span><span class="t"><b class="mono">a*</b> · ms por grado — el costo de rotar</span></div>
+        <div class="kpi glass"><span class="n">683.12</span><span class="t"><b class="mono">b*</b> · ms a 0° — ver, decidir y presionar</span></div>
+        <div class="kpi glass"><span class="n holo">364</span><span class="t"><b class="mono">1000 / a*</b> · grados por segundo</span></div>
+      </div>
+      <div class="split even r d3" style="align-items:stretch;flex:0 1 auto">
+        <div class="formula glass" style="display:flex;flex-direction:column;justify-content:center;gap:.6em">
+          <span class="math sm"><i>a</i>* = <span class="frac"><span><i>n</i>Σ<i>xy</i> − Σ<i>x</i>Σ<i>y</i></span><span><i>n</i>Σ<i>x</i><sup>2</sup> − (Σ<i>x</i>)<sup>2</sup></span></span> = <span class="frac"><span>3 500 688 450</span><span>1 274 490 000</span></span></span>
+          <span class="mono muted" style="font-size:var(--small-size)">n = 595 · Σx = 53 550 · Σx<sup>2</sup> = 6 961 500<br>Σy = 553 544.9 · Σxy = 55 702 551</span>
+        </div>
+        <div class="glass" style="padding:clamp(.8rem,1.4vw,1.4rem);display:grid;grid-template-columns:auto 1fr;gap:clamp(.8rem,1.6vw,1.6rem);align-items:center">
+          <div style="width:clamp(70px,8vw,130px);aspect-ratio:1;display:grid;place-items:center"><img id="rotR" src="../blender/renders/R/R_normal_000.png" alt="R girada" style="width:100%;transition:transform .15s"></div>
+          <div>
+            <label class="mono muted" for="rotTheta" style="font-size:var(--small-size)">gira la R · θ = <b id="rotT" class="holo">90°</b></label>
+            <input type="range" id="rotTheta" min="0" max="180" step="1" value="90">
+            <div class="mono" style="font-size:clamp(.95rem,1.4vw,1.45rem)">ŷ = 683.12 + 2.7467·θ = <b class="amber" id="rotY">930.3 ms</b></div>
+            <div class="mono muted" style="font-size:var(--small-size)" id="rotM">media medida a 90°: 954.6 ms</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template class="notes">a* es el costo de rotar un grado: 2.75 milisegundos. Su inverso es la velocidad angular: unos 364 grados por segundo. b* es el tiempo base sin rotación, 683 milisegundos: percibir, decidir y responder.
+Muevan el control: la R gira y el modelo predice el tiempo; en los múltiplos de 30° se compara con la media medida.</template>
+</section>
+
+<!-- ========================= 08 · HESSIANO ========================= -->
+<section class="slide" data-title="El Hessiano confirma el mínimo" data-sec="Gradiente y Hessiano" data-who="Integrante 2">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Criterio de la segunda derivada</span><span class="num">08</span></div>
+    <div class="body" style="justify-content:center">
+      <div class="head center r d1"><span class="eyebrow">Segundo orden</span><h2>El Hessiano dice: <em>mínimo global</em></h2></div>
+      <div class="formula glass r d2" style="align-self:center"><span class="math"><i>H</i> = <span class="mat"><span>2Σ<i>x</i><sup>2</sup></span><span>2Σ<i>x</i></span><span>2Σ<i>x</i></span><span>2<i>n</i></span></span> = <span class="mat"><span>13 923 000</span><span>107 100</span><span>107 100</span><span>1 190</span></span></span></div>
+      <div class="cards r d3">
+        <div class="card glass"><span class="tag">det H &gt; 0</span><span class="big">5.098 × 10<sup>9</sup></span></div>
+        <div class="card glass"><span class="tag">S<sub>aa</sub> &gt; 0</span><span class="big">1.392 × 10<sup>7</sup></span></div>
+        <div class="card glass"><span class="tag">valores propios &gt; 0</span><span class="big">366.1 · 1.39 × 10<sup>7</sup></span></div>
+        <div class="card glass hot"><span class="tag">H es constante</span><p><b>Paraboloide convexo:</b> un único mínimo, y es global.</p></div>
+      </div>
+    </div>
+  </div>
+  <template class="notes">El determinante y S_aa positivos, y los dos valores propios positivos, confirman mínimo. Como H no depende de a ni de b, el mínimo es global: no puede haber máximo ni punto de silla. La curvatura es muy distinta en cada dirección: el cociente de valores propios es unas 38 mil veces.</template>
+</section>
+
+<!-- ========================= 09 · EL VALLE (BLENDER) ========================= -->
+<section class="slide" data-title="Un valle con un solo fondo" data-sec="Geometría 3D" data-who="Integrante 3">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Superficie z = S(a, b) · render en Blender</span><span class="num">09</span></div>
+    <div class="body">
+      <div class="row r d1" style="justify-content:space-between;align-items:flex-end">
+        <div class="head"><span class="eyebrow">Interpretación geométrica</span><h2>Un valle con <em>un solo fondo</em></h2></div>
+        <div class="tabs" role="tablist" data-tabs="valle">
+          <button role="tab" aria-selected="true" data-t="0">Superficie 3D</button>
+          <button role="tab" aria-selected="false" data-t="1">Descenso por −∇S</button>
+          <button role="tab" aria-selected="false" data-t="2">Curvas de nivel</button>
+          <button role="tab" aria-selected="false" data-t="3">Figura 2D</button>
+        </div>
+      </div>
+      <div class="tabpanes r d2" data-panes="valle">
+        <figure class="screen on" style="margin:0" data-zoom><img src="../blender/renders/paraboloide/S_superficie_minimo.png" alt="Paraboloide S(a,b) con mínimo y plano tangente"><span class="zoom">ampliar</span></figure>
+        <figure class="screen" style="margin:0" data-zoom><video src="../blender/renders/paraboloide/S_descenso_gradiente_0001-0240.mp4" muted loop playsinline preload="metadata" poster="../blender/renders/paraboloide/S_descenso_final.png"></video><span class="zoom">ampliar</span></figure>
+        <figure class="screen" style="margin:0" data-zoom><img src="../figuras/05_curvas_nivel.png" alt="Curvas de nivel con campo menos gradiente"><span class="zoom">ampliar</span></figure>
+        <figure class="screen" style="margin:0" data-zoom><img src="../figuras/03_superficie.png" alt="Superficie S en matplotlib"><span class="zoom">ampliar</span></figure>
+      </div>
+      <p class="cap r d3">En el mínimo el plano tangente es <b class="amber">horizontal</b>. La bolita sigue <b>−∇S</b>: perpendicular a las elipses, siempre hacia el fondo.</p>
+    </div>
+  </div>
+  <template class="notes">La superficie con el mínimo marcado y el plano tangente horizontal en (a*, b*). Como S es convexa, el plano queda por debajo de la superficie salvo en el mínimo.
+Pestaña 2: la bolita sigue la curva de máximo descenso −∇S (integrada numéricamente). El camino gira casi 90°: primero baja rápido y luego avanza lento por el valle alargado; eso es el Hessiano mal condicionado. La flecha mide |∇S| y llega a cero en el mínimo.
+Pestaña 3: curvas de nivel con el campo −∇S, perpendicular a las elipses.</template>
+</section>
+
+<!-- ========================= 10 · ELIPSES INCLINADAS ========================= -->
+<section class="slide" data-title="¿Por qué las elipses se inclinan?" data-sec="Geometría 3D" data-who="Integrante 3">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Término cruzado del Hessiano</span><span class="num">10</span></div>
+    <div class="body">
+      <div class="split">
+        <div class="stack">
+          <div class="head r d1"><span class="eyebrow">Curvas de nivel</span><h2>¿Por qué las elipses se <em>inclinan</em>?</h2></div>
+          <div class="formula glass r d2" style="text-align:left"><span class="math sm"><span class="frac"><span>∂<sup>2</sup>S</span><span>∂<i>a</i>∂<i>b</i></span></span> = 2Σ<i>x</i> = <b class="amber">107 100 ≠ 0</b></span></div>
+          <p class="lede r d3"><b>a</b> y <b>b</b> están acoplados: subir la pendiente obliga a bajar el intercepto.</p>
+          <div class="formula glass r d4" style="text-align:left"><span class="math sm"><i>x</i> − 90° &nbsp;⇒&nbsp; Σ(<i>x</i> − 90) = 0 &nbsp;⇒&nbsp; S<sub><i>ab</i></sub> = <b class="good">0</b></span></div>
+          <p class="lede r d5">Al centrar, las elipses se <b>enderezan</b>. Mismo <span class="mono">a*</span>; el intercepto pasa a ser <span class="mono">ȳ = 930.33 ms</span>.</p>
+        </div>
+        <div class="stack" style="height:100%">
+          <div class="tabs r d2" role="tablist" data-tabs="elip">
+            <button role="tab" aria-selected="true" data-t="0">Animación 3D</button>
+            <button role="tab" aria-selected="false" data-t="1">Antes / después</button>
+          </div>
+          <div class="tabpanes r d3" data-panes="elip">
+            <figure class="screen on" style="margin:0" data-zoom><video src="../blender/renders/elipses/elipses_centrado_0001-0144.mp4" muted loop playsinline preload="metadata" poster="../blender/renders/elipses/elipses_inclinadas_x_grados.png"></video><span class="zoom">ampliar</span></figure>
+            <figure class="screen" style="margin:0" data-zoom><img src="../figuras/11_elipses_centradas.png" alt="Elipses inclinadas y centradas"><span class="zoom">ampliar</span></figure>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template class="notes">El término cruzado es 2 por la suma de x, positivo; por eso las elipses se inclinan: a y b están correlacionados. Si centramos x restando 90, que es el promedio de los ángulos, la suma de x centrado es cero, el término cruzado desaparece y las elipses quedan alineadas con los ejes. El mínimo no cambia: el nuevo intercepto es la media de y, 930 ms, el tiempo a 90 grados.
+La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a, b), así que cada cuadro intermedio es un problema real de mínimos cuadrados.</template>
+</section>
+
+<!-- ========================= 11 · TRAZAS ========================= -->
+<section class="slide" data-title="Cada corte es una parábola" data-sec="Geometría 3D" data-who="Integrante 3">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Trazas y secciones transversales</span><span class="num">11</span></div>
+    <div class="body">
+      <div class="head center r d1"><h2>Cada corte por el óptimo es una <em>parábola</em></h2></div>
+      <div class="media r d2"><figure class="screen" style="margin:0" data-zoom><img src="../figuras/04_trazas.png" alt="Trazas S(a, b*) y S(a*, b)"><span class="zoom">ampliar</span></figure></div>
+      <p class="cap r d3">Fija <b>b = b*</b> y mueve <b>a</b> (o al revés): una parábola con vértice en el óptimo.</p>
+    </div>
+  </div>
+  <template class="notes">Fijar b en b* y mover a da una parábola con vértice en a*; lo mismo con b. Las secciones con otro valor fijo son parábolas paralelas más altas. Visualmente, el fondo es único.</template>
+</section>
+
+<!-- ========================= 12 · CÓDIGO ========================= -->
+<section class="slide" data-title="El código replica el cálculo" data-sec="Algoritmo y validación" data-who="Integrante 3">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">codigo/ajuste.py · diagrama de flujo</span><span class="num">12</span></div>
+    <div class="body" style="justify-content:center">
+      <div class="head r d1"><span class="eyebrow">Programación y lógica</span><h2>El código <em>replica</em> el cálculo a mano</h2></div>
+      <div class="flow r d2">
+        <div class="st glass"><b>Cargar 17 CSV</b><span>595 ensayos</span></div>
+        <div class="st glass"><b>Sumatorias</b><span>n, Σx, Σy, Σx<sup>2</sup>, Σxy</span></div>
+        <div class="st glass key"><b>a*, b*</b><span>sistema normal 2 × 2</span></div>
+        <div class="st glass"><b>S mínimo</b><span>error de la recta óptima</span></div>
+        <div class="st glass"><b>Hessiano</b><span>H, det H, valores propios</span></div>
+        <div class="st glass key"><b>¿det H &gt; 0 y S<sub>aa</sub> &gt; 0?</b><span>sí ⇒ mínimo</span></div>
+        <div class="st glass"><b>Residuos</b><span>RMSE, R<sup>2</sup></span></div>
+        <div class="st glass"><b>Verificar</b><span>NumPy / SciPy</span></div>
+      </div>
+      <div class="row center r d3"><span class="chip hot">Algoritmo propio</span><span class="chip">sin regresión de librería · NumPy y SciPy solo verifican</span></div>
+    </div>
+  </div>
+  <template class="notes">Diagrama de codigo/ajuste.py: cada caja es un paso del desarrollo manual. Primero las sumatorias, luego a* y b*, el error mínimo, el Hessiano y el criterio de segunda derivada, los residuos y la comparación con NumPy y SciPy. El pseudocódigo está en codigo/pseudocodigo.md.</template>
+</section>
+
+<!-- ========================= 13 · VALIDACIÓN ========================= -->
+<section class="slide" data-title="Tres vías, mismo punto" data-sec="Algoritmo y validación" data-who="Integrante 3">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Validación numérica</span><span class="num">13</span></div>
+    <div class="body" style="justify-content:center">
+      <div class="head center r d1"><span class="eyebrow">Manual · código propio · librería</span><h2>Tres vías, <em>el mismo punto</em></h2></div>
+      <div class="glass r d2" style="padding:clamp(.6rem,1.4vw,1.4rem) clamp(.8rem,2vw,2rem);max-width:1100px;width:100%;align-self:center">
+        <table class="t">
+          <thead><tr><th>Parámetro</th><th class="n opt">Manual</th><th class="n">Código propio</th><th class="n">polyfit · linregress</th><th class="n">Diferencia</th></tr></thead>
+          <tbody>
+            <tr><td>a</td><td class="n opt">2.7467</td><td class="n">2.746737</td><td class="n">2.746737</td><td class="n good">≈ 10<sup>−14</sup></td></tr>
+            <tr><td>b</td><td class="n opt">683.12</td><td class="n">683.1213</td><td class="n">683.1213</td><td class="n good">≈ 10<sup>−13</sup></td></tr>
+            <tr class="hl"><td>S mín</td><td class="n opt">156 163 296</td><td class="n">156 163 296.22</td><td class="n">156 163 296.22</td><td class="n">0</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="cap r d3">La diferencia es solo <b>ruido de punto flotante</b>: el cálculo analítico queda verificado.</p>
+    </div>
+  </div>
+  <template class="notes">Manual, algoritmo propio y NumPy/SciPy coinciden hasta del orden de 1e-14. Esa diferencia es ruido de redondeo; el valor exacto varía un poco según la versión de la librería.</template>
+</section>
+
+<!-- ========================= 14 · RESIDUOS ========================= -->
+<section class="slide" data-title="Residuos centrados en 0" data-sec="Algoritmo y validación" data-who="Integrante 3">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Calidad del ajuste · residuos</span><span class="num">14</span></div>
+    <div class="body">
+      <div class="head center r d1"><h2>Residuos centrados en <em>0</em></h2></div>
+      <div class="media r d2"><figure class="screen" style="margin:0" data-zoom><img src="../figuras/06_residuos.png" alt="Residuos contra el ángulo e histograma"><span class="zoom">ampliar</span></figure></div>
+      <div class="row center r d3"><span class="chip">media ē ≈ 0</span><span class="chip">sin patrón curvo</span><span class="chip">el abanico crece con el ángulo</span><span class="chip hot">atípico: P09 · 150° · +5015.7 ms</span></div>
+    </div>
+  </div>
+  <template class="notes">Residuos centrados en cero, la mayoría entre menos mil y mil milisegundos, con cola derecha. La dispersión crece con el ángulo (heterocedasticidad). El extremo es la fila 262, P09 a 150 grados: una distracción. No hay patrón curvo: lo lineal es aceptable.</template>
+</section>
+
+<!-- ========================= 15 · DOBLE R<sup>2</sup> ========================= -->
+<section class="slide" data-title="Dos R² con la misma recta" data-sec="R², robustez y conclusiones" data-who="Integrante 4">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Coeficiente de determinación</span><span class="num">15</span></div>
+    <div class="body">
+      <div class="split rev" style="grid-template-columns:minmax(0,1.25fr) minmax(0,.75fr)">
+        <figure class="screen r d2" style="margin:0" data-zoom><img src="../figuras/09_doble_r2.png" alt="R cuadrado en ensayos y en medias"><span class="zoom">ampliar</span></figure>
+        <div class="stack">
+          <div class="head r d1"><span class="eyebrow">Misma recta, dos escalas</span><h2>Dos <em>R<sup>2</sup></em>, una recta</h2></div>
+          <div class="kpi glass r d3"><span class="n">0.0938</span><span class="t">en los 595 ensayos: el <b>90.3 %</b> de la variación ocurre <b>dentro</b> de cada ángulo</span></div>
+          <div class="kpi glass r d4" style="border-color:rgba(47,122,79,.35)"><span class="n good">0.9685</span><span class="t">en las 7 medias: al promediar, el ruido se cancela y aparece la tendencia</span></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template class="notes">Es la misma recta, los mismos a y b, evaluada en dos escalas. El 90.3 por ciento de la variación total ocurre dentro de un mismo ángulo: unas personas son más rápidas y cada persona varía de un ensayo a otro. Ningún modelo que solo conozca el ángulo puede explicar eso; por eso R² crudo es bajo aunque p = 2×10⁻¹⁴. Con las medias, la recta explica el 96.85 %.</template>
+</section>
+
+<!-- ========================= 16 · 16 DE 17 ========================= -->
+<section class="slide" data-title="16 de 17 personas" data-sec="R², robustez y conclusiones" data-who="Integrante 4">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Pendiente individual de cada participante</span><span class="num">16</span></div>
+    <div class="body">
+      <div class="split rev" style="grid-template-columns:minmax(0,.62fr) minmax(0,1.38fr)">
+        <div class="stack">
+          <div class="head r d1"><span class="eyebrow">¿Es un efecto real?</span><h2><em>16</em> de 17 personas</h2></div>
+          <p class="lede r d2">Ajustamos una recta por persona: <b>16 pendientes son positivas</b>. Solo P01 no muestra efecto.</p>
+          <div class="row r d3"><span class="chip">prueba de signos · p = 2.7 × 10<sup>−4</sup></span><span class="chip">sin P09 · a* = 2.36</span></div>
+        </div>
+        <figure class="screen r d2" style="margin:0" data-zoom><img src="../figuras/10_pendientes.png" alt="Pendientes individuales"><span class="zoom">ampliar</span></figure>
+      </div>
+    </div>
+  </div>
+  <template class="notes">Cada barra es la pendiente de una persona ajustada por separado. 16 de 17 son positivas; solo P01 no muestra efecto. Prueba de signos p = 2.7e-4. La pendiente global 2.75 queda en el centro. P09 es la más alta, 8.95; si la quitamos, a* baja a 2.36 y la conclusión no cambia.</template>
+</section>
+
+<!-- ========================= 17 · DESCOMPOSICIÓN ========================= -->
+<section class="slide" data-title="El error en dos piezas" data-sec="R², robustez y conclusiones" data-who="Integrante 4">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Descomposición ortogonal de S mín</span><span class="num">17</span></div>
+    <div class="body" style="justify-content:center">
+      <div class="head center r d1"><span class="eyebrow">¿Qué controla la recta?</span><h2>El error se parte en <em>dos piezas</em></h2></div>
+      <div class="formula glass r d2" style="align-self:center"><span class="math sm">S<sub>mín</sub> = <span class="holo">155 637 440</span> + <span class="amber">85 · S<sub>medias</sub>(a*, b*)</span> = 156 163 296</span></div>
+      <div class="r d3" style="width:100%">
+        <div class="prop"><div class="a">99.7 % · ruido dentro de cada ángulo — ninguna recta lo puede bajar</div><div class="b"></div></div>
+        <div class="row" style="justify-content:space-between;margin-top:.6em"><span class="cap" style="text-align:left">Personas distintas y variación ensayo a ensayo</span><span class="cap amber" style="text-align:right"><b class="amber">0.3 %</b> · lo que sí ajusta la recta</span></div>
+      </div>
+      <p class="cap r d4">Por eso minimizar S sobre 595 ensayos ≡ minimizar el error sobre las <b>7 medias</b>. Con un tiempo base por persona: misma a* = 2.7467 y R<sup>2</sup> sube a 0.38.</p>
+    </div>
+  </div>
+  <template class="notes">Descomposición ortogonal: S mínimo es la variación dentro de cada ángulo más 85 veces el error de la recta sobre las medias. La primera pieza no depende de a ni de b. Por eso la recta de los 595 ensayos es exactamente la recta de las 7 medias. Si además damos a cada persona su propio tiempo base (18 parámetros), la pendiente sale idéntica y R² sube a 0.38.</template>
+</section>
+
+<!-- ========================= 18 · ANÁLISIS A–D ========================= -->
+<section class="slide" data-title="Análisis adicional A–D" data-sec="R², robustez y conclusiones" data-who="Integrante 4">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Análisis adicional</span><span class="num">18</span></div>
+    <div class="body" style="justify-content:center">
+      <div class="head r d1"><span class="eyebrow">Cuatro pruebas de estrés</span><h2>¿Se rompe la conclusión? <em>No.</em></h2></div>
+      <div class="cards r d2" style="grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr))">
+        <div class="card glass"><span class="tag">A · Sensibilidad</span><h3>±25 ms de ruido</h3><span class="big">σ<sub>a</sub> = 0.017</span><p>solo un 0.60 % de a*</p></div>
+        <div class="card glass"><span class="tag">B · Atípicos</span><h3>Sin el extremo</h3><span class="big">a* = 2.61</span><p>sin todos los &gt; 3 s: a* = 2.41</p></div>
+        <div class="card glass"><span class="tag">C · Cuadrático</span><h3>¿Hace falta una curva?</h3><span class="big">ΔR<sup>2</sup> = +0.0003</span><p>la recta basta</p></div>
+        <div class="card glass"><span class="tag">D · Tamaño N</span><h3>¿Cuántas personas?</h3><span class="big">N ≥ 10</span><p>a*(N) ya se estabiliza</p></div>
+      </div>
+    </div>
+  </div>
+  <template class="notes">A: perturbamos cada tiempo con ruido de 25 ms, 500 veces: la pendiente casi no cambia. B: quitar el mayor atípico baja a* a 2.61; quitar todos los mayores a 3 segundos, a 2.41. C: el modelo cuadrático mejora R² en tres diezmilésimas: no aporta. D: con 10 personas o más la pendiente ya se estabiliza.</template>
+</section>
+
+<!-- ========================= 19 · ROBUSTEZ ========================= -->
+<section class="slide" data-title="Robustez en dos imágenes" data-sec="R², robustez y conclusiones" data-who="Integrante 4">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Opciones B, C y D</span><span class="num">19</span></div>
+    <div class="body">
+      <div class="head center r d1"><h2>Las rectas casi se <em>superponen</em></h2></div>
+      <div class="media r d2">
+        <figure class="screen" style="margin:0" data-zoom><img src="../figuras/07_opciones_BC_A.png" alt="Ajuste lineal, sin atípicos y cuadrático"><span class="zoom">ampliar</span></figure>
+        <figure class="screen" style="margin:0" data-zoom><img src="../figuras/07_opciones_BC_C.png" alt="Pendiente acumulada según el número de personas"><span class="zoom">ampliar</span></figure>
+      </div>
+      <p class="cap r d3">Izquierda: todos, sin atípico, sin &gt; 3 s y cuadrático. Derecha: <b>a*</b> converge cerca de 2.7 al sumar personas.</p>
+    </div>
+  </div>
+  <template class="notes">Izquierda: lineal con todos los datos, sin el atípico, sin los mayores a 3 segundos, y cuadrático: casi indistinguibles sobre las medias. Derecha: la pendiente acumulada a*(N) oscila con pocos participantes y se estabiliza cerca de 2.7.</template>
+</section>
+
+<!-- ========================= 20 · TRANSPARENCIA ========================= -->
+<section class="slide" data-title="Transparencia sobre la muestra" data-sec="R², robustez y conclusiones" data-who="Integrante 4">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Honestidad con los datos</span><span class="num">20</span></div>
+    <div class="body" style="justify-content:center">
+      <div class="head r d1"><span class="eyebrow">Transparencia</span><h2>Con cualquier muestra, <em>a* &gt; 0</em></h2></div>
+      <div class="glass r d2" style="padding:clamp(.6rem,1.4vw,1.4rem) clamp(.8rem,2vw,2rem)">
+        <table class="t">
+          <thead><tr><th>Conjunto</th><th class="n">Ensayos</th><th class="n">a* (ms/°)</th><th class="opt" style="width:34%"></th></tr></thead>
+          <tbody>
+            <tr><td>Los 15 primeros · protocolo original</td><td class="n">525</td><td class="n">2.65</td><td class="opt"><div class="barcell"><i style="width:88.3%"></i></div></td></tr>
+            <tr class="hl"><td><b>Modelo oficial · 17 con sesión completa</b></td><td class="n">595</td><td class="n amber">2.75</td><td class="opt"><div class="barcell"><i style="width:91.6%"></i></div></td></tr>
+            <tr><td>Todo lo recolectado, sin copias exactas</td><td class="n">875</td><td class="n">2.41</td><td class="opt"><div class="barcell"><i style="width:80.3%"></i></div></td></tr>
+          </tbody>
+        </table>
+      </div>
+      <p class="cap r d3" style="text-align:left">2 de los 17 se sumaron después de ver su ajuste; por eso <b>también reportamos con 15</b>. Los 875 incluyen sesiones repetidas y con distracciones.</p>
+    </div>
+  </div>
+  <template class="notes">Lo decimos de frente: los 15 primeros se recolectaron con el protocolo. Llegaron más archivos, quitamos copias exactas y sumamos dos personas nuevas. Con 15 personas la pendiente es 2.65; con las 17, 2.75; con todo lo recolectado, incluso sesiones repetidas y distraídas, 2.41. La conclusión cualitativa no cambia.</template>
+</section>
+
+<!-- ========================= 21 · CEREBRO VS COMPUTADOR ========================= -->
+<section class="slide" data-title="Cerebro vs. computador" data-sec="R², robustez y conclusiones" data-who="Integrante 4">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Mismo problema, dos estrategias</span><span class="num">21</span></div>
+    <div class="body">
+      <div class="split rev" style="grid-template-columns:minmax(0,1.3fr) minmax(0,.7fr)">
+        <figure class="screen r d2" style="margin:0" data-zoom><img src="../figuras/12_cerebro_vs_cpu.png" alt="Tiempo del cerebro frente al computador"><span class="zoom">ampliar</span></figure>
+        <div class="stack">
+          <div class="head r d1"><span class="eyebrow">Conclusión</span><h2>El cerebro gira <em>paso a paso</em></h2></div>
+          <div class="card glass hot r d3"><span class="tag">Cerebro · analógico</span><span class="big">t = 683 + 2.75 θ</span><p>el costo crece con el ángulo · ≈ 364 °/s</p></div>
+          <div class="card glass r d4"><span class="tag">Computador · matriz R(θ) 2 × 2</span><span class="big">O(1)</span><p>tarda lo mismo para 10° que para 180°</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <template class="notes">El cerebro tarda 2.75 milisegundos más por cada grado: gira la imagen mental paso a paso, como propusieron Shepard y Metzler. Un computador aplica la matriz de rotación y tarda lo mismo para 10 que para 180 grados. La línea azul es un esquema, no una medición. Mismo problema, dos estrategias.</template>
+</section>
+
+<!-- ========================= 22 · DEMO ========================= -->
+<section class="slide" data-title="Demo: el laboratorio 3D" data-sec="R², robustez y conclusiones" data-who="Integrante 4">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">figuras/superficie_interactiva.html · sin internet</span><span class="num">22</span></div>
+    <div class="body" style="justify-content:center;align-items:center;text-align:center">
+      <div class="head center r d1"><span class="eyebrow">En vivo</span><h2>Ahora, <em>pruébelo usted</em></h2></div>
+      <div class="cards r d2" style="width:100%;max-width:1200px">
+        <div class="card glass"><span class="tag">01 · Arrastra</span><p>un punto del mapa: la <b>recta</b> cambia al instante</p></div>
+        <div class="card glass hot"><span class="tag">02 · Observa −∇S</span><p>la flecha siempre apunta al <b>fondo</b></p></div>
+        <div class="card glass"><span class="tag">03 · Compara</span><p>gradiente puro (zigzag) · escalado (<b>250</b> pasos) · centrado (<b>39</b>)</p></div>
+      </div>
+      <a class="btn hot big r d3" href="../figuras/superficie_interactiva.html" target="_blank" rel="noopener">Abrir el laboratorio 3D ↗</a>
+    </div>
+  </div>
+  <template class="notes">Abrimos el simulador. Arrastramos el punto sobre el mapa y vemos cómo cambian la recta y los números: S, el gradiente, la velocidad y los dos R². Pulsamos animar descenso: con el gradiente puro casi no avanza, porque el cociente de curvaturas es 38 mil; con el gradiente escalado converge en unos 250 pasos; si marcamos centrar x, las elipses se enderezan y converge en 39.</template>
+</section>
+
+<!-- ========================= 23 · CONCLUSIONES ========================= -->
+<section class="slide" data-title="Conclusiones" data-sec="R², robustez y conclusiones" data-who="Integrante 4">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Conclusiones</span><span class="num">23</span></div>
+    <div class="body" style="justify-content:center">
+      <div class="head r d1"><span class="eyebrow">En cuatro ideas</span><h2>Lo que nos llevamos</h2></div>
+      <div class="cards r d2">
+        <div class="card glass hot"><span class="tag">01 · La recta</span><h3>y = 2.75x + 683</h3><p>cada grado cuesta <b>2.75 ms</b> · ≈ 364 °/s</p></div>
+        <div class="card glass"><span class="tag">02 · El cálculo</span><h3>∇S = 0 · H &gt; 0</h3><p>mínimo <b>único y global</b></p></div>
+        <div class="card glass"><span class="tag">03 · Doble R<sup>2</sup></span><h3>0.0938 · 0.9685</h3><p>misma recta; el ruido está dentro de cada ángulo</p></div>
+        <div class="card glass"><span class="tag">04 · Límites</span><h3>17 personas</h3><p>16 con efecto; el modelo mide la <b>tendencia media</b></p></div>
+      </div>
+    </div>
+  </div>
+  <template class="notes">Resumen: la recta describe el costo de rotar; el cálculo garantiza el mínimo; el doble R² no es contradicción sino ruido dentro de cada ángulo (un 32 % son diferencias entre personas y un 68 % variación ensayo a ensayo); y somos transparentes con los límites: muestra pequeña, dos participantes añadidos, atípicos, heterocedasticidad.</template>
+</section>
+
+<!-- ========================= 24 · GRACIAS ========================= -->
+<section class="slide" data-title="Gracias · preguntas" data-sec="Cierre" data-who="Todos">
+  <div class="cover" style="grid-template-columns:1fr;text-align:center;justify-items:center">
+    <div class="stack" style="align-items:center">
+      <span class="eyebrow r d1">NeuroCode · Cálculo Multivariable</span>
+      <h1 class="r d2" style="font-size:clamp(3.4rem,10vw,11rem);line-height:.9">Gracias</h1>
+      <p class="q r d3" style="margin:0">¿Preguntas?</p>
+      <p class="lede r d4" style="text-align:center">Cada integrante puede deducir ∂S/∂a, ∂S/∂b y el Hessiano en el tablero.</p>
+      <div class="meta glass r d5"><span>[Integrante 1]</span><span>[Integrante 2]</span><span>[Integrante 3]</span><span>[Integrante 4]</span></div>
+      <p class="cap r d6" style="max-width:70ch">Shepard, R. N., &amp; Metzler, J. (1971). Mental rotation of three-dimensional objects. <i>Science, 171</i>(3972), 701–703.</p>
+    </div>
+  </div>
+  <template class="notes">Agradecemos al profesor. Cada integrante puede derivar las parciales, el sistema normal y el Hessiano en el tablero y comprobarlo con la tabla de 7 medias. Quedamos atentos a preguntas.</template>
+</section>
+
+</main>
+
+<!-- Pie de página estilo Beamer -->
+<footer class="footline" aria-hidden="true"><span class="fl-a">NeuroCode · Ingeniería de Software UCC</span><span class="fl-b">Cálculo Multivariable</span><span class="fl-c" id="flNum">1 / 24</span></footer>
+
+<!-- Dock inferior -->
+<nav class="dock" aria-label="Navegación de la presentación">
+  <button id="bPrev" aria-label="Anterior (←)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+  <span class="count" id="count"><b>01</b> / 24</span>
+  <button id="bNext" aria-label="Siguiente (→)"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 18l6-6-6-6"/></svg></button>
+  <span class="sep"></span>
+  <button id="bToc" aria-label="Índice (G)" aria-pressed="false"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/></svg></button>
+  <span class="orb" aria-hidden="true"></span>
+  <button id="bNotes" aria-label="Notas del orador (N)" aria-pressed="false"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16M4 10h16M4 15h10M4 20h7"/></svg></button>
+  <button id="bFull" aria-label="Pantalla completa (F)"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+</nav>
+
+<aside class="notes" id="notes" aria-live="polite"><h4 id="notesSec"></h4><div class="who" id="notesWho"></div><div id="notesBody"></div></aside>
+<div class="overlay" id="toc" role="dialog" aria-label="Índice de diapositivas"><h4>Índice</h4><div class="toc" id="tocGrid"></div></div>
+<div class="overlay lightbox" id="lightbox" role="dialog" aria-label="Imagen ampliada"><div class="frame" id="lbFrame"></div></div>
+<div class="hint" id="hint"><kbd>←</kbd> <kbd>→</kbd> navegar · <kbd>N</kbd> notas · <kbd>G</kbd> índice · <kbd>F</kbd> pantalla completa</div>
+
+<script src="assets/deck.js"></script>
+</body>
+</html>
