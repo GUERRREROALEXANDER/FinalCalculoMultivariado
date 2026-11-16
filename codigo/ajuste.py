@@ -160,6 +160,19 @@ def _lab_fonts_css():
         for fam, w, f in faces)
 
 
+def _lab_scripts_html():
+    """Inline every codigo/lab/*.js (pure UMD modules, unit-tested under node) as classic scripts."""
+    lab_dir = os.path.join(ROOT, "codigo", "lab")
+    parts = []
+    for name in sorted(f for f in os.listdir(lab_dir) if f.endswith(".js")):
+        with open(os.path.join(lab_dir, name), encoding="utf-8") as fh:
+            src = fh.read()
+        if "</script" in src.lower():
+            raise ValueError(f"{name} contains </script>, which would end the inline block early")
+        parts.append(f"<script>/* lab/{name} */\n{src}\n</script>")
+    return "\n".join(parts)
+
+
 def _lab_studio_html():
     """Import map (data: URLs, no network) + the module that mounts the three.js studio view."""
     import json
@@ -1004,6 +1017,7 @@ def main():
         html_doc = (
             template.replace("__META__", json.dumps(meta))
             .replace("/*__FONTS__*/", _lab_fonts_css())
+            .replace("<!--__LAB__-->", _lab_scripts_html())
             .replace("<!--__STUDIO__-->", _lab_studio_html())
             .replace("__PLOT3D__", plot_div)   # last: the Plotly bundle is huge
         )

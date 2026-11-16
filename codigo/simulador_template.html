@@ -55,11 +55,21 @@
   .seg button[aria-selected="true"] { background:var(--teal); color:#fff; border-color:var(--teal); }
   .seg button[hidden] { display:none; }
   @media (max-width:1000px) { .stage { height:62vh; min-height:420px; } }
+  header .tour { display:flex; align-items:center; gap:10px; }
+  header #btnTour { flex:none; background:#fff; color:var(--teal); border-color:#fff; padding:5px 12px; }
+  header label.chk { margin:0; color:#fff; font-size:14px; }
+  #etaTag { font-weight:700; min-height:20px; }
+  #etaTag.bad { color:var(--min); }
+  #etaTag.good { color:var(--probe); }
+  #tourCursor { position:fixed; left:0; top:0; z-index:50; width:26px; height:26px; pointer-events:none; transition:transform .55s cubic-bezier(.4,0,.2,1); will-change:transform; filter:drop-shadow(0 1px 2px rgba(0,0,0,.45)); }
+  #tourCaption { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:49; max-width:min(560px,92vw); background:#1a1a1a; color:#fff; padding:8px 14px; border-radius:4px; font-size:15px; line-height:1.4; pointer-events:none; box-shadow:0 2px 10px rgba(0,0,0,.3); }
+  #tourCursor[hidden], #tourCaption[hidden] { display:none; }
 </style>
 </head>
 <body>
 <header>
   <h1>NeuroCode · Laboratorio de S(a,b), gradiente y recta</h1>
+  <div class="tour"><button id="btnTour" title="Recorrido guiado: cualquier clic te devuelve el control">▶ Recorrido</button><label class="chk"><input id="chkTourAuto" type="checkbox" checked> auto</label></div>
   <div class="sub">Mínimo analítico: <b>a* = <span id="hA"></span> ms/°</b> · <b>b* = <span id="hB"></span> ms</b> · <b>S<sub>mín</sub> = <span id="hS"></span></b> · n = <span id="hN"></span></div>
 </header>
 <div class="grid">
@@ -108,12 +118,17 @@
       </select>
       <div class="row" style="margin-top:6px"><span>Velocidad</span><span class="kpi" id="lblSpd"></span></div>
       <input id="slSpd" type="range" min="1" max="10" step="1" value="4">
+      <div class="row" style="margin-top:6px"><span>Paso η = k·η<sub>crit</sub></span><span class="kpi" id="lblEta"></span></div>
+      <input id="slEta" type="range" min="0.05" max="2.4" step="0.01" value="0.5">
+      <div id="etaTag" class="tip"></div>
       <div class="btns">
         <button class="go" id="btnAnim">▶ Animar descenso</button>
         <button class="opt" id="btnOpt">★ Ir al óptimo (∇S = 0)</button>
         <button id="btnReset">↺ Reiniciar</button>
       </div>
       <div id="msg"></div>
+      <canvas id="cvConv" width="440" height="170"></canvas>
+      <div class="legend">log₁₀ (S − S<sub>mín</sub>) / S<sub>mín</sub> contra el paso · <span style="color:var(--o-min)">╌╌</span> tolerancia de convergencia</div>
       <div class="tip">Pregunta para el aula: ¿por qué el gradiente puro zigzaguea? Porque λ₂/λ₁ ≈ 38 000: el valle es larguísimo y angosto. Al centrar x̃ = x − 90°, el término cruzado desaparece y los ejes quedan alineados.</div>
     </div>
   </div>
@@ -126,8 +141,11 @@
     <div id="viewData" hidden>__PLOT3D__</div>
   </div>
 </div>
+<div id="tourCursor" hidden><svg viewBox="0 0 26 26" width="26" height="26"><path d="M3 2 L3 20 L8 15.5 L11.5 23 L14.5 21.6 L11 14.2 L18 14 Z" fill="#fff" stroke="#1a1a1a" stroke-width="1.6" stroke-linejoin="round"/></svg></div>
+<div id="tourCaption" hidden></div>
+<!--__LAB__-->
 <script>
-window.NC = { views: [], state: null, active: 'studio' };
+window.NC = { views: [], state: null, active: 'studio', hist: [] };
 const C = {ink:'#1a1a1a', muted:'#46565e', min:'#0072b2', probe:'#009e73', grad:'#6a3d9a', teal:'#006a86', grid:'#dbe6ea', halo:'#ffffff', point:'#009e73'};
 const M = __META__;
 const $ = id => document.getElementById(id);
@@ -146,6 +164,10 @@ let cur = {a: start.a, b: start.b};
 const evalS = (a,b) => M.syy - 2*a*M.sxy - 2*b*M.sy + a*a*M.sxx + 2*a*b*M.sx + M.n*b*b;
 const evalG = (a,b) => [2*M.sxx*a + 2*M.sx*b - 2*M.sxy, 2*M.sx*a + 2*M.n*b - 2*M.sy];
 const centered = () => chk.checked;
+const clearHist = () => { NC.hist.length = 0; };
+const tolRel = (M.sxx*0.004**2 + 2*M.sx*0.004*0.8 + M.n*0.8**2) / M.smin;     // ΔS/Smin at the convergence tolerance
+const cvConv = $('cvConv');
+function drawConv() { if (window.NCconv) NCconv.draw(cvConv.getContext('2d'), cvConv.width, cvConv.height, NC.hist, {smin: M.smin, tolRel}); }
 const vOf = (a,b) => centered() ? b + a*M.xbar : b;       // eje vertical del mapa
 const bOf = (a,v) => centered() ? v - a*M.xbar : v;
 const vStar = () => vOf(M.astar, M.bstar);
@@ -289,22 +311,21 @@ function update(addTrail) {
   const ok = Math.hypot(ga, gb) < 5e3;
   $('lblGn').className = 'kpi' + (ok ? ' ok' : '');
   $('lblEig').textContent = centered() ? `${(2*sxxC).toExponential(2)} / ${(2*M.n).toExponential(2)}` : `${lam1.toExponential(2)} / ${lam2.toExponential(2)}`;
-  drawMap(); drawLine();
+  drawMap(); drawLine(); drawConv();
   const [a2, b2, z2] = gradEnd3D();
   NC.state = { a:cur.a, b:cur.b, S:s, centered:centered(), trail: trail.map(p => ({a:p.a, b:p.b})), grad:{a2, b2, S2:z2*1e8} };
   NC.views.forEach(v => v.update(NC.state));
 }
 function stopAnim() { if (animId) { cancelAnimationFrame(animId); animId = null; $('btnAnim').textContent = '▶ Animar descenso'; } }
-function reset() { stopAnim(); cur = {a: start.a, b: start.b}; trail = [{a: cur.a, b: cur.b}]; steps = 0; $('msg').textContent = ''; setSliders(); update(false); }
+function reset() { stopAnim(); clearHist(); cur = {a: start.a, b: start.b}; trail = [{a: cur.a, b: cur.b}]; steps = 0; $('msg').textContent = ''; setSliders(); update(false); }
 
-slA.addEventListener('input', () => { stopAnim(); cur.a = parseFloat(slA.value); update(true); });
-slB.addEventListener('input', () => { stopAnim(); cur.b = bOf(cur.a, parseFloat(slB.value)); update(true); });
-chk.addEventListener('change', () => { stopAnim(); bg = null; setSliders(); update(false); });
-$('selMethod').addEventListener('change', () => { $('msg').textContent = ''; });
+slA.addEventListener('input', () => { stopAnim(); clearHist(); cur.a = parseFloat(slA.value); update(true); });
+slB.addEventListener('input', () => { stopAnim(); clearHist(); cur.b = bOf(cur.a, parseFloat(slB.value)); update(true); });
+chk.addEventListener('change', () => { stopAnim(); clearHist(); bg = null; setSliders(); update(false); });
 $('slSpd').addEventListener('input', () => { $('lblSpd').textContent = '×' + $('slSpd').value; });
 $('lblSpd').textContent = '×' + $('slSpd').value;
 $('btnReset').onclick = reset;
-$('btnOpt').onclick = () => { stopAnim(); cur = {a: M.astar, b: M.bstar}; trail.push({a: cur.a, b: cur.b}); setSliders(); update(false); $('msg').textContent = '∇S = 0 → mínimo global (H definida positiva)'; };
+$('btnOpt').onclick = () => { stopAnim(); clearHist(); cur = {a: M.astar, b: M.bstar}; trail.push({a: cur.a, b: cur.b}); setSliders(); update(false); $('msg').textContent = '∇S = 0 → mínimo global (H definida positiva)'; };
 
 // arrastrar sobre el mapa
 let drag = false;
@@ -313,10 +334,12 @@ function pick(e) {
   const a = M.astar - RA + px / pxA, v = vStar() + RB - py / pxB;
   cur = {a, b: bOf(a, v)}; update(true);
 }
-cvMap.addEventListener('pointerdown', e => { stopAnim(); drag = true; trail = []; cvMap.setPointerCapture(e.pointerId); pick(e); });
+cvMap.addEventListener('pointerdown', e => { stopAnim(); clearHist(); drag = true; trail = []; cvMap.setPointerCapture(e.pointerId); pick(e); });
 cvMap.addEventListener('pointermove', e => { if (drag) pick(e); });
 cvMap.addEventListener('pointerup', () => { drag = false; });
 
+/*__ANIM_BEGIN__*/
+$('selMethod').addEventListener('change', () => { $('msg').textContent = ''; });
 $('btnAnim').onclick = () => {
   if (animId) { stopAnim(); return; }
   if (Math.hypot(cur.a - M.astar, (cur.b - M.bstar)/150) < 0.05) { cur = {a: start.a, b: start.b}; trail = [{a: cur.a, b: cur.b}]; steps = 0; }
@@ -344,6 +367,7 @@ $('btnAnim').onclick = () => {
   }
   animId = requestAnimationFrame(frame);
 };
+/*__ANIM_END__*/
 
 $('hA').textContent = M.astar.toFixed(4); $('hB').textContent = M.bstar.toFixed(2);
 $('hS').textContent = M.smin.toExponential(4).replace('e+', ' ×10^').replace(/\^(\d+)/, '^$1'); $('hN').textContent = M.n;
@@ -380,6 +404,67 @@ window.addEventListener('load', () => {
   Promise.all([document.fonts.load('16px "CMU Serif"'), document.fonts.load('bold 14px "CMU Typewriter"')])
     .then(() => update(false)).catch(() => {});
 });
+
+/* ---------- hooks for the lab modules (codigo/lab/*.js) ---------- */
+NC.api = {
+  reset,
+  stopAnim,
+  update,
+  isAnimating: () => !!animId,
+  setPoint(a, b) { stopAnim(); clearHist(); cur = {a, b}; update(true); },     // same as dragging on the map
+};
+
+/* ---------- guided tour: the script and the timers live in lab/tour.js, this is only the DOM glue ---------- */
+(function tourGlue() {
+  const cursor = $('tourCursor'), caption = $('tourCaption'), btn = $('btnTour'), auto = $('chkTourAuto');
+  if (!window.NCtour) { btn.parentElement.hidden = true; return; }
+  if (new URLSearchParams(location.search).get('tour') === 'off') { auto.checked = false; auto.disabled = true; }
+  else { try { const v = localStorage.getItem('nc.tourAuto'); if (v !== null) auto.checked = v === '1'; } catch (e) {} }
+
+  let token = null, skipClick = false;
+  const host = {
+    rectOf(id) { const el = $(id); if (!el) return null; const r = el.getBoundingClientRect(); return {x: r.left, y: r.top, w: r.width, h: r.height}; },
+    mapXY(a, b) { const r = cvMap.getBoundingClientRect(); return {x: r.left + sx_(a) * r.width / MW, y: r.top + sy_(vOf(a, b)) * r.height / MH}; },
+    moveCursor(x, y) { cursor.hidden = false; cursor.style.transform = `translate(${x - 3}px, ${y - 2}px)`; },
+    setCaption(text) { caption.textContent = text; caption.hidden = !text; },
+    click(id) { $(id).click(); },
+    setValue(id, v) { const el = $(id); el.value = v; el.dispatchEvent(new Event(el.tagName === 'SELECT' ? 'change' : 'input', {bubbles: true})); },
+    setChecked(id, v) { const el = $(id); if (el.checked !== v) el.click(); },
+    isAnimating: () => !!animId,
+    sleep: ms => new Promise(r => setTimeout(r, ms)),
+    api: NC.api,
+  };
+  const idle = NCtour.createIdle({ onIdle: () => { if (auto.checked && !token) startTour(); }, setTimeout: (f, ms) => window.setTimeout(f, ms), clearTimeout: h => window.clearTimeout(h) });
+  const armIdle = () => { if (auto.checked) idle.poke(); else idle.stop(); };
+
+  function stopTour() {
+    if (!token) return;
+    token.cancel(); token = null;
+    cursor.hidden = true; host.setCaption('');
+    btn.textContent = '▶ Recorrido';
+  }
+  async function startTour() {
+    if (token) return;
+    idle.stop();
+    const my = token = NCtour.createToken();
+    btn.textContent = '■ Detener';
+    const r = host.rectOf('btnTour');                          // the cursor appears on its own button, not flying in from the corner
+    cursor.style.transition = 'none'; host.moveCursor(r.x + r.w / 2, r.y + r.h / 2); void cursor.offsetWidth; cursor.style.transition = '';
+    while (!my.cancelled) {
+      NC.api.reset();
+      if (await NCtour.runTour(host, my) !== 'done') break;
+      await host.sleep(1500);
+    }
+    if (token === my) { stopTour(); armIdle(); }
+  }
+  NCtour.attach(document, e => {                               // trusted pointer/wheel/key input only
+    skipClick = !!token && btn.contains(e.target);             // the click that stops the tour must not restart it
+    stopTour(); armIdle();
+  });
+  btn.addEventListener('click', () => { if (skipClick) { skipClick = false; return; } token ? stopTour() : startTour(); });
+  auto.addEventListener('change', () => { try { localStorage.setItem('nc.tourAuto', auto.checked ? '1' : '0'); } catch (e) {} armIdle(); });
+  window.addEventListener('load', armIdle);
+})();
 </script>
 <!--__STUDIO__-->
 </body>
