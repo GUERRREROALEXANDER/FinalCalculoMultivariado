@@ -3,3 +3,6 @@
 
 __pycache__/
 *.pyc
+
+# respaldos automaticos de Blender
+*.blend1
