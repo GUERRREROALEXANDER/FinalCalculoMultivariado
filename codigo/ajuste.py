@@ -129,6 +129,73 @@ def report(df, tag, x_col="angulo_grados", y_col="tiempo_ms"):
     return dict(x=x, y=y, a=a, b=b, smin=smin, H=H, D=D, eig=eig, e=e, rmse=rmse, r2=r2, lr=lr, sums=f)
 
 
+# ---------------------------------------------------------------------------
+# Interactive lab: light UCC theme, one colour ramp shared by every view, offline assets
+# ---------------------------------------------------------------------------
+LAB_RAMP = [(255, 238, 194), (251, 207, 128), (242, 154, 76), (217, 87, 58), (156, 44, 74), (79, 24, 64)]  # cream -> amber -> red -> burgundy
+LAB_T_SCALE = 1.1  # sqrt scale of the level map and the studio view: t = sqrt((S - Smin) / Smin) / 1.1
+LAB_INK, LAB_MUTED, LAB_HAIR, LAB_GRID, LAB_PANEL = "#1a1a1a", "#46565e", "#c9dbe2", "#dbe6ea", "#f0f6f7"
+# overlay colours (markers, traces): cool, so they stand out on the warm surface ramp
+LAB_HOLO, LAB_MIN, LAB_PROBE, LAB_GRAD, LAB_TRACE_A = "#257aa2", "#006a86", "#1a1a1a", "#257aa2", "#3aa6c8"
+LAB_FONT = "CMU Serif, Georgia, serif"
+FONT_DIR = os.path.join(ROOT, "presentacion", "assets", "fonts")
+VENDOR_DIR = os.path.join(ROOT, "codigo", "vendor", "three-0.170.0")
+STUDIO_DIR = os.path.join(ROOT, "codigo", "studio")
+
+
+def _b64(path):
+    import base64
+
+    with open(path, "rb") as fh:
+        return base64.b64encode(fh.read()).decode("ascii")
+
+
+def _lab_fonts_css():
+    """CMU Serif / CMU Typewriter (same as the Beamer deck) embedded so the lab works offline."""
+    faces = [("CMU Serif", 400, "cmu-serif-500-roman.woff2"), ("CMU Serif", 700, "cmu-serif-700-roman.woff2"),
+             ("CMU Typewriter", 400, "cmu-typewriter-text-500-roman.woff2")]
+    return "\n".join(
+        f'@font-face{{font-family:"{fam}";font-weight:{w};font-style:normal;font-display:swap;'
+        f'src:url(data:font/woff2;base64,{_b64(os.path.join(FONT_DIR, f))}) format("woff2")}}'
+        for fam, w, f in faces)
+
+
+def _lab_studio_html():
+    """Import map (data: URLs, no network) + the module that mounts the three.js studio view."""
+    import json
+
+    def js(path):
+        return "data:text/javascript;base64," + _b64(path)
+
+    imports = {
+        "three": js(os.path.join(VENDOR_DIR, "three.module.min.js")),
+        "three/addons/OrbitControls.js": js(os.path.join(VENDOR_DIR, "OrbitControls.js")),
+        "three/addons/RoomEnvironment.js": js(os.path.join(VENDOR_DIR, "RoomEnvironment.js")),
+        "three/addons/CSS2DRenderer.js": js(os.path.join(VENDOR_DIR, "CSS2DRenderer.js")),
+        "studio/core": js(os.path.join(STUDIO_DIR, "studio_core.js")),
+        "studio/view": js(os.path.join(STUDIO_DIR, "studio_view.js")),
+    }
+    boot = """
+(async () => {
+  try {
+    const gl = document.createElement('canvas').getContext('webgl2');
+    if (!gl) throw new Error('WebGL2 unavailable');
+    const { mountStudio } = await import('studio/view');
+    const v = mountStudio(document.getElementById('viewStudio'), M);
+    NC.views.push(v);
+    if (NC.state) v.update(NC.state);
+    NC.studioReady = true;
+  } catch (e) {
+    NC.studioFailed = true;
+    if (NC.showData) NC.showData();
+    console.warn('studio view disabled:', e && e.message);
+  }
+})();
+"""
+    return ('<script type="importmap">' + json.dumps({"imports": imports}) + '</script>\n'
+            '<script type="module">' + boot + '</script>')
+
+
 def main():
     df = load()
     print(df.groupby("participante").size().to_string())
@@ -803,11 +870,19 @@ def main():
     plt.close(fig)
 
     # -------------------------------------------------------------------------
-    # Interactive 3D HTML with surface + minimum + 3D trace parabolas + live sliders & gradient descent
+    # Interactive lab (light UCC theme): Plotly "Datos" view + three.js "Estudio" view
+    # Trace order is a contract with the template JS: 0 surface, 1 b=b*, 2 a=a*, 3 minimum,
+    # 4 probe, 5 trail, 6 -grad S.
     # -------------------------------------------------------------------------
     try:
         import json
         import plotly.graph_objects as go
+
+        n_stops = len(LAB_RAMP)
+        colorscale = [[i / (n_stops - 1), f"rgb({c[0]},{c[1]},{c[2]})"] for i, c in enumerate(LAB_RAMP)]
+        t_surf = np.sqrt(np.maximum(Z - r["smin"], 0.0) / r["smin"]) / LAB_T_SCALE   # same colour as the map
+        cb_t = [0.0, 0.25, 0.5, 0.75, 1.0]
+        cb_txt = [f"{smin_e8 * (1 + (LAB_T_SCALE * tv) ** 2):.2f}" for tv in cb_t]
 
         pf = go.Figure()
         pf.add_trace(
@@ -815,103 +890,100 @@ def main():
                 x=a_grid,
                 y=b_grid,
                 z=Z_e8,
-                colorscale="Viridis",
-                opacity=0.86,
-                name="S(a, b) [10⁸ ms²]",
+                surfacecolor=t_surf,
+                cmin=0.0,
+                cmax=1.0,
+                colorscale=colorscale,
+                customdata=Z_e8,
+                hovertemplate="a = %{x:.2f} ms/°<br>b = %{y:.0f} ms<br>S = %{customdata:.3f} ×10⁸<extra></extra>",
+                showlegend=False,
+                lighting=dict(ambient=0.55, diffuse=0.75, specular=0.08, roughness=0.85, fresnel=0.1),
+                lightposition=dict(x=100, y=200, z=1000),
+                colorbar=dict(
+                    tickvals=cb_t, ticktext=cb_txt, tickfont=dict(size=13, color=LAB_MUTED),
+                    thickness=12, len=0.55, x=0.985, outlinewidth=0, ticks="",
+                ),
                 contours=dict(
-                    z=dict(show=True, usecolormap=True, highlightcolor="white", project_z=True)
+                    z=dict(show=True, usecolormap=False, color="rgba(70,25,40,0.45)", width=1,
+                           start=float(np.ceil(smin_e8 * 5) / 5), end=float(Z_e8.max()), size=0.2, project_z=True,
+                           highlight=True, highlightcolor=LAB_HOLO, highlightwidth=3)
                 ),
             )
         )
-        # 3D trace b = b*
-        pf.add_trace(
+        pf.add_trace(  # trace b = b*
             go.Scatter3d(
-                x=a_grid,
-                y=np.full_like(a_grid, b),
-                z=[S(av, b, x, y) / 1e8 for av in a_grid],
-                mode="lines",
-                line=dict(color="#ef4444", width=6),
-                name=f"Traza b = b* ({b:.1f} ms)",
+                x=a_grid, y=np.full_like(a_grid, b), z=[S(av, b, x, y) / 1e8 for av in a_grid],
+                mode="lines", line=dict(color=LAB_MIN, width=5), name=f"Traza b = b* ({b:.1f} ms)",
             )
         )
-        # 3D trace a = a*
-        pf.add_trace(
+        pf.add_trace(  # trace a = a*
             go.Scatter3d(
-                x=np.full_like(b_grid, a),
-                y=b_grid,
-                z=[S(a, bv, x, y) / 1e8 for bv in b_grid],
-                mode="lines",
-                line=dict(color="#38bdf8", width=6),
-                name=f"Traza a = a* ({a:.2f} ms/°)",
+                x=np.full_like(b_grid, a), y=b_grid, z=[S(a, bv, x, y) / 1e8 for bv in b_grid],
+                mode="lines", line=dict(color=LAB_TRACE_A, width=5), name=f"Traza a = a* ({a:.2f} ms/°)",
             )
         )
-        # Global minimum point (trace index 3)
-        pf.add_trace(
+        pf.add_trace(  # global minimum
             go.Scatter3d(
-                x=[a],
-                y=[b],
-                z=[smin_e8],
-                mode="markers+text",
-                marker=dict(size=8, color="#f97316", symbol="diamond"),
-                text=[f"Mínimo ({a:.2f}, {b:.1f})"],
-                textposition="top center",
-                name="Mínimo global (a*, b*)",
+                x=[a], y=[b], z=[smin_e8], mode="markers+text",
+                marker=dict(size=7, color=LAB_MIN, symbol="diamond", line=dict(color="white", width=2)),
+                text=[f"Mínimo ({a:.2f}, {b:.1f})"], textposition="top center",
+                textfont=dict(size=13, color=LAB_INK, family=LAB_FONT), name="Mínimo global (a*, b*)",
             )
         )
-        # Live movable probe point (trace index 4)
         a_init, b_init = round(a + 2.2, 2), round(b - 260.0, 1)
         s_init_e8 = S(a_init, b_init, x, y) / 1e8
-        pf.add_trace(
+        pf.add_trace(  # live probe
             go.Scatter3d(
-                x=[a_init],
-                y=[b_init],
-                z=[s_init_e8],
-                mode="markers+text",
-                marker=dict(size=9, color="#22c55e", symbol="circle", line=dict(color="white", width=2)),
-                text=[f"Punto actual ({a_init:.2f}, {b_init:.0f})"],
-                textposition="top center",
-                name="Punto explorado (a, b)",
+                x=[a_init], y=[b_init], z=[s_init_e8], mode="markers+text",
+                marker=dict(size=8, color=LAB_PROBE, symbol="circle", line=dict(color="white", width=2)),
+                text=[f"({a_init:.2f}, {b_init:.0f})"], textposition="top center",
+                textfont=dict(size=13, color=LAB_INK, family=LAB_FONT), name="Punto explorado (a, b)",
             )
         )
-        # Trajectory path for gradient descent (trace index 5)
-        pf.add_trace(
+        pf.add_trace(  # trail
             go.Scatter3d(
-                x=[a_init],
-                y=[b_init],
-                z=[s_init_e8],
-                mode="lines",
-                line=dict(color="#22c55e", width=6),
-                name="Trayectoria −∇S",
+                x=[a_init], y=[b_init], z=[s_init_e8], mode="lines",
+                line=dict(color=LAB_PROBE, width=5), name="Trayectoria −∇S",
             )
         )
-        pf.add_trace(
+        pf.add_trace(  # -grad S
             go.Scatter3d(
-                x=[a_init, a_init],
-                y=[b_init, b_init],
-                z=[s_init_e8, s_init_e8],
-                mode="lines",
-                line=dict(color="#fde047", width=10),
-                name="−∇S (dirección de máximo descenso)",
+                x=[a_init, a_init], y=[b_init, b_init], z=[s_init_e8, s_init_e8], mode="lines",
+                line=dict(color=LAB_GRAD, width=9), name="−∇S (dirección de máximo descenso)",
             )
         )
+
+        def axis(title):
+            return dict(
+                title=dict(text=title, font=dict(size=16, color=LAB_INK, family=LAB_FONT)),
+                tickfont=dict(size=14, color=LAB_MUTED, family=LAB_FONT),
+                gridcolor=LAB_GRID, linecolor=LAB_HAIR, zerolinecolor=LAB_HAIR,
+                showbackground=True, backgroundcolor=LAB_PANEL, showspikes=False,
+            )
+
         pf.update_layout(
-            title=f"NeuroCode · Laboratorio 3D de S(a,b), Gradiente ∇S y Trazas (n = {len(x)})",
-            template="plotly_dark",
-            paper_bgcolor="#0b1324",
-            plot_bgcolor="#0b1324",
+            template="plotly_white",
+            paper_bgcolor="#ffffff",
+            plot_bgcolor="#ffffff",
+            font=dict(family=LAB_FONT, size=14, color=LAB_INK),
             scene=dict(
+                bgcolor="#ffffff",
                 aspectmode="manual",
                 aspectratio=dict(x=1.1, y=1.1, z=0.65),
-                camera=dict(eye=dict(x=1.7, y=-1.7, z=0.85)),
-                xaxis_title="Pendiente a (ms/°)",
-                yaxis_title="Intercepto b (ms)",
-                zaxis_title="S(a,b) [10⁸ ms²]",
+                camera=dict(eye=dict(x=1.55, y=-1.35, z=0.95)),
+                xaxis=axis("Pendiente a (ms/°)"),
+                yaxis=axis("Intercepto b (ms)"),
+                zaxis=axis("S(a,b) [10⁸ ms²]"),
             ),
-            margin=dict(l=0, r=0, b=0, t=48),
-            legend=dict(x=0.01, y=0.98, bgcolor="rgba(15,23,42,0.75)", font=dict(size=14)),
-            font=dict(size=14),
+            margin=dict(l=0, r=0, b=0, t=0),
+            hoverlabel=dict(bgcolor="#ffffff", bordercolor=LAB_HAIR, font=dict(family=LAB_FONT, size=13, color=LAB_INK)),
+            legend=dict(orientation="h", x=0.01, y=0.01, xanchor="left", yanchor="bottom",
+                        bgcolor="rgba(255,255,255,0.9)", bordercolor=LAB_HAIR, borderwidth=1,
+                        font=dict(size=13, family=LAB_FONT)),
         )
-        plot_div = pf.to_html(full_html=False, include_plotlyjs=True, div_id="plot3d")
+        plot_div = pf.to_html(full_html=False, include_plotlyjs=True, div_id="plot3d",
+                              default_height="100%", default_width="100%",
+                              config=dict(displaylogo=False, responsive=True))
         meta = dict(
             n=int(r["sums"]["n"]),
             sx=float(r["sums"]["sx"]),
@@ -924,11 +996,17 @@ def main():
             smin=float(r["smin"]),
             angles=ang_vals.tolist(),
             means=mean_vals.tolist(),
+            ramp=[list(c) for c in LAB_RAMP],
         )
         meta.update(ssw=float(ss_within), m=int(m_per_angle), xbar=float(x.mean()), ybar=float(y.mean()))
         with open(os.path.join(ROOT, "codigo", "simulador_template.html"), encoding="utf-8") as fh:
             template = fh.read()
-        html_doc = template.replace("__META__", json.dumps(meta)).replace("__PLOT3D__", plot_div)
+        html_doc = (
+            template.replace("__META__", json.dumps(meta))
+            .replace("/*__FONTS__*/", _lab_fonts_css())
+            .replace("<!--__STUDIO__-->", _lab_studio_html())
+            .replace("__PLOT3D__", plot_div)   # last: the Plotly bundle is huge
+        )
         with open(f"{FIG}/superficie_interactiva.html", "w", encoding="utf-8") as fh:
             fh.write(html_doc)
     except ImportError:

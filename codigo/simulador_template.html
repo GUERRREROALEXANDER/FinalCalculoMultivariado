@@ -5,41 +5,61 @@
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>NeuroCode · Laboratorio de Cálculo Multivariable</title>
 <style>
-  :root { --bg:#0b1324; --card:#111c33; --border:#2b3f63; --accent:#fb923c; --green:#4ade80; --blue:#38bdf8; --yellow:#fde047; --text:#f1f5f9; --muted:#a8b5ca; }
+  /*__FONTS__*/
+  :root {
+    --bg:#ffffff; --panel:#f0f6f7; --border:#c9dbe2; --ink:#1a1a1a; --muted:#46565e;
+    --holo:#257aa2; --teal:#006a86; --min:#c0392b; --probe:#2e7d4f; --grad:#a16207; --grid:#dbe6ea;
+    --o-min:#006a86; --o-probe:#1a1a1a; --o-grad:#257aa2;   /* data overlays: cool on the warm ramp */
+    --serif:"CMU Serif",Georgia,serif; --mono:"CMU Typewriter",Consolas,monospace;
+  }
   * { box-sizing:border-box; }
-  body { margin:0; font-family:Inter,'Segoe UI',system-ui,sans-serif; background:var(--bg); color:var(--text); font-size:16px; }
-  header { padding:10px 20px; background:#070d19; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
-  header h1 { margin:0; font-size:21px; font-weight:800; }
-  header .sub { font-size:15px; color:var(--muted); }
-  header b { color:var(--accent); }
+  body { margin:0; font-family:var(--serif); background:var(--bg); color:var(--ink); font-size:16px; }
+  header { padding:10px 20px; background:var(--teal); color:#fff; display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; }
+  header h1 { margin:0; font-size:21px; font-weight:700; }
+  header .sub { font-size:15px; color:#fff; }
+  header b { color:#fff; font-weight:700; }
   .grid { display:grid; grid-template-columns:470px 1fr; height:calc(100vh - 52px); }
   @media (max-width:1000px) { .grid { grid-template-columns:1fr; height:auto; } }
-  .panel { padding:12px; background:var(--card); border-right:1px solid var(--border); overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
-  .box { background:rgba(15,23,42,.8); border:1px solid var(--border); border-radius:10px; padding:10px 12px; }
-  .box h2 { margin:0 0 6px 0; font-size:14px; text-transform:uppercase; letter-spacing:.05em; color:var(--accent); }
+  .panel { padding:12px; background:var(--bg); border-right:1px solid var(--border); overflow-y:auto; display:flex; flex-direction:column; gap:10px; }
+  .box { flex:none; background:var(--panel); box-shadow:0 1px 3px rgba(0,0,0,.18); border-radius:3px; padding:0 0 10px; overflow:hidden; }
+  .box h2 { margin:0 0 8px; background:var(--teal); color:#fff; font-size:15px; font-weight:400; text-transform:none; letter-spacing:0; padding:5px 12px; }
+  .box > *:not(h2) { margin-left:12px; margin-right:12px; }
   .row { display:flex; justify-content:space-between; align-items:baseline; margin:3px 0; font-size:16px; }
-  .kpi { font-family:Consolas,monospace; font-size:17px; color:var(--blue); font-weight:700; }
-  .kpi.big { font-size:22px; color:var(--yellow); }
-  .kpi.ok { color:var(--green); }
-  input[type=range] { width:100%; accent-color:var(--accent); cursor:pointer; }
-  select, button { font:inherit; font-size:15px; border-radius:8px; border:1px solid var(--border); background:#1e293b; color:#fff; padding:7px 10px; cursor:pointer; }
+  .kpi { font-family:var(--mono); font-size:17px; color:var(--teal); font-weight:700; }
+  .kpi.big { font-size:22px; color:var(--ink); font-weight:700; }
+  .kpi.ok { color:var(--probe); }
+  input[type=range] { width:calc(100% - 24px); accent-color:var(--teal); cursor:pointer; }
+  select, button { font:inherit; font-family:var(--serif); font-size:15px; border-radius:3px; border:1px solid var(--border); background:#fff; color:var(--ink); padding:7px 10px; cursor:pointer; }
+  select { max-width:calc(100% - 24px); }
   button { font-weight:700; flex:1; }
-  button.go { background:#15803d; border-color:var(--green); }
-  button.opt { background:#c2410c; border-color:var(--accent); }
+  button.go { background:var(--teal); color:#fff; border-color:var(--teal); }
+  button.opt { background:var(--min); color:#fff; border-color:var(--min); }
+  select:hover, button:hover { filter:brightness(.94); }
+  select:focus-visible, button:focus-visible, input:focus-visible { outline:2px solid var(--holo); outline-offset:2px; }
   .btns { display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
   label.chk { display:flex; gap:8px; align-items:center; font-size:15px; margin-top:6px; cursor:pointer; }
-  canvas { width:100%; display:block; background:#070d19; border-radius:8px; border:1px solid var(--border); touch-action:none; }
+  canvas { width:calc(100% - 24px); display:block; background:#ffffff; border-radius:2px; border:1px solid var(--border); touch-action:none; }
   .ngrid { display:grid; grid-template-columns:1fr 1fr; gap:2px 14px; }
   .ngrid .row { flex-direction:column; align-items:flex-start; margin:2px 0; font-size:13.5px; color:var(--muted); }
-  .legend { font-size:13.5px; color:var(--muted); margin-top:4px; line-height:1.45; }
+  .legend { font-size:14px; color:var(--muted); margin-top:4px; line-height:1.45; }
   .tip { font-size:14px; color:var(--muted); line-height:1.4; }
-  #msg { min-height:20px; font-size:15px; color:var(--green); font-weight:700; }
-  #plot3d { width:100%; height:100%; min-height:560px; }
+  #msg { min-height:20px; font-size:15px; color:var(--probe); font-weight:700; }
+  .stage { position:relative; min-width:0; background:#fff; }
+  #viewStudio, #viewData { position:absolute; inset:0; }
+  #viewData[hidden], #viewStudio[hidden] { display:none; }
+  #plot3d { width:100%; height:100%; min-height:0; }
+  .seg { position:absolute; top:12px; right:14px; z-index:5; display:flex; flex-direction:row; gap:0; background:#fff; }
+  .seg button { flex:none; font-size:14px; padding:6px 16px; background:#fff; border:1px solid var(--border); border-radius:3px; color:var(--ink); font-weight:400; }
+  .seg button + button { margin-left:-1px; border-top-left-radius:0; border-bottom-left-radius:0; }
+  .seg button:first-child { border-top-right-radius:0; border-bottom-right-radius:0; }
+  .seg button[aria-selected="true"] { background:var(--teal); color:#fff; border-color:var(--teal); }
+  .seg button[hidden] { display:none; }
+  @media (max-width:1000px) { .stage { height:62vh; min-height:420px; } }
 </style>
 </head>
 <body>
 <header>
-  <h1>🧠 NeuroCode · Laboratorio de S(a,b), gradiente y recta</h1>
+  <h1>NeuroCode · Laboratorio de S(a,b), gradiente y recta</h1>
   <div class="sub">Mínimo analítico: <b>a* = <span id="hA"></span> ms/°</b> · <b>b* = <span id="hB"></span> ms</b> · <b>S<sub>mín</sub> = <span id="hS"></span></b> · n = <span id="hN"></span></div>
 </header>
 <div class="grid">
@@ -56,13 +76,13 @@
     <div class="box">
       <h2>2 · Mapa de curvas de nivel + vector −∇S</h2>
       <canvas id="cvMap" width="440" height="270"></canvas>
-      <div class="legend"><span style="color:#fde047">━▶</span> −∇S (perpendicular a las curvas de nivel) · <span style="color:#4ade80">●</span> punto actual · <span style="color:#fb923c">★</span> mínimo · estela = trayectoria</div>
+      <div class="legend"><span style="color:var(--o-grad)">━▶</span> −∇S (perpendicular a las curvas de nivel) · <span style="color:var(--o-probe)">●</span> punto actual · <span style="color:var(--o-min)">★</span> mínimo · estela = trayectoria</div>
     </div>
 
     <div class="box">
       <h2>3 · La recta y = a·x + b que corresponde a ese punto</h2>
       <canvas id="cvLine" width="440" height="240"></canvas>
-      <div class="legend"><span style="color:#fb923c">╌╌</span> recta óptima · <span style="color:#4ade80">━━</span> recta actual · segmentos verdes = errores sobre las 7 medias · ○ = medias por ángulo</div>
+      <div class="legend"><span style="color:var(--o-min)">╌╌</span> recta óptima · <span style="color:var(--o-probe)">━━</span> recta actual · segmentos = errores sobre las 7 medias · ○ = medias por ángulo</div>
     </div>
 
     <div class="box">
@@ -97,9 +117,18 @@
       <div class="tip">Pregunta para el aula: ¿por qué el gradiente puro zigzaguea? Porque λ₂/λ₁ ≈ 38 000: el valle es larguísimo y angosto. Al centrar x̃ = x − 90°, el término cruzado desaparece y los ejes quedan alineados.</div>
     </div>
   </div>
-  <div>__PLOT3D__</div>
+  <div class="stage">
+    <div class="seg" role="tablist" aria-label="Vista 3D">
+      <button id="tabStudio" role="tab" aria-selected="true">Estudio</button>
+      <button id="tabData" role="tab" aria-selected="false">Datos</button>
+    </div>
+    <div id="viewStudio"></div>
+    <div id="viewData" hidden>__PLOT3D__</div>
+  </div>
 </div>
 <script>
+window.NC = { views: [], state: null, active: 'studio' };
+const C = {ink:'#1a1a1a', muted:'#46565e', min:'#006a86', probe:'#1a1a1a', grad:'#257aa2', teal:'#006a86', grid:'#dbe6ea', halo:'#ffffff', point:'#1a1a1a'};
 const M = __META__;
 const $ = id => document.getElementById(id);
 const slA = $('slA'), slB = $('slB'), chk = $('chkCenter');
@@ -110,7 +139,7 @@ const lam1 = tr/2 - Math.sqrt(tr*tr/4 - det), lam2 = tr/2 + Math.sqrt(tr*tr/4 - 
 const sxxC = M.sxx - M.n*M.xbar*M.xbar;         // Σ x̃² (con Σ x̃ = 0)
 const sstRaw = M.syy - M.sy*M.sy/M.n;
 const sstMeans = M.means.reduce((s,v) => s + (v - M.ybar)**2, 0);
-let animId = null, trail = [], steps = 0;
+let animId = null, trail = [], steps = 0, gNorm = 0;
 const start = {a: M.astar + 2.2, b: M.bstar - 260};
 let cur = {a: start.a, b: start.b};
 
@@ -136,7 +165,7 @@ const MW = cvMap.width, MH = cvMap.height;
 const pxA = MW / (2*RA), pxB = MH / (2*RB);
 const sx_ = a => (a - (M.astar - RA)) * pxA;
 const sy_ = v => MH - (v - (vStar() - RB)) * pxB;
-const VIR = [[68,1,84],[59,82,139],[33,145,140],[94,201,98],[253,231,37]];
+const VIR = M.ramp;
 function viridis(t) {
   t = Math.min(1, Math.max(0, t)) * (VIR.length - 1);
   const i = Math.min(VIR.length - 2, Math.floor(t)), f = t - i;
@@ -149,7 +178,7 @@ function buildBg() {
     const a = M.astar - RA + i / pxA, v = vStar() + RB - j / pxB;
     const s = evalS(a, bOf(a, v));
     const t = Math.sqrt(Math.max(0, s - M.smin) / M.smin) / 1.1;   // escala raíz: se ve el valle
-    const band = Math.floor(t * 16) / 16, edge = (t * 16) % 1 < 0.07 ? 1.25 : 1;
+    const band = Math.floor(t * 16) / 16, edge = (t * 16) % 1 < 0.07 ? (t > 0.55 ? 1.3 : 0.82) : 1;
     const c = viridis(band).map(x => Math.min(255, x * edge));
     const k = 4 * (j * MW + i); img.data[k] = c[0]; img.data[k+1] = c[1]; img.data[k+2] = c[2]; img.data[k+3] = 255;
   }
@@ -174,22 +203,29 @@ function drawMap() {
   if (bgMode !== centered() || !bg) buildBg();
   cm.drawImage(bg, 0, 0);
   // ejes que pasan por el mínimo
-  cm.setLineDash([4,4]); cm.strokeStyle = 'rgba(255,255,255,.35)'; cm.lineWidth = 1;
+  cm.setLineDash([4,4]); cm.strokeStyle = 'rgba(26,26,26,.35)'; cm.lineWidth = 1;
   cm.beginPath(); cm.moveTo(sx_(M.astar), 0); cm.lineTo(sx_(M.astar), MH); cm.moveTo(0, sy_(vStar())); cm.lineTo(MW, sy_(vStar())); cm.stroke(); cm.setLineDash([]);
   // estela
-  cm.strokeStyle = 'rgba(74,222,128,.95)'; cm.lineWidth = 2.5; cm.beginPath();
+  cm.strokeStyle = C.probe; cm.lineWidth = 2.5; cm.beginPath();
   trail.forEach((p, i) => { const X = sx_(p.a), Y = sy_(vOf(p.a, p.b)); i ? cm.lineTo(X, Y) : cm.moveTo(X, Y); }); cm.stroke();
   // mínimo
   const X0 = sx_(M.astar), Y0 = sy_(vStar());
-  cm.fillStyle = '#fb923c'; cm.strokeStyle = '#fff'; cm.lineWidth = 2; cm.font = '22px sans-serif'; cm.textAlign = 'center'; cm.textBaseline = 'middle';
+  cm.fillStyle = C.min; cm.strokeStyle = C.halo; cm.lineWidth = 2; cm.font = '22px "CMU Serif",Georgia,serif'; cm.textAlign = 'center'; cm.textBaseline = 'middle';
   cm.strokeText('★', X0, Y0); cm.fillText('★', X0, Y0);
   // punto actual + −∇S
   const X = sx_(cur.a), Y = sy_(vOf(cur.a, cur.b));
   const [ux, uy] = gradDirPix(cur.a, cur.b), L = 52;
-  if (Math.hypot(...evalG(cur.a, cur.b)) > 1e5) arrow(cm, X, Y, X + ux*L, Y + uy*L, '#fde047', 3.2);
-  cm.fillStyle = '#4ade80'; cm.strokeStyle = '#fff'; cm.lineWidth = 2.2; cm.beginPath(); cm.arc(X, Y, 7, 0, 7); cm.fill(); cm.stroke();
-  cm.font = '13px sans-serif'; cm.fillStyle = '#fff'; cm.textAlign = 'left'; cm.textBaseline = 'alphabetic';
-  cm.fillText('a →', MW - 34, MH - 6); cm.save(); cm.translate(12, 36); cm.fillText(centered() ? 'b̃ ↑' : 'b ↑', 0, 0); cm.restore();
+  if (gNorm > 1e5) {                       // gNorm: ‖∇S‖ at the current point, published by update()
+    arrow(cm, X, Y, X + ux*L, Y + uy*L, C.halo, 6.4);
+    arrow(cm, X, Y, X + ux*L, Y + uy*L, C.grad, 3.2);
+  }
+  cm.fillStyle = C.point; cm.strokeStyle = C.halo; cm.lineWidth = 2.2; cm.beginPath(); cm.arc(X, Y, 7, 0, 7); cm.fill(); cm.stroke();
+  cm.font = '13px "CMU Serif",Georgia,serif'; cm.textAlign = 'left'; cm.textBaseline = 'alphabetic';
+  cm.lineWidth = 3; cm.strokeStyle = 'rgba(70,25,40,.92)';
+  const la = 'a →', lb = centered() ? 'b̃ ↑' : 'b ↑';
+  cm.strokeText(la, MW - 34, MH - 6); cm.fillStyle = '#ffffff'; cm.fillText(la, MW - 34, MH - 6);
+  cm.save(); cm.translate(12, 36);
+  cm.strokeText(lb, 0, 0); cm.fillStyle = '#ffffff'; cm.fillText(lb, 0, 0); cm.restore();
 }
 
 /* ---------- recta y datos (canvas) ---------- */
@@ -198,15 +234,17 @@ function drawLine() {
   const W = cvLine.width, H = cvLine.height, pL = 46, pR = 12, pT = 12, pB = 30;
   const X = x => pL + x / 180 * (W - pL - pR), Y = y => H - pB - (y - 300) / (1500 - 300) * (H - pT - pB);
   cl.clearRect(0, 0, W, H);
-  cl.strokeStyle = '#334155'; cl.lineWidth = 1; cl.fillStyle = '#a8b5ca'; cl.font = '12.5px sans-serif'; cl.textAlign = 'center';
+  cl.strokeStyle = C.grid; cl.lineWidth = 1; cl.fillStyle = C.muted; cl.font = '12.5px "CMU Serif",Georgia,serif'; cl.textAlign = 'center';
   for (const x of M.angles) { cl.beginPath(); cl.moveTo(X(x), pT); cl.lineTo(X(x), H - pB); cl.stroke(); cl.fillText(x + '°', X(x), H - 10); }
   cl.textAlign = 'right';
   for (let y = 400; y <= 1400; y += 200) { cl.beginPath(); cl.moveTo(pL, Y(y)); cl.lineTo(W - pR, Y(y)); cl.stroke(); cl.fillText(y, pL - 5, Y(y) + 4); }
-  cl.strokeStyle = '#fb923c'; cl.lineWidth = 2.4; cl.setLineDash([6,5]); cl.beginPath(); cl.moveTo(X(0), Y(M.bstar)); cl.lineTo(X(180), Y(M.astar*180 + M.bstar)); cl.stroke(); cl.setLineDash([]);
-  M.angles.forEach((x, i) => { cl.strokeStyle = 'rgba(74,222,128,.75)'; cl.lineWidth = 2.5; cl.beginPath(); cl.moveTo(X(x), Y(M.means[i])); cl.lineTo(X(x), Y(cur.a*x + cur.b)); cl.stroke(); });
-  cl.strokeStyle = '#4ade80'; cl.lineWidth = 3.2; cl.beginPath(); cl.moveTo(X(0), Y(cur.b)); cl.lineTo(X(180), Y(cur.a*180 + cur.b)); cl.stroke();
-  M.angles.forEach((x, i) => { cl.fillStyle = '#f8fafc'; cl.strokeStyle = '#0b1324'; cl.lineWidth = 2; cl.beginPath(); cl.arc(X(x), Y(M.means[i]), 5.5, 0, 7); cl.fill(); cl.stroke(); });
-  cl.fillStyle = '#4ade80'; cl.font = 'bold 14px Consolas,monospace'; cl.textAlign = 'left';
+  cl.strokeStyle = C.min; cl.lineWidth = 2.4; cl.setLineDash([6,5]); cl.beginPath(); cl.moveTo(X(0), Y(M.bstar)); cl.lineTo(X(180), Y(M.astar*180 + M.bstar)); cl.stroke(); cl.setLineDash([]);
+  cl.globalAlpha = .75; cl.strokeStyle = C.probe; cl.lineWidth = 2.5;
+  M.angles.forEach((x, i) => { cl.beginPath(); cl.moveTo(X(x), Y(M.means[i])); cl.lineTo(X(x), Y(cur.a*x + cur.b)); cl.stroke(); });
+  cl.globalAlpha = 1;
+  cl.strokeStyle = C.probe; cl.lineWidth = 3.2; cl.beginPath(); cl.moveTo(X(0), Y(cur.b)); cl.lineTo(X(180), Y(cur.a*180 + cur.b)); cl.stroke();
+  M.angles.forEach((x, i) => { cl.fillStyle = '#ffffff'; cl.strokeStyle = '#6f7f87'; cl.lineWidth = 2; cl.beginPath(); cl.arc(X(x), Y(M.means[i]), 5.5, 0, 7); cl.fill(); cl.stroke(); });
+  cl.fillStyle = C.ink; cl.font = 'bold 14px "CMU Typewriter",monospace'; cl.textAlign = 'left';
   cl.fillText(`y = ${cur.a.toFixed(2)}·x + ${cur.b.toFixed(0)}`, pL + 8, pT + 16);
 }
 
@@ -217,18 +255,24 @@ function gradEnd3D() {
   const b2 = bOf(a2, v2);
   return [a2, b2, evalS(a2, b2) / 1e8];
 }
-function update3D(s8) {
-  if (!window.Plotly) return;
-  const [a2, b2, z2] = gradEnd3D();
+const dataView = {
+  name: 'data',
+  update(st) {
+    if (!window.Plotly || NC.active !== 'data' || !st) return;
+    const cur = st, trail = st.trail, s8 = st.S / 1e8;               // state fields bound to the names used below
+    const a2 = st.grad.a2, b2 = st.grad.b2, z2 = st.grad.S2 / 1e8;   // endpoint from gradEnd3D()
   Plotly.restyle('plot3d', {x: [[cur.a]], y: [[cur.b]], z: [[s8]], text: [[`(${cur.a.toFixed(2)}, ${cur.b.toFixed(0)})`]]}, [4]);
   Plotly.restyle('plot3d', {x: [trail.map(p => p.a)], y: [trail.map(p => p.b)], z: [trail.map(p => evalS(p.a, p.b)/1e8)]}, [5]);
   Plotly.restyle('plot3d', {x: [[cur.a, a2]], y: [[cur.b, b2]], z: [[s8, z2]]}, [6]);
-}
+  }
+};
+NC.views.push(dataView);
 
 /* ---------- actualización general ---------- */
 function update(addTrail) {
   const s = evalS(cur.a, cur.b), [ga, gb] = evalG(cur.a, cur.b);
   const gaP = centered() ? ga - M.xbar*gb : ga;
+  gNorm = Math.hypot(ga, gb);
   if (addTrail) trail.push({a: cur.a, b: cur.b});
   slA.value = cur.a; slB.value = vOf(cur.a, cur.b);
   $('lblA').textContent = cur.a.toFixed(3) + ' ms/°';
@@ -245,7 +289,10 @@ function update(addTrail) {
   const ok = Math.hypot(ga, gb) < 5e3;
   $('lblGn').className = 'kpi' + (ok ? ' ok' : '');
   $('lblEig').textContent = centered() ? `${(2*sxxC).toExponential(2)} / ${(2*M.n).toExponential(2)}` : `${lam1.toExponential(2)} / ${lam2.toExponential(2)}`;
-  drawMap(); drawLine(); update3D(s/1e8);
+  drawMap(); drawLine();
+  const [a2, b2, z2] = gradEnd3D();
+  NC.state = { a:cur.a, b:cur.b, S:s, centered:centered(), trail: trail.map(p => ({a:p.a, b:p.b})), grad:{a2, b2, S2:z2*1e8} };
+  NC.views.forEach(v => v.update(NC.state));
 }
 function stopAnim() { if (animId) { cancelAnimationFrame(animId); animId = null; $('btnAnim').textContent = '▶ Animar descenso'; } }
 function reset() { stopAnim(); cur = {a: start.a, b: start.b}; trail = [{a: cur.a, b: cur.b}]; steps = 0; $('msg').textContent = ''; setSliders(); update(false); }
@@ -301,6 +348,39 @@ $('btnAnim').onclick = () => {
 $('hA').textContent = M.astar.toFixed(4); $('hB').textContent = M.bstar.toFixed(2);
 $('hS').textContent = M.smin.toExponential(4).replace('e+', ' ×10^').replace(/\^(\d+)/, '^$1'); $('hN').textContent = M.n;
 window.addEventListener('load', () => { trail = [{a: cur.a, b: cur.b}]; setSliders(); update(false); });
+
+/* ---------- vista: Estudio / Datos ---------- */
+function setView(name) {
+  NC.active = name;
+  const data = name === 'data';
+  $('viewStudio').hidden = data;
+  $('viewData').hidden = !data;
+  $('tabStudio').setAttribute('aria-selected', data ? 'false' : 'true');
+  $('tabData').setAttribute('aria-selected', data ? 'true' : 'false');
+  if (data) {
+    const fit = () => { if (window.Plotly) Plotly.Plots.resize(document.getElementById('plot3d')); };
+    fit(); requestAnimationFrame(fit); setTimeout(fit, 250);   // the div was display:none: size again once laid out
+    if (NC.state) dataView.update(NC.state);
+  } else {
+    NC.views.forEach(v => v.update(NC.state));
+  }
+}
+$('tabStudio').addEventListener('click', () => setView('studio'));
+$('tabData').addEventListener('click', () => setView('data'));
+NC.showData = () => {                       // called by the studio bootstrap if WebGL2 or the module fails
+  $('tabStudio').hidden = true;
+  $('viewStudio').hidden = true;
+  $('viewData').hidden = false;
+  setView('data');
+};
+window.addEventListener('load', () => { if (NC.studioFailed) NC.showData(); });
+
+window.addEventListener('load', () => {
+  if (!document.fonts) return;
+  Promise.all([document.fonts.load('16px "CMU Serif"'), document.fonts.load('bold 14px "CMU Typewriter"')])
+    .then(() => update(false)).catch(() => {});
+});
 </script>
+<!--__STUDIO__-->
 </body>
 </html>
