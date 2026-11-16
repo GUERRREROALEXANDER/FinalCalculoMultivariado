@@ -136,7 +136,7 @@ LAB_RAMP = [(255, 238, 194), (251, 207, 128), (242, 154, 76), (217, 87, 58), (15
 LAB_T_SCALE = 1.1  # sqrt scale of the level map and the studio view: t = sqrt((S - Smin) / Smin) / 1.1
 LAB_INK, LAB_MUTED, LAB_HAIR, LAB_GRID, LAB_PANEL = "#1a1a1a", "#46565e", "#c9dbe2", "#dbe6ea", "#f0f6f7"
 # overlay colours (markers, traces): cool, so they stand out on the warm surface ramp
-LAB_HOLO, LAB_MIN, LAB_PROBE, LAB_GRAD, LAB_TRACE_A = "#257aa2", "#006a86", "#1a1a1a", "#257aa2", "#3aa6c8"
+LAB_HOLO, LAB_MIN, LAB_PROBE, LAB_GRAD, LAB_TRACE_A = "#257aa2", "#0072b2", "#009e73", "#6a3d9a", "#7d8b93"  # blue, green, purple, grey: 4 clearly different hues
 LAB_FONT = "CMU Serif, Georgia, serif"
 FONT_DIR = os.path.join(ROOT, "presentacion", "assets", "fonts")
 VENDOR_DIR = os.path.join(ROOT, "codigo", "vendor", "three-0.170.0")

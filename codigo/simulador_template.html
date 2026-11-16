@@ -9,7 +9,7 @@
   :root {
     --bg:#ffffff; --panel:#f0f6f7; --border:#c9dbe2; --ink:#1a1a1a; --muted:#46565e;
     --holo:#257aa2; --teal:#006a86; --min:#c0392b; --probe:#2e7d4f; --grad:#a16207; --grid:#dbe6ea;
-    --o-min:#006a86; --o-probe:#1a1a1a; --o-grad:#257aa2;   /* data overlays: cool on the warm ramp */
+    --o-min:#0072b2; --o-probe:#009e73; --o-grad:#6a3d9a;   /* data overlays: cool on the warm ramp */
     --serif:"CMU Serif",Georgia,serif; --mono:"CMU Typewriter",Consolas,monospace;
   }
   * { box-sizing:border-box; }
@@ -128,7 +128,7 @@
 </div>
 <script>
 window.NC = { views: [], state: null, active: 'studio' };
-const C = {ink:'#1a1a1a', muted:'#46565e', min:'#006a86', probe:'#1a1a1a', grad:'#257aa2', teal:'#006a86', grid:'#dbe6ea', halo:'#ffffff', point:'#1a1a1a'};
+const C = {ink:'#1a1a1a', muted:'#46565e', min:'#0072b2', probe:'#009e73', grad:'#6a3d9a', teal:'#006a86', grid:'#dbe6ea', halo:'#ffffff', point:'#009e73'};
 const M = __META__;
 const $ = id => document.getElementById(id);
 const slA = $('slA'), slB = $('slB'), chk = $('chkCenter');

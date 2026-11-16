@@ -12,10 +12,10 @@ import { CSS2DRenderer, CSS2DObject } from 'three/addons/CSS2DRenderer.js';
 import { createStudio } from 'studio/core';
 
 // Palette (fixed by the spec)
-const COL_MIN = 0x006a86;
-const COL_PROBE = 0x1a1a1a;
-const COL_GRAD = 0x257aa2;
-const COL_HOLO = 0x3aa6c8;   // trace a = a*
+const COL_MIN = 0x0072b2;
+const COL_PROBE = 0x009e73;
+const COL_GRAD = 0x6a3d9a;
+const COL_HOLO = 0x7d8b93;   // trace a = a* (neutral grey: readable on cream and burgundy)
 const COL_HAIR = 0xc9dbe2;
 
 const stdMat = color => new THREE.MeshStandardMaterial({ color, roughness: 0.4, metalness: 0 });
