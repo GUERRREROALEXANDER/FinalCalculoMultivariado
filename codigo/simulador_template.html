@@ -62,8 +62,9 @@
   #etaTag.bad { color:var(--min); }
   #etaTag.good { color:var(--probe); }
   #tourCursor { position:fixed; left:0; top:0; z-index:50; width:26px; height:26px; pointer-events:none; transition:transform .55s cubic-bezier(.4,0,.2,1); will-change:transform; filter:drop-shadow(0 1px 2px rgba(0,0,0,.45)); }
-  #tourCaption { position:fixed; left:50%; bottom:18px; transform:translateX(-50%); z-index:49; max-width:min(560px,92vw); background:#1a1a1a; color:#fff; padding:8px 14px; border-radius:4px; font-size:15px; line-height:1.4; pointer-events:none; box-shadow:0 2px 10px rgba(0,0,0,.3); }
+  #tourCaption { position:fixed; left:calc(235px + 50vw); bottom:18px; transform:translateX(-50%); z-index:49; max-width:min(560px,92vw); background:#1a1a1a; color:#fff; padding:8px 14px; border-radius:4px; font-size:15px; line-height:1.4; pointer-events:none; box-shadow:0 2px 10px rgba(0,0,0,.3); }
   #tourCursor[hidden], #tourCaption[hidden] { display:none; }
+  @media (max-width:1000px) { #tourCaption { left:50%; } }   /* single column: no side panel to dodge */
 </style>
 </head>
 <body>
@@ -339,27 +340,54 @@ cvMap.addEventListener('pointermove', e => { if (drag) pick(e); });
 cvMap.addEventListener('pointerup', () => { drag = false; });
 
 /*__ANIM_BEGIN__*/
-$('selMethod').addEventListener('change', () => { $('msg').textContent = ''; });
+/* ---------- paso η = k·η_crit: deslizador k + etiqueta de estabilidad ---------- */
+const slEta = $('slEta'), lblEtaEl = $('lblEta'), etaTagEl = $('etaTag');
+function etaNow() {
+  const method = $('selMethod').value, k = parseFloat(slEta.value);
+  const crit = NCdescent.etaCrit(M, method, centered());
+  return { k, crit, eta: k * crit };
+}
+function refreshEta() {
+  const { k, crit, eta } = etaNow();
+  lblEtaEl.textContent = `k = ${k.toFixed(2)} · η = ${eta.toExponential(2)}`;
+  const stable = k < 1;
+  etaTagEl.textContent = stable ? 'estable' : 'diverge';
+  etaTagEl.className = stable ? 'tip good' : 'tip bad';
+  return { k, crit, eta };
+}
+function syncEta() { slEta.value = NCdescent.defaultK(M, $('selMethod').value, centered()); return refreshEta(); }
+
+$('selMethod').addEventListener('change', () => { $('msg').textContent = ''; syncEta(); });
+$('chkCenter').addEventListener('change', syncEta);
+slEta.addEventListener('input', refreshEta);
+refreshEta();
+
 $('btnAnim').onclick = () => {
   if (animId) { stopAnim(); return; }
   if (Math.hypot(cur.a - M.astar, (cur.b - M.bstar)/150) < 0.05) { cur = {a: start.a, b: start.b}; trail = [{a: cur.a, b: cur.b}]; steps = 0; }
   $('btnAnim').textContent = '❚❚ Pausar'; $('msg').textContent = '';
-  const method = $('selMethod').value, eta = 0.15;
+  const method = $('selMethod').value;
   function frame() {
+    const { crit, eta } = etaNow();                      // read every frame: the slider works while it runs
     const per = method === 'pure' ? 60 * +$('slSpd').value : 1 + Math.floor(+$('slSpd').value / 2);
+    if (!NC.hist.length) NC.hist.push({step: steps, dS: evalS(cur.a, cur.b) - M.smin});
     for (let k = 0; k < per; k++) {
-      const [ga, gb] = evalG(cur.a, cur.b);
-      if (method === 'pure') { cur.a -= ga / lam2; cur.b -= gb / lam2; }        // η = 1/λ_máx
-      else if (centered()) {
-        const v = vOf(cur.a, cur.b) - eta * gb / (2*M.n), a2 = cur.a - eta * (ga - M.xbar*gb) / (2*sxxC);
-        cur = {a: a2, b: bOf(a2, v)};
-      } else { cur.a -= eta * ga / (2*M.sxx); cur.b -= eta * gb / (2*M.n); }
+      const next = NCdescent.step(M, cur, method, centered(), eta);
+      if (NCdescent.outOfBox(M, next, centered())) {
+        NC.hist.push({step: steps, dS: evalS(cur.a, cur.b) - M.smin});
+        update(false); stopAnim();
+        $('msg').textContent = `Divergió: η = ${eta.toExponential(2)} > η_crit = ${crit.toExponential(2)}`;
+        return;
+      }
+      cur = next;
       steps++;
       if (steps % (method === 'pure' ? 40 : 1) === 0) trail.push({a: cur.a, b: cur.b});
-      if (Math.abs(cur.a - M.astar) < 0.004 && Math.abs(cur.b - M.bstar) < 0.8) {
+      if (NCdescent.isConverged(M, cur)) {
+        NC.hist.push({step: steps, dS: evalS(cur.a, cur.b) - M.smin});
         update(true); stopAnim(); $('msg').textContent = `Convergió en ${steps} pasos: (a, b) ≈ (a*, b*)`; return;
       }
     }
+    NC.hist.push({step: steps, dS: evalS(cur.a, cur.b) - M.smin});
     update(false);
     if (steps > 200000) { stopAnim(); return; }
     $('msg').textContent = `paso ${steps} · ΔS = ${(100*(evalS(cur.a, cur.b) - M.smin)/M.smin).toFixed(3)} %` + (method === 'pure' ? ` · |b − b*| = ${Math.abs(cur.b - M.bstar).toFixed(1)} ms` + (steps > 3000 ? ' (zigzag: cond. ≈ 38 000)' : '') : '');
@@ -427,6 +455,7 @@ NC.api = {
     mapXY(a, b) { const r = cvMap.getBoundingClientRect(); return {x: r.left + sx_(a) * r.width / MW, y: r.top + sy_(vOf(a, b)) * r.height / MH}; },
     moveCursor(x, y) { cursor.hidden = false; cursor.style.transform = `translate(${x - 3}px, ${y - 2}px)`; },
     setCaption(text) { caption.textContent = text; caption.hidden = !text; },
+    scrollTo(id) { const el = $(id); if (el) el.scrollIntoView({block: 'center', behavior: 'smooth'}); },   // the left panel is the scroll container
     click(id) { $(id).click(); },
     setValue(id, v) { const el = $(id); el.value = v; el.dispatchEvent(new Event(el.tagName === 'SELECT' ? 'change' : 'input', {bubbles: true})); },
     setChecked(id, v) { const el = $(id); if (el.checked !== v) el.click(); },
@@ -451,6 +480,7 @@ NC.api = {
     const r = host.rectOf('btnTour');                          // the cursor appears on its own button, not flying in from the corner
     cursor.style.transition = 'none'; host.moveCursor(r.x + r.w / 2, r.y + r.h / 2); void cursor.offsetWidth; cursor.style.transition = '';
     while (!my.cancelled) {
+      host.setChecked('chkCenter', false); host.setValue('selMethod', 'scaled');   // every pass starts from the same clean slate
       NC.api.reset();
       if (await NCtour.runTour(host, my) !== 'done') break;
       await host.sleep(1500);
@@ -458,8 +488,11 @@ NC.api = {
     if (token === my) { stopTour(); armIdle(); }
   }
   NCtour.attach(document, e => {                               // trusted pointer/wheel/key input only
-    skipClick = !!token && btn.contains(e.target);             // the click that stops the tour must not restart it
+    const wasRunning = !!token, onAnimBtn = !!(e.target && e.target.closest && e.target.closest('#btnAnim'));
+    skipClick = wasRunning && btn.contains(e.target);          // the click that stops the tour must not restart it
     stopTour(); armIdle();
+    if (wasRunning && !onAnimBtn) NC.api.stopAnim();           // a descent the tour started must not run on unattended;
+                                                               // on the Animar button the visitor's own click pauses it
   });
   btn.addEventListener('click', () => { if (skipClick) { skipClick = false; return; } token ? stopTour() : startTour(); });
   auto.addEventListener('change', () => { try { localStorage.setItem('nc.tourAuto', auto.checked ? '1' : '0'); } catch (e) {} armIdle(); });

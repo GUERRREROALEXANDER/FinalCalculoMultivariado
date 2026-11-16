@@ -1,7 +1,7 @@
 // Judge for codigo/lab/tour.js (UMD: `module.exports` under node, `window.NCtour` in the page).
 //
 // Contract
-//   IDLE_MS = 25000, BEAT_INTRO_MS = 600
+//   IDLE_MS = 25000, BEAT_INTRO_MS = 600, CURSOR_MS = 600 (time the cursor needs to glide to its target), SCROLL_MS = 700 (smooth page scroll)
 //   createToken()  -> {cancelled: false, cancel()}
 //   isUserEvent(e) -> true only when e.isTrusted === true
 //   attach(doc, onUser) -> detach()    registers pointerdown, wheel, keydown on `doc` with
@@ -9,15 +9,16 @@
 //        detach() removes the same three with doc.removeEventListener(type, fn, true).
 //   createIdle({onIdle, setTimeout, clearTimeout}) -> {poke(), stop()}
 //        poke(): clear the pending timer (if any), then setTimeout(onIdle, IDLE_MS). stop(): clear it.
-//   BEATS: [{id, target, caption, steps}]   target = DOM id of the element the cursor goes to first.
+//   BEATS: [{id, target, view?, caption, steps}]   target = DOM id of the element the cursor goes to first.
+//     view = DOM id to bring into view first: host.scrollTo(view), then host.sleep(SCROLL_MS), before the caption and the cursor move.
 //   Actions (every `id` is a DOM id that must exist in codigo/simulador_template.html):
 //     {do:'wait', ms}                          host.sleep(ms)
-//     {do:'click', id}                         move cursor to the center of host.rectOf(id), then host.click(id)
-//     {do:'set', id, value}                    move cursor to the element, then host.setValue(id, value)
-//     {do:'check', id, value}                  move cursor to the element, then host.setChecked(id, value)
+//     {do:'click', id}                         move cursor to the center of host.rectOf(id), host.sleep(CURSOR_MS), then host.click(id)
+//     {do:'set', id, value}                    move cursor to the element, host.sleep(CURSOR_MS), then host.setValue(id, value)
+//     {do:'check', id, value}                  move cursor to the element, host.sleep(CURSOR_MS), then host.setChecked(id, value)
 //     {do:'reset'}                             host.api.reset()
-//     {do:'sweep', path:[[a,b],...], ms}       for each point, in order: host.moveCursor(host.mapXY(a,b)), host.api.setPoint(a,b),
-//                                              sleeping ms/path.length between points
+//     {do:'sweep', path:[[a,b],...], ms}       for each point, in order: host.moveCursor(host.mapXY(a,b)), host.sleep(CURSOR_MS),
+//                                              host.api.setPoint(a,b), then sleep max(0, ms/path.length - CURSOR_MS) (not after the last point)
 //     {do:'untilIdle', maxMs}                  poll every 100 ms: while host.isAnimating() and < maxMs elapsed, host.sleep(100);
 //                                              if still animating at maxMs, host.api.stopAnim()
 //   runTour(host, token, beats = BEATS) -> Promise<'done' | 'cancelled'>
@@ -44,6 +45,7 @@ function makeHost({ onSleep, animating = () => false, rect = { x: 100, y: 200, w
     mapXY: (a, b) => ({ x: a, y: b }),
     moveCursor: (x, y) => log.push(['move', x, y]),
     setCaption: t => log.push(['caption', t]),
+    scrollTo: id => log.push(['scroll', id]),
     click: id => log.push(['click', id]),
     setValue: (id, v) => log.push(['set', id, v]),
     setChecked: (id, v) => log.push(['check', id, v]),
@@ -92,8 +94,19 @@ test('BEATS: tells the planned story', () => {
   assert.deepEqual([last.do, last.id], ['click', 'btnOpt']);
 });
 
+const BOX5 = ['msg', 'btnAnim', 'cvConv', 'slEta', 'selMethod'];   // the descent box: buttons, step size, message, chart
+test('BEATS: every view id exists, the tour starts at the top and every descent is scrolled into view', () => {
+  for (const b of T.BEATS) if (b.view) assert.ok(ids.has(b.view), `view ${b.view} missing in template`);
+  assert.equal(T.BEATS[0].view, 'slA');
+  for (const b of T.BEATS.filter(b => b.steps.some(s => s.do === 'click' && s.id === 'btnAnim'))) {
+    assert.ok(BOX5.includes(b.view), `beat ${b.id} runs a descent but its view is ${b.view}`);
+  }
+  const check = T.BEATS.find(b => b.steps.some(s => s.do === 'check' && s.id === 'chkCenter'));
+  assert.ok(check && !check.steps.some(s => s.do === 'click' && s.id === 'btnAnim'), 'the centering checkbox (top of the panel) and the descent run in different beats');
+});
+
 test('BEATS: total length is between 30 s and 120 s', () => {
-  const ms = T.BEATS.reduce((t, b) => t + T.BEAT_INTRO_MS + b.steps.reduce((u, s) => u + (s.ms || s.maxMs || 0) + (s.do === 'click' || s.do === 'set' || s.do === 'check' ? 500 : 0), 0), 0);
+  const ms = T.BEATS.reduce((t, b) => t + T.BEAT_INTRO_MS + (b.view ? T.SCROLL_MS : 0) + b.steps.reduce((u, s) => u + (s.ms || s.maxMs || 0) + (s.do === 'click' || s.do === 'set' || s.do === 'check' ? 500 : 0), 0), 0);
   assert.ok(ms >= 30000 && ms <= 120000, `${ms} ms`);
 });
 
@@ -104,6 +117,28 @@ test('runTour: a full run over the real beats is done and stays on the declared 
   assert.equal(res, 'done');
   assert.ok(h.log.filter(e => e[0] === 'click' && e[1] === 'btnAnim').length >= 3);
   assert.ok(h.log.some(e => e[0] === 'set' && e[1] === 'selMethod' && e[2] === 'pure'));
+});
+
+test('runTour: a beat with view scrolls first, waits SCROLL_MS, then captions and moves the cursor', async () => {
+  assert.equal(T.SCROLL_MS, 700);
+  const h = makeHost();
+  await T.runTour(h, T.createToken(), [{ id: 't', target: 'btnAnim', view: 'msg', caption: 'c', steps: [] }]);
+  assert.deepEqual(h.log.slice(0, 4), [['scroll', 'msg'], ['sleep', 700], ['caption', 'c'], ['move', 120, 210]]);
+});
+
+test('runTour: a beat without view never scrolls', async () => {
+  const h = makeHost();
+  await T.runTour(h, T.createToken(), beat([{ do: 'wait', ms: 10 }]));
+  assert.ok(!h.log.some(e => e[0] === 'scroll'));
+});
+
+test('runTour: cancelling during the scroll wait shows no caption', async () => {
+  const token = T.createToken();
+  const h = makeHost({ onSleep: () => token.cancel() });
+  const res = await T.runTour(h, token, [{ id: 't', target: 'btnAnim', view: 'msg', caption: 'c', steps: [{ do: 'click', id: 'btnAnim' }] }]);
+  assert.equal(res, 'cancelled');
+  assert.ok(!h.log.some(e => e[0] === 'caption' && e[1] !== ''));
+  assert.ok(!h.log.some(e => e[0] === 'click'));
 });
 
 test('runTour: wait sleeps exactly ms', async () => {
@@ -118,6 +153,19 @@ test('runTour: the cursor goes to the center of the element before a click', asy
   const f = noSleep(h.log), i = f.findIndex(e => e[0] === 'click');
   assert.deepEqual(f[i], ['click', 'btnAnim']);
   assert.deepEqual(f[i - 1], ['move', 120, 210]);
+});
+
+test('runTour: the cursor gets CURSOR_MS to arrive before click, set, check and each sweep point act', async () => {
+  assert.equal(T.CURSOR_MS, 600);
+  const h = makeHost();
+  await T.runTour(h, T.createToken(), beat([
+    { do: 'click', id: 'btnAnim' }, { do: 'set', id: 'slEta', value: 1 },
+    { do: 'check', id: 'chkCenter', value: true }, { do: 'sweep', path: [[1, 2], [3, 4]], ms: 2000 }]));
+  for (const kind of ['click', 'set', 'check', 'point']) {
+    const i = h.log.findIndex(e => e[0] === kind);
+    assert.deepEqual(h.log[i - 1], ['sleep', 600], `${kind} must follow a ${600} ms sleep`);
+    assert.equal(h.log[i - 2][0], 'move');
+  }
 });
 
 test('runTour: set and check move the cursor first, then act', async () => {
