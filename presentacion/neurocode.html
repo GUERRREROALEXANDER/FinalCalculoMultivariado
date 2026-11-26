@@ -57,7 +57,6 @@
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Se muestra una R girada y la persona dice si es normal o espejo. Medimos cuánto tarda.</p>
   <template class="notes">Cada participante vio una R girada 0, 30, 60, 90, 120, 150 o 180 grados y respondió si era normal (tecla F) o espejo (tecla J). Solo aciertos: 5 por ángulo, 35 por persona, 17 personas, 595 ensayos. Diseño balanceado: 85 ensayos por ángulo.
 Las R son renders 3D hechos en Blender con la misma fuente y el mismo giro de la app.</template>
 </section>
@@ -81,7 +80,6 @@ Las R son renders 3D hechos en Blender con la misma fuente y el mismo giro de la
       <p class="cap r d3">Cada persona termina con <b>5 aciertos por ángulo</b>: 5 × 7 = 35 filas. Por eso el diseño queda <b>balanceado</b> (85 ensayos por ángulo).</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> El reloj arranca cuando aparece la R y para al oprimir la tecla. Solo cuentan los aciertos.</p>
   <template class="notes">Explicar la app con calma, porque de aquí salen todos los números. Cada ensayo: cruz de fijación de medio segundo, aparece la R girada. El cronómetro arranca con performance.now() cuando la R ya está dibujada (se usan dos requestAnimationFrame para asegurarlo). La persona presiona F si la R es normal y J si está en espejo.
 Solo guardamos aciertos. Si responde en menos de 150 ms es anticipación; si tarda más de 7 s no cuenta; si se equivoca tampoco. En esos casos el ensayo se vuelve a meter en la cola en una posición aleatoria, así todos terminan con exactamente 5 aciertos por ángulo.
 Ese balance (85 por ángulo) es lo que después permite hacer todo el cálculo con solo 7 medias.</template>
@@ -97,7 +95,6 @@ Ese balance (85 por ángulo) es lo que después permite hacer todo el cálculo c
       <p class="cap r d3">Media <b>718.7 ms</b> a 0° → <b>1169.1 ms</b> a 180°. &nbsp;¿Cuál es la <span class="amber">mejor recta</span>?</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Cada color es una persona; lo negro es el promedio por ángulo. A más giro, más tiempo.</p>
   <template class="notes">Cada color es una persona (P01 a P17), con mucha dispersión entre ellas. Las esferas negras son las siete medias por ángulo, con su valor en milisegundos, y sí siguen una recta casi perfecta. La pregunta es qué recta y = ax + b es la mejor.</template>
 </section>
 
@@ -131,7 +128,6 @@ Ese balance (85 por ángulo) es lo que después permite hacer todo el cálculo c
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Resumimos los 595 datos en 7 promedios para poder hacer las cuentas a mano.</p>
   <template class="notes">Esta es la tabla que cualquiera de nosotros puede usar en el tablero con calculadora. Columna por columna: el ángulo, la media de tiempo a ese ángulo, el ángulo al cuadrado y el producto ángulo por media. La última fila son las sumas que entran en las fórmulas.
 Ojo con Σx·y: con las medias da 655 324.13; con los 595 datos da 55 702 551, que es 85 veces la suma de las medias (85 × 655 324.13 ≈ 55 702 551).
 Si el profe pregunta por qué basta con 7 filas: porque el diseño es balanceado y la parte del error que está dentro de cada ángulo no depende de a ni de b (diapositiva de la descomposición).</template>
@@ -170,7 +166,6 @@ Si el profe pregunta por qué basta con 7 filas: porque el diseño es balanceado
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> a es la inclinación y b dónde arranca. Cada pareja (a, b) dibuja una recta distinta.</p>
   <template class="notes">Esta es la idea central. A la izquierda el plano de parámetros: cada punto (a, b) es un candidato. A la derecha, ese mismo punto dibujado como recta sobre los datos. Arrastren el punto: cerca del fondo del valle la recta se pega a las medias; lejos, se despega. La altura de S es el error de esa recta.
 El S que se muestra es el de los 595 ensayos, exacto: S = 155 637 440 + 85·Σ(ȳ − a·x − b)² (la descomposición ortogonal de la diapositiva 17). Las candidatas son las mismas de la figura 08.</template>
 </section>
@@ -194,7 +189,6 @@ El S que se muestra es el de los 595 ensayos, exacto: S = 155 637 440 + 85·Σ(�
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> S suma los errores al cuadrado. Entre más pequeño, mejor es la recta.</p>
   <template class="notes">Cada recta tiene un error total S. El cuadrado evita que errores positivos y negativos se cancelen, castiga los errores grandes y permite derivar. Las rectas punteadas tienen S mayor que la óptima, con el porcentaje en la leyenda.</template>
 </section>
 
@@ -217,7 +211,6 @@ El S que se muestra es el de los 595 ensayos, exacto: S = 155 637 440 + 85·Σ(�
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Abrimos el paréntesis para ver que S es un polinomio en a y b.</p>
   <template class="notes">Antes de derivar abrimos el cuadrado. Es un trinomio: y menos ax menos b, al cuadrado. Salen seis términos. Al sumar sobre las 595 filas, cada término se vuelve una sumatoria; el único detalle es que sumar b² 595 veces da n·b².
 Con nuestros números: 6 961 500 es Σx², 107 100 es 2Σx, 595 es n, 111 405 102 es 2Σxy, 1 107 089.8 es 2Σy y la constante es Σy².
 La idea que hay que decir en voz alta: los x e y ya están medidos, son números fijos. Lo que se mueve son a y b. Como S es un polinomio de grado 2 en a y b, su gráfica es un paraboloide. Eso explica por qué el Hessiano sale constante.</template>
@@ -238,7 +231,6 @@ La idea que hay que decir en voz alta: los x e y ya están medidos, son números
       </ol>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Vemos cómo cambia el error si movemos solo a (b queda quieta).</p>
   <template class="notes">Derivada parcial respecto de a: b se trata como constante. Regla de la cadena: la derivada de u al cuadrado es 2u por la derivada de u. Aquí u es y_i − a·x_i − b, y su derivada respecto de a es −x_i, porque y_i y b no dependen de a.
 Juntando y sumando sobre todos los datos queda −2 Σ x_i (y_i − a x_i − b). Si distribuimos, queda lineal en a y b: 2aΣx² + 2bΣx − 2Σxy.
 Comprobación rápida: derivar la expansión de la diapositiva anterior respecto de a da 2·6 961 500 a + 107 100 b − 111 405 102. Es lo mismo.</template>
@@ -260,7 +252,6 @@ Comprobación rápida: derivar la expansión de la diapositiva anterior respecto
       <div class="note r d3">Las dos derivadas son <b>lineales</b> en a y b. Por eso, al igualarlas a cero, el problema se vuelve un <b>sistema lineal 2 × 2</b>.</div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Vemos cómo cambia el error si movemos solo b (a queda quieta).</p>
   <template class="notes">Igual que antes, pero ahora la constante es a. La derivada interna de y_i − a x_i − b respecto de b es −1. Queda −2 por la suma de los residuos.
 El detalle que más se confunde: la suma de b, 595 veces, es 595·b, o sea n·b. Por eso aparece 2nb = 1190 b.
 Mensaje para cerrar: las dos parciales son funciones lineales de a y b. Igualarlas a cero da dos ecuaciones lineales con dos incógnitas, el sistema normal.</template>
@@ -283,7 +274,6 @@ Mensaje para cerrar: las dos parciales son funciones lineales de a y b. Igualarl
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> En el punto más bajo las dos derivadas valen cero.</p>
   <template class="notes">Regla de la cadena tratando la otra variable como constante. Igualar el gradiente a cero da el sistema normal: dos ecuaciones lineales y dos incógnitas. Geométricamente, el plano tangente a z = S(a, b) es horizontal: no se puede bajar más.</template>
 </section>
 
@@ -303,7 +293,6 @@ Mensaje para cerrar: las dos parciales son funciones lineales de a y b. Igualarl
       <div class="note warn r d3">Si todos los x fueran iguales, <b>D<sub>0</sub> = 0</b> y no habría una única recta. Con 7 ángulos distintos, D<sub>0</sub> &gt; 0.</div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Resolvemos dos ecuaciones con dos incógnitas por sustitución.</p>
   <template class="notes">Resolvemos el sistema normal por sustitución, como en álgebra lineal básica. De la segunda ecuación despejamos b: b = ȳ − a·x̄. Esto dice algo geométrico: la recta óptima siempre pasa por el punto promedio de los datos (90°, 930.33 ms).
 Sustituimos b en la primera ecuación, multiplicamos todo por n y agrupamos los términos con a. Sale a* = (nΣxy − ΣxΣy) / (nΣx² − (Σx)²). Al denominador lo llamamos D₀.
 D₀ también es el determinante del sistema; si fuera cero (todos los ángulos iguales) habría infinitas soluciones. Esas dos fórmulas son exactamente las líneas de la función fit() del código.</template>
@@ -326,7 +315,6 @@ D₀ también es el determinante del sistema; si fuera cero (todos los ángulos 
       <p class="cap r d4">Ojo: sumando las medias ya redondeadas da <b>6 512.30</b>; con todos los decimales es <b>6 512.29</b>, y 85 × 6 512.2929 = 553 544.9.</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Todos los números salen de los CSV: 85 veces la suma de los 7 ángulos.</p>
   <template class="notes">Aquí se responde la pregunta "¿de dónde salió ese número?". Los datos están en los 17 archivos CSV, uno por persona; usamos las columnas angulo_grados (x) y tiempo_ms (y). Como cada ángulo tiene exactamente 85 ensayos, en vez de sumar 595 filas se suman los 7 ángulos o las 7 medias y se multiplica por 85. Las medias salen de la tabla de la diapositiva 5. Σxy: cada ángulo por su media, se suman y por 85.</template>
 </section>
 
@@ -349,7 +337,6 @@ D₀ también es el determinante del sistema; si fuera cero (todos los ángulos 
       <p class="cap r d4">Con la tabla de 7 medias: <span class="mono">D<sub>0</sub> = 7(81 900) − 630² = 176 400</span> y <span class="mono">a* = 484 524.4 / 176 400 = 2.746737</span>. <b>Mismo resultado.</b></p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Metemos las sumas en las fórmulas y salen a = 2.75 y b = 683.</p>
   <template class="notes">Aquí se hace el cálculo de verdad. Primero D₀: 595 por 6 961 500 menos 53 550 al cuadrado, da 1 274 490 000. Luego el numerador: 595 por 55 702 551 menos 53 550 por 553 544.9, da 3 500 688 450. La división da a* = 2.746737 milisegundos por grado.
 Para b*: a Σy le quitamos a*·Σx (147 087.75) y dividimos entre 595. Da 683.1213 ms.
 Si el profe pide hacerlo en el tablero, usar la tabla de 7 medias: D₀ = 7·81 900 − 630² = 176 400 y el numerador 7·655 324.13 − 630·6 512.29 ≈ 484 524.4. Se divide y sale el mismo 2.7467. Cuidado: si se redondea Σȳ a 6 512.30 el numerador baja a 484 519.9 y da 2.74671; la diferencia es solo redondeo.</template>
@@ -383,7 +370,6 @@ Si el profe pide hacerlo en el tablero, usar la tabla de 7 medias: D₀ = 7·81 
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> a: milisegundos extra por cada grado. b: lo que se tarda sin girar.</p>
   <template class="notes">a* es el costo de rotar un grado: 2.75 milisegundos. Su inverso es la velocidad angular: unos 364 grados por segundo. b* es el tiempo base sin rotación, 683 milisegundos: percibir, decidir y responder.
 Muevan el control: la R gira y el modelo predice el tiempo; en los múltiplos de 30° se compara con la media medida.</template>
 </section>
@@ -410,7 +396,6 @@ Muevan el control: la R gira y el modelo predice el tiempo; en los múltiplos de
       <p class="cap r d3">Plano tangente: <span class="mono">z = S(a₀, b₀) + S<sub>a</sub>(a − a₀) + S<sub>b</sub>(b − b₀)</span>. Si S<sub>a</sub> = S<sub>b</sub> = 0, el plano es <b>horizontal</b>.</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Reemplazamos el resultado en las derivadas: si dan cero, está bien.</p>
   <template class="notes">Usamos las parciales lineales de las diapositivas anteriores. En el óptimo: 13 923 000 por a* da 38 242 815; 107 100 por b* da 73 162 287; sumando y restando 111 405 102 da cero. Lo mismo con la otra derivada.
 Para contrastar evaluamos en la candidata 1 (pendiente 4.25, intercepto 583): las dos parciales son positivas y grandes. Eso significa que S crece si subimos a o b, así que hay que bajarlos. El vector −∇S apunta hacia el mínimo; es lo que dibuja la flecha del laboratorio.
 Relación con el plano tangente: la ecuación del plano usa las parciales como pendientes. Si ambas son cero, el plano es z = constante, horizontal.</template>
@@ -432,7 +417,6 @@ Relación con el plano tangente: la ecuación del plano usa las parciales como p
       <div class="note r d3">Ninguna depende de a ni de b: <b>H es constante</b>. La curvatura es la misma en todo el plano.</div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Derivamos otra vez para saber cómo se curva la superficie.</p>
   <template class="notes">Tomamos las primeras derivadas, que ya son lineales, y derivamos otra vez. S_aa: derivar respecto de a deja 2Σx². S_bb: derivar respecto de b deja 2n = 1190. S_ab: derivar ∂S/∂a respecto de b deja 2Σx. Y S_ba sale igual, como garantiza el teorema de Schwarz (las derivadas mixtas son iguales cuando son continuas).
 Lo importante: ninguna segunda derivada tiene a ni b. El Hessiano es constante. Si el profe pregunta por qué el mínimo es global, la respuesta empieza aquí: la curvatura es positiva y es la misma en todo el plano, así que no puede haber otro punto crítico.</template>
 </section>
@@ -452,7 +436,6 @@ Lo importante: ninguna segunda derivada tiene a ni b. El Hessiano es constante. 
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> det H positivo y S_aa positivo: es un mínimo, no un máximo ni una silla.</p>
   <template class="notes">El determinante y S_aa positivos, y los dos valores propios positivos, confirman mínimo. Como H no depende de a ni de b, el mínimo es global: no puede haber máximo ni punto de silla. La curvatura es muy distinta en cada dirección: el cociente de valores propios es unas 38 mil veces.</template>
 </section>
 
@@ -475,7 +458,6 @@ Lo importante: ninguna segunda derivada tiene a ni b. El Hessiano es constante. 
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Son las dos curvaturas. Como ambas son positivas, la forma es un tazón.</p>
   <template class="notes">Los valores propios son las curvaturas en las direcciones principales del paraboloide. Se calculan con el polinomio característico: det(H − λI) = 0. Al desarrollar el determinante 2×2 queda λ² − (traza)λ + det = 0, con traza 13 924 190 y determinante 5 097 960 000.
 Con la fórmula cuadrática salen 366.13 y 13 923 823.87. Los dos son positivos, así que H es definida positiva: la superficie se curva hacia arriba en todas las direcciones.
 Dos chequeos rápidos: la suma de los valores propios es la traza y el producto es el determinante.
@@ -505,7 +487,6 @@ El cociente, unas 38 000, dice que el valle es muy estrecho en una dirección y 
       <p class="cap r d3">En el mínimo el plano tangente es <b class="amber">horizontal</b>. La bolita sigue <b>−∇S</b>: perpendicular a las elipses, siempre hacia el fondo.</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> El piso son las rectas posibles, la altura es el error y el fondo es la mejor recta.</p>
   <template class="notes">La superficie con el mínimo marcado y el plano tangente horizontal en (a*, b*). Como S es convexa, el plano queda por debajo de la superficie salvo en el mínimo.
 Pestaña 2: la bolita sigue la curva de máximo descenso −∇S (integrada numéricamente). El camino gira casi 90°: primero baja rápido y luego avanza lento por el valle alargado; eso es el Hessiano mal condicionado. La flecha mide |∇S| y llega a cero en el mínimo.
 Pestaña 3: curvas de nivel con el campo −∇S, perpendicular a las elipses.</template>
@@ -537,7 +518,6 @@ Pestaña 3: curvas de nivel con el campo −∇S, perpendicular a las elipses.</
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Porque a y b dependen una de otra. Si restamos 90 grados, se enderezan.</p>
   <template class="notes">El término cruzado es 2 por la suma de x, positivo; por eso las elipses se inclinan: a y b están correlacionados. Si centramos x restando 90, que es el promedio de los ángulos, la suma de x centrado es cero, el término cruzado desaparece y las elipses quedan alineadas con los ejes. El mínimo no cambia: el nuevo intercepto es la media de y, 930 ms, el tiempo a 90 grados.
 La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a, b), así que cada cuadro intermedio es un problema real de mínimos cuadrados.</template>
 </section>
@@ -552,7 +532,6 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       <p class="cap r d3">Fija <b>b = b*</b> y mueve <b>a</b> (o al revés): una parábola con vértice en el óptimo.</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Si dejamos fija una variable y movemos la otra, se ve una parábola.</p>
   <template class="notes">Fijar b en b* y mover a da una parábola con vértice en a*; lo mismo con b. Las secciones con otro valor fijo son parábolas paralelas más altas. Visualmente, el fondo es único.</template>
 </section>
 
@@ -575,7 +554,6 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       <div class="row center r d3"><span class="chip hot">Algoritmo propio</span><span class="chip">sin regresión de librería · NumPy y SciPy solo verifican</span></div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> El programa hace los mismos pasos que hicimos a mano.</p>
   <template class="notes">Diagrama de codigo/ajuste.py: cada caja es un paso del desarrollo manual. Primero las sumatorias, luego a* y b*, el error mínimo, el Hessiano y el criterio de segunda derivada, los residuos y la comparación con NumPy y SciPy. El pseudocódigo está en codigo/pseudocodigo.md.</template>
 </section>
 
@@ -616,7 +594,6 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Leer datos, sumar, calcular a y b, revisar el Hessiano y medir el error.</p>
   <template class="notes">Leer el diagrama en forma de S. Inicio; leemos los 17 CSV con la función load(); calculamos las cinco sumas; con ellas, fit() calcula D₀, a* y b*; evaluamos el error mínimo y comprobamos que el gradiente sea cero.
 Bajamos al Hessiano: la función hessian() arma la matriz y NumPy da el determinante y los valores propios. Decisión: si det H es positivo y S_aa es positivo, es mínimo global. Con nuestros datos siempre se cumple, porque hay ángulos distintos. La rama "no" solo pasaría si todos los x fueran iguales.
 Al final calculamos residuos, RMSE y R² con metrics(), verificamos contra NumPy y SciPy, y generamos las figuras y el laboratorio.
@@ -641,7 +618,6 @@ Aclaración honesta si preguntan: en el código el criterio se imprime y se revi
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> La receta del programa en palabras, antes de escribirla en Python.</p>
   <template class="notes">El pseudocódigo es el mismo desarrollo matemático escrito como pasos. Las líneas resaltadas son las del cálculo a mano: inicializar las sumas, D₀, a* y b*.
 Tres ideas para decir: primero, basta un solo recorrido por los datos para acumular las cinco sumas; segundo, eso hace que el algoritmo sea O(n), lineal en el número de ensayos; tercero, no hay iteraciones ni aproximaciones: como resolvimos ∇S = 0 a mano, la fórmula da el mínimo exacto. El descenso por gradiente del laboratorio es otra forma de llegar al mismo punto, y lo usamos para visualizarlo.
 La línea "SI D0 = 0" es una protección del pseudocódigo; en ajuste.py no hace falta porque siempre hay 7 ángulos distintos.</template>
@@ -669,7 +645,6 @@ La línea "SI D0 = 0" es una protección del pseudocódigo; en ajuste.py no hace
       <p class="cap r d3">No usa ninguna función de regresión: solo <b>sumas, productos y una división</b>. NumPy y SciPy aparecen después, únicamente para verificar.</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> fit() calcula las sumas y con ellas a y b.</p>
   <template class="notes">Este es el código real de la función fit(). La lectura es línea por línea contra la fórmula. Línea 2: n es la cantidad de datos. Línea 3: sumas de x y de y. Línea 4: x*x y x*y en NumPy multiplican elemento a elemento, y .sum() suma el resultado: eso es Σx² y Σxy. Línea 5: el denominador D₀. Líneas 6 y 7: a* y b*, idénticas a las fórmulas que despejamos.
 Si el profe pregunta "¿qué hace sx**2?": es Σx elevado al cuadrado, (Σx)², no la suma de los cuadrados. La suma de cuadrados es sxx.
 La función devuelve un diccionario con todas las sumas para poder imprimirlas y verificarlas.</template>
@@ -695,7 +670,6 @@ La función devuelve un diccionario con todas las sumas para poder imprimirlas y
       <p class="cap r d3">Detalle que lo confirma: <b>hessian(x)</b> solo recibe x. En el código también se ve que el Hessiano no depende de a ni de b.</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Cada función calcula una cosa: error, gradiente, Hessiano y calidad.</p>
   <template class="notes">Cuatro funciones, cuatro fórmulas. S calcula el error total exactamente como lo definimos. grad_S calcula primero el vector de residuos e y luego las dos parciales: −2Σx·e y −2Σe. Son las mismas que derivamos con la regla de la cadena.
 hessian arma la matriz 2×2 (el return está partido en dos líneas para que se lea en la diapositiva). Detalle que vale la pena señalar: la función solo recibe x, no a ni b, porque el Hessiano es constante.
 metrics calcula residuos, la suma de cuadrados del error (SSE = S mín), la variación total SST, y devuelve RMSE y R².</template>
@@ -719,7 +693,6 @@ metrics calcula residuos, la suma de cuadrados del error (SSE = S mín), la vari
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Otra forma de llegar al mínimo: bajar de a pasitos.</p>
   <template class="notes">Este es el algoritmo que anima el laboratorio. No es el que da el resultado oficial (ese es la fórmula cerrada), pero muestra el gradiente en acción. En cada paso se calcula el gradiente con las fórmulas que derivamos y se da un paso en sentido contrario.
 Versión pura: a ← a − η·∂S/∂a. El problema es el cociente de curvaturas de 38 000: para no divergir, η tiene que ser menor que 2/λ₂, y con un paso tan pequeño la dirección suave del valle (λ₁ = 366) casi no avanza.
 Versión escalada: dividimos cada componente entre su segunda derivada. Es como normalizar las unidades de a y b y converge en unos 250 pasos. Si además centramos x restando 90°, el término cruzado desaparece, el Hessiano queda diagonal y converge en unos 39 pasos.</template>
@@ -744,7 +717,6 @@ Versión escalada: dividimos cada componente entre su segunda derivada. Es como 
       <p class="cap r d3">La diferencia es solo <b>ruido de punto flotante</b>: el cálculo analítico queda verificado.</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> A mano, nuestro código y las librerías dan lo mismo.</p>
   <template class="notes">Manual, algoritmo propio y NumPy/SciPy coinciden hasta del orden de 1e-14. Esa diferencia es ruido de redondeo; el valor exacto varía un poco según la versión de la librería.</template>
 </section>
 
@@ -764,7 +736,6 @@ Versión escalada: dividimos cada componente entre su segunda derivada. Es como 
       <p class="cap r d3">Un R<sup>2</sup> bajo <b>no</b> significa que la recta esté mal: el efecto es claro (t = 7.83), pero cada ensayo individual tiene mucho ruido.</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> RMSE: error típico. R²: cuánto explica la recta. t: si la pendiente es real.</p>
   <template class="notes">El RMSE es la raíz del error cuadrático medio: un ensayo típico se aleja unos 512 ms de la recta. Es grande porque las personas varían mucho.
 SST es la variación total de los tiempos respecto a su media. R² compara: qué fracción de esa variación explica la recta. Con los 595 ensayos es 9.38 %; con las 7 medias, 96.85 %.
 La prueba t responde otra pregunta: ¿la pendiente es distinta de cero? El error estándar de a* es 0.35 (usa Σ(x − x̄)² = 2 142 000). t = 7.83 da p = 2.2×10⁻¹⁴: la probabilidad de ver una pendiente así por azar es prácticamente nula. Por eso no hay contradicción entre R² bajo y un efecto muy claro.</template>
@@ -780,7 +751,6 @@ La prueba t responde otra pregunta: ¿la pendiente es distinta de cero? El error
       <div class="row center r d3"><span class="chip">media ē ≈ 0</span><span class="chip">sin patrón curvo</span><span class="chip">el abanico crece con el ángulo</span><span class="chip hot">atípico: P09 · 150° · +5015.7 ms</span></div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Residuo = dato real menos lo que predice la recta.</p>
   <template class="notes">Residuos centrados en cero, la mayoría entre menos mil y mil milisegundos, con cola derecha. La dispersión crece con el ángulo (heterocedasticidad). El extremo es la fila 262, P09 a 150 grados: una distracción. No hay patrón curvo: lo lineal es aceptable.</template>
 </section>
 
@@ -799,7 +769,6 @@ La prueba t responde otra pregunta: ¿la pendiente es distinta de cero? El error
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Con datos sueltos hay mucho ruido; con promedios se ve clara la tendencia.</p>
   <template class="notes">Es la misma recta, los mismos a y b, evaluada en dos escalas. El 90.3 por ciento de la variación total ocurre dentro de un mismo ángulo: unas personas son más rápidas y cada persona varía de un ensayo a otro. Ningún modelo que solo conozca el ángulo puede explicar eso; por eso R² crudo es bajo aunque p = 2×10⁻¹⁴. Con las medias, la recta explica el 96.85 %.</template>
 </section>
 
@@ -818,7 +787,6 @@ La prueba t responde otra pregunta: ¿la pendiente es distinta de cero? El error
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Hicimos una recta por persona: en 16 el tiempo sube con el ángulo.</p>
   <template class="notes">Cada barra es la pendiente de una persona ajustada por separado. 16 de 17 son positivas; solo P01 no muestra efecto. Prueba de signos p = 2.7e-4. La pendiente global 2.75 queda en el centro. P09 es la más alta, 8.95; si la quitamos, a* baja a 2.36 y la conclusión no cambia.</template>
 </section>
 
@@ -836,7 +804,6 @@ La prueba t responde otra pregunta: ¿la pendiente es distinta de cero? El error
       <p class="cap r d4">Por eso minimizar S sobre 595 ensayos ≡ minimizar el error sobre las <b>7 medias</b>. Con un tiempo base por persona: misma a* = 2.7467 y R<sup>2</sup> sube a 0.38.</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Una parte del error es variación entre ensayos y ninguna recta la quita.</p>
   <template class="notes">Descomposición ortogonal: S mínimo es la variación dentro de cada ángulo más 85 veces el error de la recta sobre las medias. La primera pieza no depende de a ni de b. Por eso la recta de los 595 ensayos es exactamente la recta de las 7 medias. Si además damos a cada persona su propio tiempo base (18 parámetros), la pendiente sale idéntica y R² sube a 0.38.</template>
 </section>
 
@@ -854,7 +821,6 @@ La prueba t responde otra pregunta: ¿la pendiente es distinta de cero? El error
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Cuatro pruebas para ver si la conclusión se mantiene.</p>
   <template class="notes">A: perturbamos cada tiempo con ruido de 25 ms, 500 veces: la pendiente casi no cambia. B: quitar el mayor atípico baja a* a 2.61; quitar todos los mayores a 3 segundos, a 2.41. C: el modelo cuadrático mejora R² en tres diezmilésimas: no aporta. D: con 10 personas o más la pendiente ya se estabiliza.</template>
 </section>
 
@@ -871,7 +837,6 @@ La prueba t responde otra pregunta: ¿la pendiente es distinta de cero? El error
       <p class="cap r d3">Izquierda: todos, sin atípico, sin &gt; 3 s y cuadrático. Derecha: <b>a*</b> converge cerca de 2.7 al sumar personas.</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Aunque cambiemos los datos usados, la recta casi no cambia.</p>
   <template class="notes">Izquierda: lineal con todos los datos, sin el atípico, sin los mayores a 3 segundos, y cuadrático: casi indistinguibles sobre las medias. Derecha: la pendiente acumulada a*(N) oscila con pocos participantes y se estabiliza cerca de 2.7.</template>
 </section>
 
@@ -894,7 +859,6 @@ La prueba t responde otra pregunta: ¿la pendiente es distinta de cero? El error
       <p class="cap r d3" style="text-align:left">2 de los 17 se sumaron después de ver su ajuste; por eso <b>también reportamos con 15</b>. Los 875 incluyen sesiones repetidas y con distracciones.</p>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Contamos qué datos usamos y qué pasa con otras muestras.</p>
   <template class="notes">Lo decimos de frente: los 15 primeros se recolectaron con el protocolo. Llegaron más archivos, quitamos copias exactas y sumamos dos personas nuevas. Con 15 personas la pendiente es 2.65; con las 17, 2.75; con todo lo recolectado, incluso sesiones repetidas y distraídas, 2.41. La conclusión cualitativa no cambia.</template>
 </section>
 
@@ -913,7 +877,6 @@ La prueba t responde otra pregunta: ¿la pendiente es distinta de cero? El error
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> El cerebro tarda más si el giro es mayor; el computador tarda igual.</p>
   <template class="notes">El cerebro tarda 2.75 milisegundos más por cada grado: gira la imagen mental paso a paso, como propusieron Shepard y Metzler. Un computador aplica la matriz de rotación y tarda lo mismo para 10 que para 180 grados. La línea azul es un esquema, no una medición. Mismo problema, dos estrategias.</template>
 </section>
 
@@ -931,7 +894,6 @@ La prueba t responde otra pregunta: ¿la pendiente es distinta de cero? El error
       <a class="btn hot big r d3" href="../figuras/superficie_interactiva.html" target="_blank" rel="noopener">Abrir el laboratorio 3D ↗</a>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> Se mueve el punto y se ve cómo cambian la recta y el error.</p>
   <template class="notes">Abrimos el simulador. Arrastramos el punto sobre el mapa y vemos cómo cambian la recta y los números: S, el gradiente, la velocidad y los dos R². Pulsamos animar descenso: con el gradiente puro casi no avanza, porque el cociente de curvaturas es 38 mil; con el gradiente escalado converge en unos 250 pasos; si marcamos centrar x, las elipses se enderezan y converge en 39.</template>
 </section>
 
@@ -949,7 +911,6 @@ La prueba t responde otra pregunta: ¿la pendiente es distinta de cero? El error
       </div>
     </div>
   </div>
-  <p class="recuerda"><b>Para recordar:</b> La recta, por qué es el mínimo, qué tan buena es y sus límites.</p>
   <template class="notes">Resumen: la recta describe el costo de rotar; el cálculo garantiza el mínimo; el doble R² no es contradicción sino ruido dentro de cada ángulo (un 32 % son diferencias entre personas y un 68 % variación ensayo a ensayo); y somos transparentes con los límites: muestra pequeña, dos participantes añadidos, atípicos, heterocedasticidad.</template>
 </section>
 
