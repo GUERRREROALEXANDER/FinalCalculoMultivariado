@@ -8,6 +8,7 @@
 <link rel="stylesheet" href="assets/fonts/fonts.css">
 <link rel="stylesheet" href="assets/deck.css">
 <link rel="stylesheet" href="assets/tema-ucc.css">
+<link rel="stylesheet" href="assets/extra.css">
 </head>
 <body>
 
@@ -31,7 +32,7 @@
     <p class="tp-sub r d2">Rotación mental y mínimos cuadrados · Cálculo Multivariable</p>
     <p class="tp-auth r d3">Nicolas Casanova · Santiago Parra · Andres Muñoz· Santiago Hurtado· Jesus Guerrero </p>
     <p class="tp-inst r d4">Ingeniería de Software,<br>Universidad Cooperativa de Colombia,<br>San Juan de Pasto</p>
-    <p class="tp-date r d5">Docente: M.Sc. Alejandro Molina · 17 de noviembre de 2026</p>
+    <p class="tp-date r d5">Docente: M.Sc. Alejandro Molina · 26 de noviembre de 2026</p>
   </div>
   <template class="notes">Medimos cuánto tarda el cerebro en girar una letra R en la mente y buscamos la recta que mejor lo describe. La herramienta es cálculo de varias variables: parciales, gradiente y Hessiano. Todo con datos reales, inspirado en Shepard y Metzler (1971).</template>
 </section>
@@ -56,8 +57,34 @@
       </div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> Se muestra una R girada y la persona dice si es normal o espejo. Medimos cuánto tarda.</p>
   <template class="notes">Cada participante vio una R girada 0, 30, 60, 90, 120, 150 o 180 grados y respondió si era normal (tecla F) o espejo (tecla J). Solo aciertos: 5 por ángulo, 35 por persona, 17 personas, 595 ensayos. Diseño balanceado: 85 ensayos por ángulo.
 Las R son renders 3D hechos en Blender con la misma fuente y el mismo giro de la app.</template>
+</section>
+
+<!-- ========================= 02b · CÓMO MEDIMOS ========================= -->
+<section class="slide" data-title="Cómo medimos el tiempo" data-sec="Problema y datos" data-who="Integrante 1">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">app/index.html · protocolo de un ensayo</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Recolección de datos</span><h2>Así se mide <em>un</em> ensayo</h2></div>
+      <div class="flow r d2">
+        <div class="st glass"><b>Fijación</b><span>una cruz durante 500 ms</span></div>
+        <div class="st glass"><b>Aparece la R</b><span>girada θ ∈ {0°, 30°, …, 180°}, normal o en espejo</span></div>
+        <div class="st glass key"><b>t₀ = performance.now()</b><span>justo cuando la R ya está pintada</span></div>
+        <div class="st glass"><b>Tecla F o J</b><span>F = normal · J = espejo</span></div>
+        <div class="st glass key"><b>y = ahora − t₀</b><span>tiempo de respuesta en ms</span></div>
+        <div class="st glass"><b>Filtro</b><span>&lt; 150 ms anticipación · &gt; 7 s sin respuesta · error</span></div>
+        <div class="st glass"><b>Se repite</b><span>el ensayo inválido vuelve a la cola al azar</span></div>
+        <div class="st glass"><b>CSV</b><span>participante, ángulo, espejo, tiempo_ms…</span></div>
+      </div>
+      <p class="cap r d3">Cada persona termina con <b>5 aciertos por ángulo</b>: 5 × 7 = 35 filas. Por eso el diseño queda <b>balanceado</b> (85 ensayos por ángulo).</p>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> El reloj arranca cuando aparece la R y para al oprimir la tecla. Solo cuentan los aciertos.</p>
+  <template class="notes">Explicar la app con calma, porque de aquí salen todos los números. Cada ensayo: cruz de fijación de medio segundo, aparece la R girada. El cronómetro arranca con performance.now() cuando la R ya está dibujada (se usan dos requestAnimationFrame para asegurarlo). La persona presiona F si la R es normal y J si está en espejo.
+Solo guardamos aciertos. Si responde en menos de 150 ms es anticipación; si tarda más de 7 s no cuenta; si se equivoca tampoco. En esos casos el ensayo se vuelve a meter en la cola en una posición aleatoria, así todos terminan con exactamente 5 aciertos por ángulo.
+Ese balance (85 por ángulo) es lo que después permite hacer todo el cálculo con solo 7 medias.</template>
 </section>
 
 <!-- ========================= 03 · TENDENCIA ========================= -->
@@ -66,11 +93,48 @@ Las R son renders 3D hechos en Blender con la misma fuente y el mismo giro de la
     <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Exploración de los datos</span><span class="num">03</span></div>
     <div class="body">
       <div class="head center r d1"><h2>El tiempo <em>sube</em> con el ángulo</h2></div>
-      <div class="media r d2"><figure class="screen" style="margin:0" data-zoom><img src="../figuras/01_dispersion.png" alt="Dispersión de los 595 ensayos y medias por ángulo"><span class="zoom">ampliar</span></figure></div>
+      <div class="media r d2"><figure class="screen" style="margin:0" data-zoom><img src="../blender/renders/v2/recta_datos.png" alt="Los 595 ensayos con un color por participante, las medias por ángulo y la recta ajustada"><span class="zoom">ampliar</span></figure></div>
       <p class="cap r d3">Media <b>718.7 ms</b> a 0° → <b>1169.1 ms</b> a 180°. &nbsp;¿Cuál es la <span class="amber">mejor recta</span>?</p>
     </div>
   </div>
-  <template class="notes">Izquierda: los 595 ensayos, con mucha dispersión entre personas. Derecha: las siete medias por ángulo, que sí siguen una recta casi perfecta. La pregunta es qué recta y = ax + b es la mejor.</template>
+  <p class="recuerda"><b>Para recordar:</b> Cada color es una persona; lo negro es el promedio por ángulo. A más giro, más tiempo.</p>
+  <template class="notes">Cada color es una persona (P01 a P17), con mucha dispersión entre ellas. Las esferas negras son las siete medias por ángulo, con su valor en milisegundos, y sí siguen una recta casi perfecta. La pregunta es qué recta y = ax + b es la mejor.</template>
+</section>
+
+<!-- ========================= 03b · TABLA DE 7 MEDIAS ========================= -->
+<section class="slide" data-title="La tabla de trabajo: 7 medias" data-sec="Problema y datos" data-who="Integrante 1">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Tabla para el cálculo a mano</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Datos de trabajo</span><h2>Lo que se suma <em>a mano</em>: 7 filas</h2></div>
+      <div class="two wide-l r d2" style="align-items:center">
+        <div class="glass" style="padding:clamp(.4rem,1vw,1rem)">
+          <table class="t tight">
+            <thead><tr><th class="n">k</th><th class="n">x<sub>k</sub> (°)</th><th class="n">ȳ<sub>k</sub> (ms)</th><th class="n">x<sub>k</sub><sup>2</sup></th><th class="n">x<sub>k</sub>·ȳ<sub>k</sub></th></tr></thead>
+            <tbody>
+              <tr><td class="n">1</td><td class="n">0</td><td class="n">718.68</td><td class="n">0</td><td class="n">0.00</td></tr>
+              <tr><td class="n">2</td><td class="n">30</td><td class="n">751.74</td><td class="n">900</td><td class="n">22 552.09</td></tr>
+              <tr><td class="n">3</td><td class="n">60</td><td class="n">790.02</td><td class="n">3 600</td><td class="n">47 401.34</td></tr>
+              <tr><td class="n">4</td><td class="n">90</td><td class="n">954.60</td><td class="n">8 100</td><td class="n">85 913.79</td></tr>
+              <tr><td class="n">5</td><td class="n">120</td><td class="n">1 006.84</td><td class="n">14 400</td><td class="n">120 820.24</td></tr>
+              <tr><td class="n">6</td><td class="n">150</td><td class="n">1 121.30</td><td class="n">22 500</td><td class="n">168 194.65</td></tr>
+              <tr><td class="n">7</td><td class="n">180</td><td class="n">1 169.12</td><td class="n">32 400</td><td class="n">210 442.02</td></tr>
+            </tbody>
+            <tfoot><tr><td class="n">Σ</td><td class="n">630</td><td class="n">6 512.29</td><td class="n">81 900</td><td class="n">655 324.13</td></tr></tfoot>
+          </table>
+        </div>
+        <div class="stack">
+          <div class="note">Cada <b>ȳ<sub>k</sub></b> es el promedio de los <b>85</b> aciertos a ese ángulo.</div>
+          <div class="note">Como todos los ángulos tienen 85 datos, las sumas de los 595 ensayos salen de multiplicar:<br><span class="mono">Σx = 85 · 630 = 53 550</span><br><span class="mono">Σx² = 85 · 81 900 = 6 961 500</span></div>
+          <div class="note warn">Con estas 7 filas se obtiene <b>exactamente</b> la misma recta que con los 595 ensayos (lo demostramos más adelante).</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Resumimos los 595 datos en 7 promedios para poder hacer las cuentas a mano.</p>
+  <template class="notes">Esta es la tabla que cualquiera de nosotros puede usar en el tablero con calculadora. Columna por columna: el ángulo, la media de tiempo a ese ángulo, el ángulo al cuadrado y el producto ángulo por media. La última fila son las sumas que entran en las fórmulas.
+Ojo con Σx·y: con las medias da 655 324.13; con los 595 datos da 55 702 551, que es 85 veces la suma de las medias (85 × 655 324.13 ≈ 55 702 551).
+Si el profe pregunta por qué basta con 7 filas: porque el diseño es balanceado y la parte del error que está dentro de cada ángulo no depende de a ni de b (diapositiva de la descomposición).</template>
 </section>
 
 <!-- ========================= 04 · PUENTE (LABORATORIO) ========================= -->
@@ -106,6 +170,7 @@ Las R son renders 3D hechos en Blender con la misma fuente y el mismo giro de la
       </div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> a es la inclinación y b dónde arranca. Cada pareja (a, b) dibuja una recta distinta.</p>
   <template class="notes">Esta es la idea central. A la izquierda el plano de parámetros: cada punto (a, b) es un candidato. A la derecha, ese mismo punto dibujado como recta sobre los datos. Arrastren el punto: cerca del fondo del valle la recta se pega a las medias; lejos, se despega. La altura de S es el error de esa recta.
 El S que se muestra es el de los 595 ensayos, exacto: S = 155 637 440 + 85·Σ(ȳ − a·x − b)² (la descomposición ortogonal de la diapositiva 17). Las candidatas son las mismas de la figura 08.</template>
 </section>
@@ -129,7 +194,76 @@ El S que se muestra es el de los 595 ensayos, exacto: S = 155 637 440 + 85·Σ(�
       </div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> S suma los errores al cuadrado. Entre más pequeño, mejor es la recta.</p>
   <template class="notes">Cada recta tiene un error total S. El cuadrado evita que errores positivos y negativos se cancelen, castiga los errores grandes y permite derivar. Las rectas punteadas tienen S mayor que la óptima, con el porcentaje en la leyenda.</template>
+</section>
+
+<!-- ========================= 05b · EXPANSIÓN DE S ========================= -->
+<section class="slide" data-title="S es un polinomio de grado 2" data-sec="Gradiente y Hessiano" data-who="Integrante 2">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Desarrollo del cuadrado</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Paso previo</span><h2>Abrimos el cuadrado: S es <em>cuadrática</em> en a y b</h2></div>
+      <div class="fx r d2"><span class="fx-t">Fórmula</span><span class="math sm">S(a, b) = <span class="sum"><b>Σ</b></span>(y<sub>i</sub> − a·x<sub>i</sub> − b)<sup>2</sup> &nbsp; y &nbsp; (p − q − r)<sup>2</sup> = p<sup>2</sup> + q<sup>2</sup> + r<sup>2</sup> − 2pq − 2pr + 2qr</span></div>
+      <ol class="steps r d2">
+        <li><span class="math sm">(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>)<sup>2</sup> = <i>y<sub>i</sub></i><sup>2</sup> + <span class="p">a</span><sup>2</sup><i>x<sub>i</sub></i><sup>2</sup> + <span class="p">b</span><sup>2</sup> − 2<span class="p">a</span><i>x<sub>i</sub>y<sub>i</sub></i> − 2<span class="p">b</span><i>y<sub>i</sub></i> + 2<span class="p">ab</span><i>x<sub>i</sub></i></span><span class="why">(p − q − r)² con tres términos</span></li>
+        <li><span class="math sm">S = <span class="p">a</span><sup>2</sup>Σ<i>x</i><sup>2</sup> + 2<span class="p">ab</span>Σ<i>x</i> + <i>n</i><span class="p">b</span><sup>2</sup> − 2<span class="p">a</span>Σ<i>xy</i> − 2<span class="p">b</span>Σ<i>y</i> + Σ<i>y</i><sup>2</sup></span><span class="why">sumamos las 595 filas; Σb² = n·b²</span></li>
+        <li class="key"><span class="math sm">S = 6 961 500<span class="p">a</span><sup>2</sup> + 107 100<span class="p">ab</span> + 595<span class="p">b</span><sup>2</sup> − 111 405 102<span class="p">a</span> − 1 107 089.8<span class="p">b</span> + 687 301 826.87</span><span class="why">con nuestras sumas</span></li>
+      </ol>
+      <div class="row r d3" style="gap:1rem;flex-wrap:wrap">
+        <span class="chip">los datos ya son <b>constantes</b></span>
+        <span class="chip">las incógnitas son <b class="amber">a</b> y <b class="amber">b</b></span>
+        <span class="chip hot">grado 2 en (a, b) ⇒ la superficie es un paraboloide</span>
+      </div>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Abrimos el paréntesis para ver que S es un polinomio en a y b.</p>
+  <template class="notes">Antes de derivar abrimos el cuadrado. Es un trinomio: y menos ax menos b, al cuadrado. Salen seis términos. Al sumar sobre las 595 filas, cada término se vuelve una sumatoria; el único detalle es que sumar b² 595 veces da n·b².
+Con nuestros números: 6 961 500 es Σx², 107 100 es 2Σx, 595 es n, 111 405 102 es 2Σxy, 1 107 089.8 es 2Σy y la constante es Σy².
+La idea que hay que decir en voz alta: los x e y ya están medidos, son números fijos. Lo que se mueve son a y b. Como S es un polinomio de grado 2 en a y b, su gráfica es un paraboloide. Eso explica por qué el Hessiano sale constante.</template>
+</section>
+
+<!-- ========================= 05c · ∂S/∂a PASO A PASO ========================= -->
+<section class="slide" data-title="∂S/∂a paso a paso" data-sec="Gradiente y Hessiano" data-who="Integrante 2">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Regla de la cadena · b constante</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Derivada parcial</span><h2>Derivamos respecto de <em>a</em> (b queda fija)</h2></div>
+      <div class="fx r d2"><span class="fx-t">Fórmula</span><span class="math sm">Regla de la cadena: &nbsp; <span class="frac"><span>∂</span><span>∂a</span></span> u<sup>2</sup> = 2u · <span class="frac"><span>∂u</span><span>∂a</span></span>, &nbsp; con u = y<sub>i</sub> − a·x<sub>i</sub> − b</span></div>
+      <ol class="steps r d2">
+        <li><span class="math sm"><span class="frac"><span>∂</span><span>∂<span class="p">a</span></span></span>(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>)<sup>2</sup> = 2(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>) · <span class="frac"><span>∂</span><span>∂<span class="p">a</span></span></span>(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>)</span><span class="why">regla de la cadena: (u²)' = 2u·u'</span></li>
+        <li><span class="math sm"><span class="frac"><span>∂</span><span>∂<span class="p">a</span></span></span>(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>) = 0 − <i>x<sub>i</sub></i> − 0 = −<i>x<sub>i</sub></i></span><span class="why">y<sub>i</sub> y b son constantes</span></li>
+        <li><span class="math sm"><span class="frac"><span>∂S</span><span>∂<span class="p">a</span></span></span> = <span class="sum"><b>Σ</b></span>2(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>)(−<i>x<sub>i</sub></i>) = −2<span class="sum"><b>Σ</b></span><i>x<sub>i</sub></i>(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>)</span><span class="why">la derivada de una suma es la suma de derivadas</span></li>
+        <li class="key"><span class="math sm"><span class="frac"><span>∂S</span><span>∂<span class="p">a</span></span></span> = 2<span class="p">a</span>Σ<i>x</i><sup>2</sup> + 2<span class="p">b</span>Σ<i>x</i> − 2Σ<i>xy</i> = 13 923 000<span class="p">a</span> + 107 100<span class="p">b</span> − 111 405 102</span><span class="why">distribuimos; mismo resultado que derivar la expansión</span></li>
+      </ol>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Vemos cómo cambia el error si movemos solo a (b queda quieta).</p>
+  <template class="notes">Derivada parcial respecto de a: b se trata como constante. Regla de la cadena: la derivada de u al cuadrado es 2u por la derivada de u. Aquí u es y_i − a·x_i − b, y su derivada respecto de a es −x_i, porque y_i y b no dependen de a.
+Juntando y sumando sobre todos los datos queda −2 Σ x_i (y_i − a x_i − b). Si distribuimos, queda lineal en a y b: 2aΣx² + 2bΣx − 2Σxy.
+Comprobación rápida: derivar la expansión de la diapositiva anterior respecto de a da 2·6 961 500 a + 107 100 b − 111 405 102. Es lo mismo.</template>
+</section>
+
+<!-- ========================= 05d · ∂S/∂b PASO A PASO ========================= -->
+<section class="slide" data-title="∂S/∂b paso a paso" data-sec="Gradiente y Hessiano" data-who="Integrante 2">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Regla de la cadena · a constante</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Derivada parcial</span><h2>Derivamos respecto de <em>b</em> (a queda fija)</h2></div>
+      <div class="fx r d2"><span class="fx-t">Fórmula</span><span class="math sm">Regla de la cadena: &nbsp; <span class="frac"><span>∂</span><span>∂b</span></span> u<sup>2</sup> = 2u · <span class="frac"><span>∂u</span><span>∂b</span></span>, &nbsp; con u = y<sub>i</sub> − a·x<sub>i</sub> − b</span></div>
+      <ol class="steps r d2">
+        <li><span class="math sm"><span class="frac"><span>∂</span><span>∂<span class="p">b</span></span></span>(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>)<sup>2</sup> = 2(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>) · (−1)</span><span class="why">la derivada interna de −b es −1</span></li>
+        <li><span class="math sm"><span class="frac"><span>∂S</span><span>∂<span class="p">b</span></span></span> = −2<span class="sum"><b>Σ</b></span>(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>)</span><span class="why">sumamos las 595 filas</span></li>
+        <li><span class="math sm">−2[Σ<i>y</i> − <span class="p">a</span>Σ<i>x</i> − <i>n</i><span class="p">b</span>] = 2<span class="p">a</span>Σ<i>x</i> + 2<i>n</i><span class="p">b</span> − 2Σ<i>y</i></span><span class="why">Σb = b + b + … = n·b</span></li>
+        <li class="key"><span class="math sm"><span class="frac"><span>∂S</span><span>∂<span class="p">b</span></span></span> = 107 100<span class="p">a</span> + 1 190<span class="p">b</span> − 1 107 089.8</span><span class="why">con nuestros datos</span></li>
+      </ol>
+      <div class="note r d3">Las dos derivadas son <b>lineales</b> en a y b. Por eso, al igualarlas a cero, el problema se vuelve un <b>sistema lineal 2 × 2</b>.</div>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Vemos cómo cambia el error si movemos solo b (a queda quieta).</p>
+  <template class="notes">Igual que antes, pero ahora la constante es a. La derivada interna de y_i − a x_i − b respecto de b es −1. Queda −2 por la suma de los residuos.
+El detalle que más se confunde: la suma de b, 595 veces, es 595·b, o sea n·b. Por eso aparece 2nb = 1190 b.
+Mensaje para cerrar: las dos parciales son funciones lineales de a y b. Igualarlas a cero da dos ecuaciones lineales con dos incógnitas, el sistema normal.</template>
 </section>
 
 <!-- ========================= 06 · ∇S = 0 ========================= -->
@@ -149,7 +283,76 @@ El S que se muestra es el de los 595 ensayos, exacto: S = 155 637 440 + 85·Σ(�
       </div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> En el punto más bajo las dos derivadas valen cero.</p>
   <template class="notes">Regla de la cadena tratando la otra variable como constante. Igualar el gradiente a cero da el sistema normal: dos ecuaciones lineales y dos incógnitas. Geométricamente, el plano tangente a z = S(a, b) es horizontal: no se puede bajar más.</template>
+</section>
+
+<!-- ========================= 06b · DESPEJE GENERAL ========================= -->
+<section class="slide" data-title="Despejamos a* y b*" data-sec="Gradiente y Hessiano" data-who="Integrante 2">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Solución del sistema normal por sustitución</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Álgebra</span><h2>Del sistema a la <em>fórmula cerrada</em></h2></div>
+      <div class="fx r d2"><span class="fx-t">Fórmula</span><span class="math sm">Sistema normal: &nbsp; (1) a·Σx<sup>2</sup> + b·Σx = Σxy &nbsp;&nbsp; (2) a·Σx + n·b = Σy</span></div>
+      <ol class="steps r d2">
+        <li><span class="math sm">Ec. 2: &nbsp;<span class="p">a</span>Σ<i>x</i> + <i>n</i><span class="p">b</span> = Σ<i>y</i> &nbsp;⇒&nbsp; <span class="p">b</span> = <span class="frac"><span>Σ<i>y</i> − <span class="p">a</span>Σ<i>x</i></span><span><i>n</i></span></span> = <i>ȳ</i> − <span class="p">a</span><i>x̄</i></span><span class="why">la recta pasa por el centroide (x̄, ȳ)</span></li>
+        <li><span class="math sm">Ec. 1: &nbsp;<span class="p">a</span>Σ<i>x</i><sup>2</sup> + <span class="frac"><span>Σ<i>y</i> − <span class="p">a</span>Σ<i>x</i></span><span><i>n</i></span></span>Σ<i>x</i> = Σ<i>xy</i></span><span class="why">sustituimos b</span></li>
+        <li><span class="math sm"><span class="p">a</span>[<i>n</i>Σ<i>x</i><sup>2</sup> − (Σ<i>x</i>)<sup>2</sup>] = <i>n</i>Σ<i>xy</i> − Σ<i>x</i>Σ<i>y</i></span><span class="why">multiplicamos por n y agrupamos a</span></li>
+        <li class="key"><span class="math sm"><span class="p">a</span>* = <span class="frac"><span><i>n</i>Σ<i>xy</i> − Σ<i>x</i>Σ<i>y</i></span><span><i>D</i><sub>0</sub></span></span>, &nbsp;&nbsp; <i>D</i><sub>0</sub> = <i>n</i>Σ<i>x</i><sup>2</sup> − (Σ<i>x</i>)<sup>2</sup> &nbsp;&nbsp; <span class="p">b</span>* = <span class="frac"><span>Σ<i>y</i> − <span class="p">a</span>*Σ<i>x</i></span><span><i>n</i></span></span></span><span class="why">fórmulas que usa el código</span></li>
+      </ol>
+      <div class="note warn r d3">Si todos los x fueran iguales, <b>D<sub>0</sub> = 0</b> y no habría una única recta. Con 7 ángulos distintos, D<sub>0</sub> &gt; 0.</div>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Resolvemos dos ecuaciones con dos incógnitas por sustitución.</p>
+  <template class="notes">Resolvemos el sistema normal por sustitución, como en álgebra lineal básica. De la segunda ecuación despejamos b: b = ȳ − a·x̄. Esto dice algo geométrico: la recta óptima siempre pasa por el punto promedio de los datos (90°, 930.33 ms).
+Sustituimos b en la primera ecuación, multiplicamos todo por n y agrupamos los términos con a. Sale a* = (nΣxy − ΣxΣy) / (nΣx² − (Σx)²). Al denominador lo llamamos D₀.
+D₀ también es el determinante del sistema; si fuera cero (todos los ángulos iguales) habría infinitas soluciones. Esas dos fórmulas son exactamente las líneas de la función fit() del código.</template>
+</section>
+
+<!-- ========================= DE DÓNDE SALEN LOS VALORES ========================= -->
+<section class="slide" data-title="De dónde sale cada valor" data-sec="Gradiente y Hessiano" data-who="Integrante 2">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Sumatorias a partir de los CSV</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Origen de los datos</span><h2>¿De dónde sale <em>cada valor</em>?</h2></div>
+      <div class="fx r d2"><span class="fx-t">Idea</span><span class="math sm">Cada ángulo tiene 85 ensayos (5 aciertos × 17 personas), así que Σ(595 datos) = 85 · Σ(7 ángulos)</span></div>
+      <ol class="steps r d3">
+        <li><span class="math sm"><b>n</b> = 5 aciertos × 7 ángulos × 17 personas = <b>595</b></span><span class="why">filas de los 17 CSV</span></li>
+        <li><span class="math sm"><b>Σx</b> = 85 · (0+30+60+90+120+150+180) = 85 · 630 = <b>53 550</b></span><span class="why">columna angulo_grados</span></li>
+        <li><span class="math sm"><b>Σx²</b> = 85 · (0+900+3 600+8 100+14 400+22 500+32 400) = 85 · 81 900 = <b>6 961 500</b></span><span class="why">cada ángulo al cuadrado</span></li>
+        <li><span class="math sm"><b>Σy</b> = 85 · (718.68+751.74+790.02+954.60+1006.84+1121.30+1169.12) = <b>553 544.9</b></span><span class="why">columna tiempo_ms; 85 × media</span></li>
+        <li><span class="math sm"><b>Σxy</b> = 85 · (0+22 552.09+47 401.34+85 913.79+120 820.24+168 194.65+210 442.02) = <b>55 702 551</b></span><span class="why">ángulo × media de ese ángulo</span></li>
+      </ol>
+      <p class="cap r d4">Ojo: sumando las medias ya redondeadas da <b>6 512.30</b>; con todos los decimales es <b>6 512.29</b>, y 85 × 6 512.2929 = 553 544.9.</p>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Todos los números salen de los CSV: 85 veces la suma de los 7 ángulos.</p>
+  <template class="notes">Aquí se responde la pregunta "¿de dónde salió ese número?". Los datos están en los 17 archivos CSV, uno por persona; usamos las columnas angulo_grados (x) y tiempo_ms (y). Como cada ángulo tiene exactamente 85 ensayos, en vez de sumar 595 filas se suman los 7 ángulos o las 7 medias y se multiplica por 85. Las medias salen de la tabla de la diapositiva 5. Σxy: cada ángulo por su media, se suman y por 85.</template>
+</section>
+
+<!-- ========================= 06c · DESPEJE NUMÉRICO ========================= -->
+<section class="slide" data-title="Con nuestros números" data-sec="Gradiente y Hessiano" data-who="Integrante 2">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Sustitución numérica · n = 595</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Cálculo</span><h2>Sustituimos las <em>sumatorias</em></h2></div>
+      <div class="fx r d2"><span class="fx-t">Fórmula</span><span class="math sm">a* = <span class="frac"><span>nΣxy − Σx·Σy</span><span>nΣx<sup>2</sup> − (Σx)<sup>2</sup></span></span> &nbsp;&nbsp;&nbsp; b* = <span class="frac"><span>Σy − a*·Σx</span><span>n</span></span></span></div>
+      <div class="row r d2" style="gap:.6rem;flex-wrap:wrap">
+        <span class="chip">n = 595</span><span class="chip">Σx = 53 550</span><span class="chip">Σy = 553 544.9</span><span class="chip">Σx² = 6 961 500</span><span class="chip">Σxy = 55 702 551</span>
+      </div>
+      <ol class="steps r d3">
+        <li><span class="math sm"><i>D</i><sub>0</sub> = 595(6 961 500) − 53 550<sup>2</sup> = 4 142 092 500 − 2 867 602 500 = <b>1 274 490 000</b></span></li>
+        <li><span class="math sm">Numerador = 595(55 702 551) − 53 550(553 544.9) = 33 143 017 845 − 29 642 329 395 = <b>3 500 688 450</b></span></li>
+        <li class="key"><span class="math sm"><span class="p">a</span>* = <span class="frac"><span>3 500 688 450</span><span>1 274 490 000</span></span> = <b class="amber">2.746737 ms/°</b></span><span class="why">costo de rotar 1 grado</span></li>
+        <li class="key"><span class="math sm"><span class="p">b</span>* = <span class="frac"><span>553 544.9 − 2.746737(53 550)</span><span>595</span></span> = <span class="frac"><span>406 457.15</span><span>595</span></span> = <b class="amber">683.1213 ms</b></span><span class="why">tiempo a 0°</span></li>
+      </ol>
+      <p class="cap r d4">Con la tabla de 7 medias: <span class="mono">D<sub>0</sub> = 7(81 900) − 630² = 176 400</span> y <span class="mono">a* = 484 524.4 / 176 400 = 2.746737</span>. <b>Mismo resultado.</b></p>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Metemos las sumas en las fórmulas y salen a = 2.75 y b = 683.</p>
+  <template class="notes">Aquí se hace el cálculo de verdad. Primero D₀: 595 por 6 961 500 menos 53 550 al cuadrado, da 1 274 490 000. Luego el numerador: 595 por 55 702 551 menos 53 550 por 553 544.9, da 3 500 688 450. La división da a* = 2.746737 milisegundos por grado.
+Para b*: a Σy le quitamos a*·Σx (147 087.75) y dividimos entre 595. Da 683.1213 ms.
+Si el profe pide hacerlo en el tablero, usar la tabla de 7 medias: D₀ = 7·81 900 − 630² = 176 400 y el numerador 7·655 324.13 − 630·6 512.29 ≈ 484 524.4. Se divide y sale el mismo 2.7467. Cuidado: si se redondea Σȳ a 6 512.30 el numerador baja a 484 519.9 y da 2.74671; la diferencia es solo redondeo.</template>
 </section>
 
 <!-- ========================= 07 · RESULTADO ========================= -->
@@ -180,8 +383,58 @@ El S que se muestra es el de los 595 ensayos, exacto: S = 155 637 440 + 85·Σ(�
       </div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> a: milisegundos extra por cada grado. b: lo que se tarda sin girar.</p>
   <template class="notes">a* es el costo de rotar un grado: 2.75 milisegundos. Su inverso es la velocidad angular: unos 364 grados por segundo. b* es el tiempo base sin rotación, 683 milisegundos: percibir, decidir y responder.
 Muevan el control: la R gira y el modelo predice el tiempo; en los múltiplos de 30° se compara con la media medida.</template>
+</section>
+
+<!-- ========================= 07b · COMPROBAR ∇S = 0 ========================= -->
+<section class="slide" data-title="Comprobamos ∇S(a*, b*) = 0" data-sec="Gradiente y Hessiano" data-who="Integrante 2">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Verificación del punto crítico</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Verificación</span><h2>En el óptimo el gradiente <em>se anula</em>; fuera de él, no</h2></div>
+      <div class="fx r d2"><span class="fx-t">Fórmula</span><span class="math sm"><span class="frac"><span>∂S</span><span>∂a</span></span> = 2a·Σx<sup>2</sup> + 2b·Σx − 2Σxy &nbsp;&nbsp;&nbsp; <span class="frac"><span>∂S</span><span>∂b</span></span> = 2a·Σx + 2n·b − 2Σy</span></div>
+      <div class="two r d2">
+        <div class="card glass hot"><span class="tag">En (a*, b*) = (2.746737, 683.1213)</span>
+          <p class="math sm" style="white-space:normal">∂S/∂a = 38 242 815 + 73 162 287 − 111 405 102 = <b class="good">0</b></p>
+          <p class="math sm" style="white-space:normal">∂S/∂b = 294 175.5 + 812 914.3 − 1 107 089.8 = <b class="good">0</b></p>
+          <p>El código obtiene ∇S = (−7.2 × 10<sup>−9</sup>, −2.0 × 10<sup>−10</sup>): cero salvo redondeo.</p>
+        </div>
+        <div class="card glass"><span class="tag">En la candidata 1 · (4.25, 583)</span>
+          <p class="math sm" style="white-space:normal">∂S/∂a = 59 172 750 + 62 439 300 − 111 405 102 = <b class="amber">10 206 948</b></p>
+          <p class="math sm" style="white-space:normal">∂S/∂b = 455 175 + 693 770 − 1 107 089.8 = <b class="amber">41 855.2</b></p>
+          <p>Ambas positivas ⇒ conviene <b>bajar</b> a y b. −∇S apunta hacia el mínimo.</p>
+        </div>
+      </div>
+      <p class="cap r d3">Plano tangente: <span class="mono">z = S(a₀, b₀) + S<sub>a</sub>(a − a₀) + S<sub>b</sub>(b − b₀)</span>. Si S<sub>a</sub> = S<sub>b</sub> = 0, el plano es <b>horizontal</b>.</p>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Reemplazamos el resultado en las derivadas: si dan cero, está bien.</p>
+  <template class="notes">Usamos las parciales lineales de las diapositivas anteriores. En el óptimo: 13 923 000 por a* da 38 242 815; 107 100 por b* da 73 162 287; sumando y restando 111 405 102 da cero. Lo mismo con la otra derivada.
+Para contrastar evaluamos en la candidata 1 (pendiente 4.25, intercepto 583): las dos parciales son positivas y grandes. Eso significa que S crece si subimos a o b, así que hay que bajarlos. El vector −∇S apunta hacia el mínimo; es lo que dibuja la flecha del laboratorio.
+Relación con el plano tangente: la ecuación del plano usa las parciales como pendientes. Si ambas son cero, el plano es z = constante, horizontal.</template>
+</section>
+
+<!-- ========================= 07c · SEGUNDAS DERIVADAS ========================= -->
+<section class="slide" data-title="Segundas derivadas, una por una" data-sec="Gradiente y Hessiano" data-who="Integrante 2">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Derivamos otra vez las parciales lineales</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Segundo orden</span><h2>Cuatro derivadas, <em>tres distintas</em></h2></div>
+      <div class="fx r d2"><span class="fx-t">Fórmula</span><span class="math sm">H = [ [S<sub>aa</sub>, S<sub>ab</sub>], [S<sub>ba</sub>, S<sub>bb</sub>] ] &nbsp;&nbsp; Mínimo si det H = S<sub>aa</sub>·S<sub>bb</sub> − S<sub>ab</sub><sup>2</sup> &gt; 0 y S<sub>aa</sub> &gt; 0</span></div>
+      <ol class="steps r d2">
+        <li><span class="math sm">S<sub><i>aa</i></sub> = <span class="frac"><span>∂</span><span>∂<span class="p">a</span></span></span>(2<span class="p">a</span>Σ<i>x</i><sup>2</sup> + 2<span class="p">b</span>Σ<i>x</i> − 2Σ<i>xy</i>) = 2Σ<i>x</i><sup>2</sup> = <b>13 923 000</b></span><span class="why">curvatura en la dirección de a</span></li>
+        <li><span class="math sm">S<sub><i>bb</i></sub> = <span class="frac"><span>∂</span><span>∂<span class="p">b</span></span></span>(2<span class="p">a</span>Σ<i>x</i> + 2<i>n</i><span class="p">b</span> − 2Σ<i>y</i>) = 2<i>n</i> = <b>1 190</b></span><span class="why">curvatura en la dirección de b</span></li>
+        <li><span class="math sm">S<sub><i>ab</i></sub> = <span class="frac"><span>∂</span><span>∂<span class="p">b</span></span></span>(2<span class="p">a</span>Σ<i>x</i><sup>2</sup> + 2<span class="p">b</span>Σ<i>x</i> − 2Σ<i>xy</i>) = 2Σ<i>x</i> = <b>107 100</b></span><span class="why">término cruzado: acopla a con b</span></li>
+        <li><span class="math sm">S<sub><i>ba</i></sub> = <span class="frac"><span>∂</span><span>∂<span class="p">a</span></span></span>(2<span class="p">a</span>Σ<i>x</i> + 2<i>n</i><span class="p">b</span> − 2Σ<i>y</i>) = 2Σ<i>x</i> = <b>107 100</b> = S<sub><i>ab</i></sub></span><span class="why">teorema de Schwarz (Clairaut)</span></li>
+      </ol>
+      <div class="note r d3">Ninguna depende de a ni de b: <b>H es constante</b>. La curvatura es la misma en todo el plano.</div>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Derivamos otra vez para saber cómo se curva la superficie.</p>
+  <template class="notes">Tomamos las primeras derivadas, que ya son lineales, y derivamos otra vez. S_aa: derivar respecto de a deja 2Σx². S_bb: derivar respecto de b deja 2n = 1190. S_ab: derivar ∂S/∂a respecto de b deja 2Σx. Y S_ba sale igual, como garantiza el teorema de Schwarz (las derivadas mixtas son iguales cuando son continuas).
+Lo importante: ninguna segunda derivada tiene a ni b. El Hessiano es constante. Si el profe pregunta por qué el mínimo es global, la respuesta empieza aquí: la curvatura es positiva y es la misma en todo el plano, así que no puede haber otro punto crítico.</template>
 </section>
 
 <!-- ========================= 08 · HESSIANO ========================= -->
@@ -199,7 +452,34 @@ Muevan el control: la R gira y el modelo predice el tiempo; en los múltiplos de
       </div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> det H positivo y S_aa positivo: es un mínimo, no un máximo ni una silla.</p>
   <template class="notes">El determinante y S_aa positivos, y los dos valores propios positivos, confirman mínimo. Como H no depende de a ni de b, el mínimo es global: no puede haber máximo ni punto de silla. La curvatura es muy distinta en cada dirección: el cociente de valores propios es unas 38 mil veces.</template>
+</section>
+
+<!-- ========================= 08b · VALORES PROPIOS ========================= -->
+<section class="slide" data-title="Valores propios a mano" data-sec="Gradiente y Hessiano" data-who="Integrante 2">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Polinomio característico de H</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Álgebra lineal</span><h2>det(H − λI) = 0: <em>dos curvaturas</em> positivas</h2></div>
+      <div class="fx r d2"><span class="fx-t">Fórmula</span><span class="math sm">det(H − λI) = 0 &nbsp;⇒&nbsp; λ<sup>2</sup> − (traza)·λ + det H = 0 &nbsp;⇒&nbsp; λ = <span class="frac"><span>traza ± √(traza<sup>2</sup> − 4·det H)</span><span>2</span></span></span></div>
+      <ol class="steps r d2">
+        <li><span class="math sm">det(H − λ<i>I</i>) = (13 923 000 − λ)(1 190 − λ) − 107 100<sup>2</sup> = 0</span></li>
+        <li><span class="math sm">λ<sup>2</sup> − <b>13 924 190</b> λ + <b>5 097 960 000</b> = 0</span><span class="why">traza y determinante de H</span></li>
+        <li><span class="math sm">λ = <span class="frac"><span>13 924 190 ± √(13 924 190<sup>2</sup> − 4 · 5 097 960 000)</span><span>2</span></span> = <span class="frac"><span>13 924 190 ± 13 923 457.74</span><span>2</span></span></span><span class="why">fórmula cuadrática</span></li>
+        <li class="key"><span class="math sm">λ<sub>1</sub> = <b class="amber">366.13</b> &gt; 0 &nbsp;&nbsp;&nbsp; λ<sub>2</sub> = <b class="amber">13 923 823.87</b> &gt; 0</span><span class="why">H definida positiva ⇒ mínimo</span></li>
+      </ol>
+      <div class="two r d3">
+        <div class="note"><b>Comprobación:</b> λ₁ + λ₂ = 13 924 190 = traza; λ₁ · λ₂ = 5.098 × 10⁹ = det H.</div>
+        <div class="note warn"><b>λ₂ / λ₁ ≈ 38 030:</b> el valle es muy alargado. Por eso el descenso de gradiente puro avanza lento.</div>
+      </div>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Son las dos curvaturas. Como ambas son positivas, la forma es un tazón.</p>
+  <template class="notes">Los valores propios son las curvaturas en las direcciones principales del paraboloide. Se calculan con el polinomio característico: det(H − λI) = 0. Al desarrollar el determinante 2×2 queda λ² − (traza)λ + det = 0, con traza 13 924 190 y determinante 5 097 960 000.
+Con la fórmula cuadrática salen 366.13 y 13 923 823.87. Los dos son positivos, así que H es definida positiva: la superficie se curva hacia arriba en todas las direcciones.
+Dos chequeos rápidos: la suma de los valores propios es la traza y el producto es el determinante.
+El cociente, unas 38 000, dice que el valle es muy estrecho en una dirección y muy largo en la otra. Eso conecta con el laboratorio: el gradiente puro zigzaguea y casi no avanza.</template>
 </section>
 
 <!-- ========================= 09 · EL VALLE (BLENDER) ========================= -->
@@ -217,14 +497,15 @@ Muevan el control: la R gira y el modelo predice el tiempo; en los múltiplos de
         </div>
       </div>
       <div class="tabpanes r d2" data-panes="valle">
-        <figure class="screen on" style="margin:0" data-zoom><img src="../blender/renders/paraboloide/S_superficie_minimo.png" alt="Paraboloide S(a,b) con mínimo y plano tangente"><span class="zoom">ampliar</span></figure>
+        <figure class="screen on" style="margin:0" data-zoom><img src="../blender/renders/v2/S_superficie_malla.png" alt="Paraboloide S(a,b) con mínimo y plano tangente"><span class="zoom">ampliar</span></figure>
         <figure class="screen" style="margin:0" data-zoom><video src="../blender/renders/paraboloide/S_descenso_gradiente_0001-0240.mp4" muted loop playsinline preload="metadata" poster="../blender/renders/paraboloide/S_descenso_final.png"></video><span class="zoom">ampliar</span></figure>
-        <figure class="screen" style="margin:0" data-zoom><img src="../figuras/05_curvas_nivel.png" alt="Curvas de nivel con campo menos gradiente"><span class="zoom">ampliar</span></figure>
+        <figure class="screen" style="margin:0" data-zoom><img src="../blender/renders/v2/S_nivel_gradiente.png" alt="Curvas de nivel con campo menos gradiente"><span class="zoom">ampliar</span></figure>
         <figure class="screen" style="margin:0" data-zoom><img src="../figuras/03_superficie.png" alt="Superficie S en matplotlib"><span class="zoom">ampliar</span></figure>
       </div>
       <p class="cap r d3">En el mínimo el plano tangente es <b class="amber">horizontal</b>. La bolita sigue <b>−∇S</b>: perpendicular a las elipses, siempre hacia el fondo.</p>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> El piso son las rectas posibles, la altura es el error y el fondo es la mejor recta.</p>
   <template class="notes">La superficie con el mínimo marcado y el plano tangente horizontal en (a*, b*). Como S es convexa, el plano queda por debajo de la superficie salvo en el mínimo.
 Pestaña 2: la bolita sigue la curva de máximo descenso −∇S (integrada numéricamente). El camino gira casi 90°: primero baja rápido y luego avanza lento por el valle alargado; eso es el Hessiano mal condicionado. La flecha mide |∇S| y llega a cero en el mínimo.
 Pestaña 3: curvas de nivel con el campo −∇S, perpendicular a las elipses.</template>
@@ -256,6 +537,7 @@ Pestaña 3: curvas de nivel con el campo −∇S, perpendicular a las elipses.</
       </div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> Porque a y b dependen una de otra. Si restamos 90 grados, se enderezan.</p>
   <template class="notes">El término cruzado es 2 por la suma de x, positivo; por eso las elipses se inclinan: a y b están correlacionados. Si centramos x restando 90, que es el promedio de los ángulos, la suma de x centrado es cero, el término cruzado desaparece y las elipses quedan alineadas con los ejes. El mínimo no cambia: el nuevo intercepto es la media de y, 930 ms, el tiempo a 90 grados.
 La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a, b), así que cada cuadro intermedio es un problema real de mínimos cuadrados.</template>
 </section>
@@ -270,6 +552,7 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       <p class="cap r d3">Fija <b>b = b*</b> y mueve <b>a</b> (o al revés): una parábola con vértice en el óptimo.</p>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> Si dejamos fija una variable y movemos la otra, se ve una parábola.</p>
   <template class="notes">Fijar b en b* y mover a da una parábola con vértice en a*; lo mismo con b. Las secciones con otro valor fijo son parábolas paralelas más altas. Visualmente, el fondo es único.</template>
 </section>
 
@@ -292,7 +575,154 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       <div class="row center r d3"><span class="chip hot">Algoritmo propio</span><span class="chip">sin regresión de librería · NumPy y SciPy solo verifican</span></div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> El programa hace los mismos pasos que hicimos a mano.</p>
   <template class="notes">Diagrama de codigo/ajuste.py: cada caja es un paso del desarrollo manual. Primero las sumatorias, luego a* y b*, el error mínimo, el Hessiano y el criterio de segunda derivada, los residuos y la comparación con NumPy y SciPy. El pseudocódigo está en codigo/pseudocodigo.md.</template>
+</section>
+
+<!-- ========================= 12b · DIAGRAMA DE FLUJO ========================= -->
+<section class="slide" data-title="Diagrama de flujo" data-sec="Algoritmo y validación" data-who="Integrante 3">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Diagrama de flujo de codigo/ajuste.py</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Programación y lógica</span><h2>Diagrama de flujo: <em>cada caja es una función</em></h2></div>
+      <div class="r d2" style="flex:1;min-height:0;display:flex">
+        <svg class="fc" viewBox="0 0 1600 640" preserveAspectRatio="xMidYMid meet" role="img" aria-label="Diagrama de flujo del ajuste por mínimos cuadrados">
+          <defs><marker id="fcArrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0,0 L10,5 L0,10 z" fill="#3a4a52"/></marker></defs>
+          <!-- fila 1 -->
+          <rect class="bx end" x="20" y="72" width="180" height="76" rx="38"/><text class="w" x="110" y="110">Inicio</text>
+          <polygon class="bx io" points="285,68 525,68 495,152 255,152"/><text x="390" y="98">Leer 17 CSV</text><text class="s" x="390" y="128">load() · n = 595</text>
+          <rect class="bx" x="570" y="68" width="250" height="84" rx="4"/><text x="695" y="98">Sumatorias</text><text class="s" x="695" y="128">n, Σx, Σy, Σx², Σxy</text>
+          <rect class="bx key" x="880" y="68" width="250" height="84" rx="4"/><text x="1005" y="98">D₀, a*, b*</text><text class="s" x="1005" y="128">fit()</text>
+          <rect class="bx" x="1190" y="68" width="250" height="84" rx="4"/><text x="1315" y="98">S mín y ∇S</text><text class="s" x="1315" y="128">S(), grad_S()</text>
+          <path class="ar" d="M200 110 H262"/><path class="ar" d="M512 110 H568"/><path class="ar" d="M820 110 H878"/><path class="ar" d="M1130 110 H1188"/>
+          <path class="ar" d="M1315 152 V286"/>
+          <!-- fila 2 (derecha a izquierda) -->
+          <rect class="bx" x="1190" y="288" width="250" height="84" rx="4"/><text x="1315" y="318">Hessiano H</text><text class="s" x="1315" y="348">hessian(), det, eigvalsh</text>
+          <polygon class="bx key" points="1005,256 1145,330 1005,404 865,330"/><text x="1005" y="318">¿det H &gt; 0</text><text x="1005" y="346">y S<tspan dy="6" font-size="15">aa</tspan><tspan dy="-6"> &gt; 0?</tspan></text>
+          <rect class="bx ok" x="570" y="288" width="250" height="84" rx="4"/><text x="695" y="318">Mínimo global</text><text class="s" x="695" y="348">paraboloide convexo</text>
+          <rect class="bx" x="265" y="288" width="250" height="84" rx="4"/><text x="390" y="318">Residuos</text><text class="s" x="390" y="348">metrics(): RMSE, R²</text>
+          <path class="ar" d="M1190 330 H1147"/><path class="ar" d="M865 330 H822"/><text class="lab" x="843" y="310">sí</text>
+          <path class="ar" d="M570 330 H517"/>
+          <path class="ar" d="M390 372 V496"/>
+          <!-- fila 3 -->
+          <rect class="bx" x="265" y="498" width="250" height="84" rx="4"/><text x="390" y="528">Verificar</text><text class="s" x="390" y="558">polyfit, linregress</text>
+          <rect class="bx" x="570" y="498" width="250" height="84" rx="4"/><text x="695" y="528">Figuras y laboratorio</text><text class="s" x="695" y="558">PNG 01–12 · HTML 3D</text>
+          <rect class="bx end" x="880" y="502" width="180" height="76" rx="38"/><text class="w" x="970" y="540">Fin</text>
+          <path class="ar" d="M515 540 H568"/><path class="ar" d="M820 540 H878"/>
+          <!-- rama no -->
+          <path class="ar no" d="M1005 404 V450 H1315 V496"/><text class="lab no" x="1030" y="432">no</text>
+          <rect class="bx key" x="1190" y="498" width="250" height="84" rx="4"/><text x="1315" y="528">Revisar datos</text><text class="s" x="1315" y="558">¿todos los x iguales?</text>
+        </svg>
+      </div>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Leer datos, sumar, calcular a y b, revisar el Hessiano y medir el error.</p>
+  <template class="notes">Leer el diagrama en forma de S. Inicio; leemos los 17 CSV con la función load(); calculamos las cinco sumas; con ellas, fit() calcula D₀, a* y b*; evaluamos el error mínimo y comprobamos que el gradiente sea cero.
+Bajamos al Hessiano: la función hessian() arma la matriz y NumPy da el determinante y los valores propios. Decisión: si det H es positivo y S_aa es positivo, es mínimo global. Con nuestros datos siempre se cumple, porque hay ángulos distintos. La rama "no" solo pasaría si todos los x fueran iguales.
+Al final calculamos residuos, RMSE y R² con metrics(), verificamos contra NumPy y SciPy, y generamos las figuras y el laboratorio.
+Aclaración honesta si preguntan: en el código el criterio se imprime y se revisa en resultados.txt; no hay un if que detenga el programa.</template>
+</section>
+
+<!-- ========================= 12c · PSEUDOCÓDIGO ========================= -->
+<section class="slide" data-title="Pseudocódigo" data-sec="Algoritmo y validación" data-who="Integrante 3">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">codigo/pseudocodigo.md</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Programación y lógica</span><h2>El algoritmo en <em>pseudocódigo</em></h2></div>
+      <div class="two wide-l r d2" style="flex:1;min-height:0">
+        <div class="codewrap"><span class="code-title">AjusteMinimosCuadrados</span>
+<pre class="code"><span class="l"><span class="kw">ENTRADA</span>: archivos CSV con pares (x<sub>i</sub>, y<sub>i</sub>)</span><span class="l"><span class="kw">SALIDA</span>:  a*, b*, S_min, H, RMSE, R²</span><span class="l"></span><span class="l hl">n ← 0;  Sx ← 0;  Sy ← 0;  Sxx ← 0;  Sxy ← 0</span><span class="l"><span class="kw">PARA</span> i ← 1 <span class="kw">HASTA</span> n <span class="kw">HACER</span></span><span class="l">    Sx ← Sx + x<sub>i</sub>;      Sy  ← Sy  + y<sub>i</sub></span><span class="l">    Sxx ← Sxx + x<sub>i</sub>²;  Sxy ← Sxy + x<sub>i</sub>·y<sub>i</sub></span><span class="l"><span class="kw">FIN PARA</span></span><span class="l hl">D0 ← n·Sxx − Sx²</span><span class="l"><span class="kw">SI</span> D0 = 0 <span class="kw">ENTONCES</span> <span class="kw">ERROR</span> <span class="st">"x constantes"</span></span><span class="l hl">a* ← (n·Sxy − Sx·Sy) / D0</span><span class="l hl">b* ← (Sy − a*·Sx) / n</span><span class="l">S_min ← Σ (y<sub>i</sub> − a*·x<sub>i</sub> − b*)²</span><span class="l">H ← [[2·Sxx, 2·Sx], [2·Sx, 2·n]]</span><span class="l"><span class="kw">SI</span> det(H) &gt; 0 <span class="kw">Y</span> H[1,1] &gt; 0 <span class="kw">ENTONCES</span></span><span class="l">    <span class="kw">ESCRIBIR</span> <span class="st">"mínimo global"</span></span><span class="l"><span class="kw">FIN SI</span></span><span class="l">RMSE ← √(S_min / n);   R² ← 1 − S_min / SST</span></pre>
+        </div>
+        <div class="stack">
+          <div class="card glass"><span class="tag">Un solo recorrido</span><p>Las cinco sumas se acumulan en <b>una pasada</b> por los datos.</p></div>
+          <div class="card glass"><span class="tag">Complejidad</span><span class="big">O(n)</span><p>tiempo lineal; memoria O(1) además de los datos</p></div>
+          <div class="card glass hot"><span class="tag">Sin iteraciones</span><p>No hay que “buscar” el mínimo: la fórmula cerrada lo da <b>exacto</b> en un paso.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> La receta del programa en palabras, antes de escribirla en Python.</p>
+  <template class="notes">El pseudocódigo es el mismo desarrollo matemático escrito como pasos. Las líneas resaltadas son las del cálculo a mano: inicializar las sumas, D₀, a* y b*.
+Tres ideas para decir: primero, basta un solo recorrido por los datos para acumular las cinco sumas; segundo, eso hace que el algoritmo sea O(n), lineal en el número de ensayos; tercero, no hay iteraciones ni aproximaciones: como resolvimos ∇S = 0 a mano, la fórmula da el mínimo exacto. El descenso por gradiente del laboratorio es otra forma de llegar al mismo punto, y lo usamos para visualizarlo.
+La línea "SI D0 = 0" es una protección del pseudocódigo; en ajuste.py no hace falta porque siempre hay 7 ángulos distintos.</template>
+</section>
+
+<!-- ========================= 12d · fit() ========================= -->
+<section class="slide" data-title="Código: fit()" data-sec="Algoritmo y validación" data-who="Integrante 3">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">codigo/ajuste.py · líneas 77–84</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Relación código ↔ modelo</span><h2>Cada línea de <em>fit()</em> es una fórmula</h2></div>
+      <div class="two r d2" style="align-items:center">
+        <div class="codewrap"><span class="code-title">ajuste.py</span>
+<pre class="code"><span class="l"><span class="kw">def</span> <span class="fn">fit</span>(x, y):</span><span class="l hl">    n = <span class="fn">len</span>(x)</span><span class="l hl">    sx, sy = x.<span class="fn">sum</span>(), y.<span class="fn">sum</span>()</span><span class="l hl">    sxx, sxy = (x * x).<span class="fn">sum</span>(), (x * y).<span class="fn">sum</span>()</span><span class="l hl">    d = n * sxx - sx**<span class="nu">2</span></span><span class="l hl">    a = (n * sxy - sx * sy) / d</span><span class="l hl">    b = (sy - a * sx) / n</span><span class="l">    <span class="kw">return</span> <span class="fn">dict</span>(n=n, sx=sx, sy=sy, sxx=sxx,</span><span class="l">                sxy=sxy, d=d, a=a, b=b)</span></pre>
+        </div>
+        <div class="map">
+          <div><span class="ln">2</span><span class="math sm"><i>n</i> = 595 <small>número de ensayos</small></span></div>
+          <div><span class="ln">3</span><span class="math sm">Σ<i>x</i>, Σ<i>y</i> <small>x e y son vectores de NumPy</small></span></div>
+          <div><span class="ln">4</span><span class="math sm">Σ<i>x</i><sup>2</sup>, Σ<i>xy</i> <small>x * y multiplica elemento a elemento</small></span></div>
+          <div><span class="ln">5</span><span class="math sm"><i>D</i><sub>0</sub> = <i>n</i>Σ<i>x</i><sup>2</sup> − (Σ<i>x</i>)<sup>2</sup></span></div>
+          <div><span class="ln">6</span><span class="math sm"><span class="p">a</span>* = (<i>n</i>Σ<i>xy</i> − Σ<i>x</i>Σ<i>y</i>) / <i>D</i><sub>0</sub></span></div>
+          <div><span class="ln">7</span><span class="math sm"><span class="p">b</span>* = (Σ<i>y</i> − <span class="p">a</span>*Σ<i>x</i>) / <i>n</i></span></div>
+        </div>
+      </div>
+      <p class="cap r d3">No usa ninguna función de regresión: solo <b>sumas, productos y una división</b>. NumPy y SciPy aparecen después, únicamente para verificar.</p>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> fit() calcula las sumas y con ellas a y b.</p>
+  <template class="notes">Este es el código real de la función fit(). La lectura es línea por línea contra la fórmula. Línea 2: n es la cantidad de datos. Línea 3: sumas de x y de y. Línea 4: x*x y x*y en NumPy multiplican elemento a elemento, y .sum() suma el resultado: eso es Σx² y Σxy. Línea 5: el denominador D₀. Líneas 6 y 7: a* y b*, idénticas a las fórmulas que despejamos.
+Si el profe pregunta "¿qué hace sx**2?": es Σx elevado al cuadrado, (Σx)², no la suma de los cuadrados. La suma de cuadrados es sxx.
+La función devuelve un diccionario con todas las sumas para poder imprimirlas y verificarlas.</template>
+</section>
+
+<!-- ========================= 12e · S, grad, H, metrics ========================= -->
+<section class="slide" data-title="Código: S, ∇S, H y R²" data-sec="Algoritmo y validación" data-who="Integrante 3">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">codigo/ajuste.py · líneas 87–105</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Relación código ↔ modelo</span><h2>El resto del cálculo, <em>función por función</em></h2></div>
+      <div class="two r d2" style="align-items:center">
+        <div class="codewrap"><span class="code-title">ajuste.py</span>
+<pre class="code"><span class="l"><span class="kw">def</span> <span class="fn">S</span>(a, b, x, y):</span><span class="l hl">    <span class="kw">return</span> ((y - a * x - b) ** <span class="nu">2</span>).<span class="fn">sum</span>()</span><span class="l"></span><span class="l"><span class="kw">def</span> <span class="fn">grad_S</span>(a, b, x, y):</span><span class="l">    e = y - a * x - b</span><span class="l hl">    <span class="kw">return</span> np.array([-<span class="nu">2.0</span> * (x * e).<span class="fn">sum</span>(), -<span class="nu">2.0</span> * e.<span class="fn">sum</span>()])</span><span class="l"></span><span class="l"><span class="kw">def</span> <span class="fn">hessian</span>(x):</span><span class="l">    n = <span class="fn">len</span>(x)</span><span class="l hl">    <span class="kw">return</span> np.array([[<span class="nu">2</span> * (x * x).<span class="fn">sum</span>(), <span class="nu">2</span> * x.<span class="fn">sum</span>()],</span><span class="l hl">                     [<span class="nu">2</span> * x.<span class="fn">sum</span>(), <span class="nu">2</span> * n]], dtype=<span class="fn">float</span>)</span><span class="l"></span><span class="l"><span class="kw">def</span> <span class="fn">metrics</span>(x, y, a, b):</span><span class="l">    e = y - (a * x + b)</span><span class="l">    sse = (e**<span class="nu">2</span>).<span class="fn">sum</span>()</span><span class="l">    sst = ((y - y.<span class="fn">mean</span>()) ** <span class="nu">2</span>).<span class="fn">sum</span>()</span><span class="l hl">    <span class="kw">return</span> e, np.<span class="fn">sqrt</span>(sse / <span class="fn">len</span>(x)), <span class="nu">1</span> - sse / sst</span></pre>
+        </div>
+        <div class="map">
+          <div><span class="ln">2</span><span class="math sm">S(<span class="p">a</span>, <span class="p">b</span>) = Σ(<i>y<sub>i</sub></i> − <span class="p">a</span><i>x<sub>i</sub></i> − <span class="p">b</span>)<sup>2</sup></span></div>
+          <div><span class="ln">6</span><span class="math sm">∇S = (−2Σ<i>x<sub>i</sub>e<sub>i</sub></i>, −2Σ<i>e<sub>i</sub></i>) <small>las parciales que derivamos</small></span></div>
+          <div><span class="ln">10</span><span class="math sm">H = [[2Σ<i>x</i><sup>2</sup>, 2Σ<i>x</i>], [2Σ<i>x</i>, 2<i>n</i>]] <small>no recibe a ni b: H es constante</small></span></div>
+          <div><span class="ln">17</span><span class="math sm">RMSE = √(S<sub>mín</sub>/<i>n</i>), &nbsp;R<sup>2</sup> = 1 − S<sub>mín</sub>/SST</span></div>
+        </div>
+      </div>
+      <p class="cap r d3">Detalle que lo confirma: <b>hessian(x)</b> solo recibe x. En el código también se ve que el Hessiano no depende de a ni de b.</p>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Cada función calcula una cosa: error, gradiente, Hessiano y calidad.</p>
+  <template class="notes">Cuatro funciones, cuatro fórmulas. S calcula el error total exactamente como lo definimos. grad_S calcula primero el vector de residuos e y luego las dos parciales: −2Σx·e y −2Σe. Son las mismas que derivamos con la regla de la cadena.
+hessian arma la matriz 2×2 (el return está partido en dos líneas para que se lea en la diapositiva). Detalle que vale la pena señalar: la función solo recibe x, no a ni b, porque el Hessiano es constante.
+metrics calcula residuos, la suma de cuadrados del error (SSE = S mín), la variación total SST, y devuelve RMSE y R².</template>
+</section>
+
+<!-- ========================= 12f · DESCENSO ========================= -->
+<section class="slide" data-title="Algoritmo de descenso por gradiente" data-sec="Algoritmo y validación" data-who="Integrante 3">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">codigo/lab/descent.js · otra forma de llegar al mínimo</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Método iterativo</span><h2>Bajar por <em>−∇S</em> paso a paso</h2></div>
+      <div class="two wide-l r d2" style="flex:1;min-height:0;align-items:center">
+        <div class="codewrap"><span class="code-title">DescensoGradiente</span>
+<pre class="code"><span class="l"><span class="kw">ENTRADA</span>: punto inicial (a, b), paso η, método</span><span class="l"><span class="kw">REPETIR</span></span><span class="l hl">    g<sub>a</sub> ← 2·Sxx·a + 2·Sx·b − 2·Sxy        <span class="cm">// ∂S/∂a</span></span><span class="l hl">    g<sub>b</sub> ← 2·Sx·a  + 2·n·b  − 2·Sy         <span class="cm">// ∂S/∂b</span></span><span class="l">    <span class="kw">SI</span> método = <span class="st">"puro"</span> <span class="kw">ENTONCES</span></span><span class="l hl">        a ← a − η·g<sub>a</sub>;   b ← b − η·g<sub>b</sub></span><span class="l">    <span class="kw">SI NO</span>                          <span class="cm">// escalado</span></span><span class="l hl">        a ← a − η·g<sub>a</sub>/S<sub>aa</sub>;  b ← b − η·g<sub>b</sub>/S<sub>bb</sub></span><span class="l">    <span class="kw">FIN SI</span></span><span class="l"><span class="kw">HASTA</span> |a − a*| &lt; 0.004 <span class="kw">Y</span> |b − b*| &lt; 0.8</span></pre>
+        </div>
+        <div class="stack">
+          <div class="card glass"><span class="tag">Puro</span><p>Estable solo si η &lt; 2/λ₂ ≈ 1.4 × 10⁻⁷. Con ese paso, la dirección de λ₁ = 366 casi no avanza: <b>zigzag</b>.</p></div>
+          <div class="card glass hot"><span class="tag">Escalado</span><p>Divide cada componente entre su curvatura (S<sub>aa</sub>, S<sub>bb</sub>): unos <b>250 pasos</b>.</p></div>
+          <div class="card glass"><span class="tag">Centrado x − 90°</span><p>H queda diagonal: unos <b>39 pasos</b>.</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> Otra forma de llegar al mínimo: bajar de a pasitos.</p>
+  <template class="notes">Este es el algoritmo que anima el laboratorio. No es el que da el resultado oficial (ese es la fórmula cerrada), pero muestra el gradiente en acción. En cada paso se calcula el gradiente con las fórmulas que derivamos y se da un paso en sentido contrario.
+Versión pura: a ← a − η·∂S/∂a. El problema es el cociente de curvaturas de 38 000: para no divergir, η tiene que ser menor que 2/λ₂, y con un paso tan pequeño la dirección suave del valle (λ₁ = 366) casi no avanza.
+Versión escalada: dividimos cada componente entre su segunda derivada. Es como normalizar las unidades de a y b y converge en unos 250 pasos. Si además centramos x restando 90°, el término cruzado desaparece, el Hessiano queda diagonal y converge en unos 39 pasos.</template>
 </section>
 
 <!-- ========================= 13 · VALIDACIÓN ========================= -->
@@ -314,7 +744,30 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       <p class="cap r d3">La diferencia es solo <b>ruido de punto flotante</b>: el cálculo analítico queda verificado.</p>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> A mano, nuestro código y las librerías dan lo mismo.</p>
   <template class="notes">Manual, algoritmo propio y NumPy/SciPy coinciden hasta del orden de 1e-14. Esa diferencia es ruido de redondeo; el valor exacto varía un poco según la versión de la librería.</template>
+</section>
+
+<!-- ========================= 13b · RMSE Y R² ========================= -->
+<section class="slide" data-title="RMSE, R² y prueba t" data-sec="Algoritmo y validación" data-who="Integrante 3">
+  <div class="win">
+    <div class="bar"><button class="back" data-prev aria-label="Anterior">‹</button><span class="wt">Calidad del ajuste con fórmulas</span><span class="num">—</span></div>
+    <div class="body">
+      <div class="head r d1"><span class="eyebrow">Calidad del ajuste</span><h2>¿Qué tan buena es la recta? <em>Tres números</em></h2></div>
+      <div class="fx r d2"><span class="fx-t">Fórmula</span><span class="math sm">RMSE = √(S<sub>mín</sub> / n) &nbsp;&nbsp; R<sup>2</sup> = 1 − <span class="frac"><span>S<sub>mín</sub></span><span>SST</span></span> &nbsp;&nbsp; SST = Σ(y − ȳ)<sup>2</sup> &nbsp;&nbsp; t = <span class="frac"><span>a*</span><span>error estándar de a*</span></span></span></div>
+      <ol class="steps r d2">
+        <li><span class="math sm">RMSE = √(S<sub>mín</sub> / <i>n</i>) = √(156 163 296.22 / 595) = <b>512.3 ms</b></span><span class="why">error típico de un ensayo</span></li>
+        <li><span class="math sm">SST = Σ<i>y</i><sup>2</sup> − (Σ<i>y</i>)<sup>2</sup>/<i>n</i> = 687 301 826.87 − 553 544.9<sup>2</sup>/595 = <b>172 323 749.03</b></span><span class="why">variación total de los tiempos</span></li>
+        <li><span class="math sm">R<sup>2</sup> = 1 − <span class="frac"><span>156 163 296.22</span><span>172 323 749.03</span></span> = <b>0.0938</b> &nbsp;·&nbsp; con las 7 medias: 1 − <span class="frac"><span>6 186.54</span><span>196 309.52</span></span> = <b class="good">0.9685</b></span><span class="why">fracción de la variación que explica la recta</span></li>
+        <li class="key"><span class="math sm"><i>t</i> = <span class="frac"><span><span class="p">a</span>*</span><span>√( S<sub>mín</sub>/(<i>n</i>−2) / Σ(<i>x</i> − <i>x̄</i>)<sup>2</sup> )</span></span> = <span class="frac"><span>2.7467</span><span>0.3506</span></span> = <b class="amber">7.83</b> &nbsp;⇒&nbsp; <i>p</i> = 2.2 × 10<sup>−14</sup></span><span class="why">la pendiente no es cero</span></li>
+      </ol>
+      <p class="cap r d3">Un R<sup>2</sup> bajo <b>no</b> significa que la recta esté mal: el efecto es claro (t = 7.83), pero cada ensayo individual tiene mucho ruido.</p>
+    </div>
+  </div>
+  <p class="recuerda"><b>Para recordar:</b> RMSE: error típico. R²: cuánto explica la recta. t: si la pendiente es real.</p>
+  <template class="notes">El RMSE es la raíz del error cuadrático medio: un ensayo típico se aleja unos 512 ms de la recta. Es grande porque las personas varían mucho.
+SST es la variación total de los tiempos respecto a su media. R² compara: qué fracción de esa variación explica la recta. Con los 595 ensayos es 9.38 %; con las 7 medias, 96.85 %.
+La prueba t responde otra pregunta: ¿la pendiente es distinta de cero? El error estándar de a* es 0.35 (usa Σ(x − x̄)² = 2 142 000). t = 7.83 da p = 2.2×10⁻¹⁴: la probabilidad de ver una pendiente así por azar es prácticamente nula. Por eso no hay contradicción entre R² bajo y un efecto muy claro.</template>
 </section>
 
 <!-- ========================= 14 · RESIDUOS ========================= -->
@@ -327,6 +780,7 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       <div class="row center r d3"><span class="chip">media ē ≈ 0</span><span class="chip">sin patrón curvo</span><span class="chip">el abanico crece con el ángulo</span><span class="chip hot">atípico: P09 · 150° · +5015.7 ms</span></div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> Residuo = dato real menos lo que predice la recta.</p>
   <template class="notes">Residuos centrados en cero, la mayoría entre menos mil y mil milisegundos, con cola derecha. La dispersión crece con el ángulo (heterocedasticidad). El extremo es la fila 262, P09 a 150 grados: una distracción. No hay patrón curvo: lo lineal es aceptable.</template>
 </section>
 
@@ -345,6 +799,7 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       </div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> Con datos sueltos hay mucho ruido; con promedios se ve clara la tendencia.</p>
   <template class="notes">Es la misma recta, los mismos a y b, evaluada en dos escalas. El 90.3 por ciento de la variación total ocurre dentro de un mismo ángulo: unas personas son más rápidas y cada persona varía de un ensayo a otro. Ningún modelo que solo conozca el ángulo puede explicar eso; por eso R² crudo es bajo aunque p = 2×10⁻¹⁴. Con las medias, la recta explica el 96.85 %.</template>
 </section>
 
@@ -363,6 +818,7 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       </div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> Hicimos una recta por persona: en 16 el tiempo sube con el ángulo.</p>
   <template class="notes">Cada barra es la pendiente de una persona ajustada por separado. 16 de 17 son positivas; solo P01 no muestra efecto. Prueba de signos p = 2.7e-4. La pendiente global 2.75 queda en el centro. P09 es la más alta, 8.95; si la quitamos, a* baja a 2.36 y la conclusión no cambia.</template>
 </section>
 
@@ -380,6 +836,7 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       <p class="cap r d4">Por eso minimizar S sobre 595 ensayos ≡ minimizar el error sobre las <b>7 medias</b>. Con un tiempo base por persona: misma a* = 2.7467 y R<sup>2</sup> sube a 0.38.</p>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> Una parte del error es variación entre ensayos y ninguna recta la quita.</p>
   <template class="notes">Descomposición ortogonal: S mínimo es la variación dentro de cada ángulo más 85 veces el error de la recta sobre las medias. La primera pieza no depende de a ni de b. Por eso la recta de los 595 ensayos es exactamente la recta de las 7 medias. Si además damos a cada persona su propio tiempo base (18 parámetros), la pendiente sale idéntica y R² sube a 0.38.</template>
 </section>
 
@@ -397,6 +854,7 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       </div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> Cuatro pruebas para ver si la conclusión se mantiene.</p>
   <template class="notes">A: perturbamos cada tiempo con ruido de 25 ms, 500 veces: la pendiente casi no cambia. B: quitar el mayor atípico baja a* a 2.61; quitar todos los mayores a 3 segundos, a 2.41. C: el modelo cuadrático mejora R² en tres diezmilésimas: no aporta. D: con 10 personas o más la pendiente ya se estabiliza.</template>
 </section>
 
@@ -413,6 +871,7 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       <p class="cap r d3">Izquierda: todos, sin atípico, sin &gt; 3 s y cuadrático. Derecha: <b>a*</b> converge cerca de 2.7 al sumar personas.</p>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> Aunque cambiemos los datos usados, la recta casi no cambia.</p>
   <template class="notes">Izquierda: lineal con todos los datos, sin el atípico, sin los mayores a 3 segundos, y cuadrático: casi indistinguibles sobre las medias. Derecha: la pendiente acumulada a*(N) oscila con pocos participantes y se estabiliza cerca de 2.7.</template>
 </section>
 
@@ -435,6 +894,7 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       <p class="cap r d3" style="text-align:left">2 de los 17 se sumaron después de ver su ajuste; por eso <b>también reportamos con 15</b>. Los 875 incluyen sesiones repetidas y con distracciones.</p>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> Contamos qué datos usamos y qué pasa con otras muestras.</p>
   <template class="notes">Lo decimos de frente: los 15 primeros se recolectaron con el protocolo. Llegaron más archivos, quitamos copias exactas y sumamos dos personas nuevas. Con 15 personas la pendiente es 2.65; con las 17, 2.75; con todo lo recolectado, incluso sesiones repetidas y distraídas, 2.41. La conclusión cualitativa no cambia.</template>
 </section>
 
@@ -453,6 +913,7 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       </div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> El cerebro tarda más si el giro es mayor; el computador tarda igual.</p>
   <template class="notes">El cerebro tarda 2.75 milisegundos más por cada grado: gira la imagen mental paso a paso, como propusieron Shepard y Metzler. Un computador aplica la matriz de rotación y tarda lo mismo para 10 que para 180 grados. La línea azul es un esquema, no una medición. Mismo problema, dos estrategias.</template>
 </section>
 
@@ -470,6 +931,7 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       <a class="btn hot big r d3" href="../figuras/superficie_interactiva.html" target="_blank" rel="noopener">Abrir el laboratorio 3D ↗</a>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> Se mueve el punto y se ve cómo cambian la recta y el error.</p>
   <template class="notes">Abrimos el simulador. Arrastramos el punto sobre el mapa y vemos cómo cambian la recta y los números: S, el gradiente, la velocidad y los dos R². Pulsamos animar descenso: con el gradiente puro casi no avanza, porque el cociente de curvaturas es 38 mil; con el gradiente escalado converge en unos 250 pasos; si marcamos centrar x, las elipses se enderezan y converge en 39.</template>
 </section>
 
@@ -487,6 +949,7 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       </div>
     </div>
   </div>
+  <p class="recuerda"><b>Para recordar:</b> La recta, por qué es el mínimo, qué tan buena es y sus límites.</p>
   <template class="notes">Resumen: la recta describe el costo de rotar; el cálculo garantiza el mínimo; el doble R² no es contradicción sino ruido dentro de cada ángulo (un 32 % son diferencias entre personas y un 68 % variación ensayo a ensayo); y somos transparentes con los límites: muestra pequeña, dos participantes añadidos, atípicos, heterocedasticidad.</template>
 </section>
 
@@ -498,7 +961,7 @@ La animación es exacta: centrar con x − 90t es un cizallamiento del plano (a,
       <h1 class="r d2" style="font-size:clamp(3.4rem,10vw,11rem);line-height:.9">Gracias</h1>
       <p class="q r d3" style="margin:0">¿Preguntas?</p>
       <p class="lede r d4" style="text-align:center">Cada integrante puede deducir ∂S/∂a, ∂S/∂b y el Hessiano en el tablero.</p>
-      <div class="meta glass r d5"><span>[Integrante 1]</span><span>[Integrante 2]</span><span>[Integrante 3]</span><span>[Integrante 4]</span></div>
+      <div class="meta glass r d5"><span>Nicolas Casanova</span><span>Santiago Parra</span><span>Andres Muñoz</span><span>Santiago Hurtado</span><span>Jesus Guerrero</span></div>
       <p class="cap r d6" style="max-width:70ch">Shepard, R. N., &amp; Metzler, J. (1971). Mental rotation of three-dimensional objects. <i>Science, 171</i>(3972), 701–703.</p>
     </div>
   </div>
