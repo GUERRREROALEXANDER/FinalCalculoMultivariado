@@ -67,3 +67,14 @@ table.t td.n.pos{color:var(--good)} table.t td.n.neg{color:var(--amber)}
   .steps>li{grid-template-columns:auto minmax(0,1fr)}
   .steps .why{display:none}
 }
+
+/* ---------- fórmula general antes del paso a paso ---------- */
+.fx{display:flex;align-items:center;gap:1.1em;border:2px solid var(--block);background:#fff;padding:clamp(.35rem,1vh,.8rem) clamp(.7rem,1.2vw,1.2rem)}
+.fx .fx-t{background:var(--block);color:#fff;font-family:var(--serif);font-weight:700;font-size:clamp(.8rem,1.1vw,1.15rem);padding:.2em .7em}
+.fx .math{white-space:normal}
+
+/* ---------- nota corta para quien expone ---------- */
+.recuerda{position:absolute;left:clamp(1rem,3vw,3.2rem);right:clamp(1rem,3vw,3.2rem);bottom:calc(var(--foot-h) + 2px);margin:0;text-align:right;
+  font-family:var(--serif);font-size:clamp(.72rem,.92vw,1rem);line-height:1.2;color:#4a5a62;pointer-events:none;z-index:3}
+.recuerda b{color:var(--amber)}
+.slide:has(>.recuerda){padding-bottom:calc(var(--foot-h) + clamp(1.6rem,4vh,2.8rem))}

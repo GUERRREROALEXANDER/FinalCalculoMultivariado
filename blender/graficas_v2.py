@@ -32,12 +32,13 @@ OUT = os.path.join(ROOT, "blender", "renders", "v2")
 os.makedirs(OUT, exist_ok=True)
 
 # ----------------------------------------------------------------- datos y modelo
-X, Y = [], []
+X, Y, WHO = [], [], []
 for path in sorted(glob.glob(os.path.join(ROOT, "csvs", "*.csv"))):
     with open(path, encoding="utf-8-sig", newline="") as fh:
         for row in csv.DictReader(fh):
             X.append(float(row["angulo_grados"]))
             Y.append(float(row["tiempo_ms"]))
+            WHO.append(os.path.basename(path).split("_")[-1][:-4].upper())
 n = len(X)
 sx, sy = sum(X), sum(Y)
 sxx = sum(x * x for x in X)
@@ -603,7 +604,7 @@ def escena_recta():
     SXs, Y0, SY = 1 / 22.5, 300.0, 1 / 400.0             # x: grados → escena,  y: ms → escena
     YMAX = 2500.0
     P = lambda x, y: (x * SXs, 0.0, (y - Y0) * SY)
-    cam = camera((3.7, -22.0, 2.95), (3.7, 0, 2.9), lens=58)
+    cam = camera((4.25, -22.8, 2.95), (4.25, 0, 2.9), lens=58)
 
     board = material("tablero", (0.975, 0.98, 0.985), rough=0.7)
     plane("Tablero", 30, 30, (4, 0.25, 0), board, rot=(math.pi / 2, 0, 0))
@@ -624,36 +625,57 @@ def escena_recta():
     text("ángulo de la R  (grados)", (4.0, 0.1, -0.62), 0.24, ink)
     text("tiempo (ms)", (-1.45, 0.1, 2.75), 0.24, ink, rot=(math.pi / 2, -math.pi / 2, 0))
 
-    # ensayos individuales (desplazamiento horizontal solo visual, ±3°)
-    rnd = random.Random(7)
-    m_pt = material("ensayo", (0.15, 0.48, 0.64), rough=0.3, coat=0.5)
-    me_pt = bpy.data.meshes.new("pt")
-    bm = bmesh.new()
-    bmesh.ops.create_icosphere(bm, subdivisions=2, radius=0.04)
-    bm.to_mesh(me_pt)
-    bm.free()
-    for p in me_pt.polygons:
-        p.use_smooth = True
-    me_pt.materials.append(m_pt)
+    # ensayos individuales: un color y una columna fija por participante (el corrimiento es solo visual)
+    ids = sorted(set(WHO))
+    colores = ["#e6194b", "#3cb44b", "#4363d8", "#f58231", "#911eb4", "#00bcd4", "#f032e6", "#8db600",
+               "#ff9ebb", "#008080", "#9a6324", "#800000", "#2fd67a", "#808000", "#ffb300", "#000075", "#8a8a8a"]
+    assert len(ids) == len(colores) == 17
+
+    def lineal(hx):
+        v = [int(hx[i:i + 2], 16) / 255 for i in (1, 3, 5)]
+        return tuple(c / 12.92 if c <= 0.04045 else ((c + 0.055) / 1.055) ** 2.4 for c in v)
+
+    mallas = {}
+    for k, pid in enumerate(ids):
+        m_p = material("color_" + pid, (0, 0, 0), rough=1.0)
+        pr = m_p.node_tree.nodes.get("Principled BSDF")
+        setin(pr, ["Specular IOR Level", "Specular"], 0.0)
+        setin(pr, ["Emission Color", "Emission"], (*lineal(colores[k]), 1))
+        setin(pr, ["Emission Strength"], 1.15)
+        me = bpy.data.meshes.new("pt_" + pid)
+        bm = bmesh.new()
+        bmesh.ops.create_icosphere(bm, subdivisions=2, radius=0.045)
+        bm.to_mesh(me)
+        bm.free()
+        for p in me.polygons:
+            p.use_smooth = True
+        me.materials.append(m_p)
+        mallas[pid] = (k, me, m_p)
     hidden = 0
-    for x, y in zip(X, Y):
+    for x, y, pid in zip(X, Y, WHO):
         if y > YMAX:
             hidden += 1
             continue
-        ob = link(bpy.data.objects.new("e", me_pt))
-        px, _, pz = P(x + rnd.uniform(-3, 3), y)
-        ob.location = (px, -0.05 + rnd.uniform(-0.12, 0.0), pz)
+        k, me, _ = mallas[pid]
+        ob = link(bpy.data.objects.new("e_" + pid, me))
+        px, _, pz = P(x + (k - 8) * 0.65, y)
+        ob.location = (px, -0.08, pz)
+        ob.visible_shadow = False
+    text("persona", (9.95, -0.3, 5.5), 0.13, ink)
+    for pid, (k, me, m_p) in mallas.items():
+        zz = 5.05 - k * 0.3
+        sphere("leyenda_" + pid, (9.55, -0.3, zz), 0.09, m_p, seg=24)
+        text(pid, (9.8, -0.3, zz), 0.11, ink, align="LEFT")
 
     # recta óptima y medias con residuos
     red = material("recta", (0.75, 0.2, 0.15), rough=0.25, coat=0.7)
     tubes("Recta", [[P(-6, A * -6 + B), P(186, A * 186 + B)]], 0.035, red)
-    gold = material("oro", (0.95, 0.66, 0.18), rough=0.2, metal=1.0)
+    gold = material("media_negra", (0.008, 0.008, 0.01), rough=0.35)
     m_res = material("residuo", (0.1, 0.1, 0.1), rough=0.4)
     for x, yb in MEANS:
         sphere(f"media {x:.0f}", (P(x, yb)[0], -0.25, P(x, yb)[2]), 0.1, gold)
         tubes(f"res {x:.0f}", [[(P(x, yb)[0], -0.25, P(x, yb)[2]), (P(x, A * x + B)[0], -0.25, P(x, A * x + B)[2])]], 0.012, m_res)
     xb, yb = sx / n, sy / n
-    sphere("centroide", (P(xb, yb)[0], -0.3, P(xb, yb)[2]), 0.075, material("centroide", (0.0, 0.42, 0.53), rough=0.25, coat=0.6))
 
     accent = material("acento", (0.75, 0.2, 0.15), rough=0.45)
     for x, yb in MEANS:                      # valor de cada media sobre la gráfica
@@ -662,8 +684,8 @@ def escena_recta():
         plate((px, -0.55, pz + 0.52), 0.9, 0.42)
         text(f"{yb:.0f}", (px, -0.57, pz + 0.52), 0.16, ink)
     text(f"ŷ = {A:.4f}·x + {B:.2f}", (1.7, -0.3, 6.35), 0.26, accent)
-    text("dorado = media de cada ángulo (ms)", (6.3, -0.3, 6.45), 0.12, ink)
-    text("azul = cada ensayo", (6.3, -0.3, 6.05), 0.12, ink)
+    text("negro = media de cada ángulo (ms)", (6.3, -0.3, 6.45), 0.12, ink)
+    text("colores = cada ensayo, por persona", (6.3, -0.3, 6.05), 0.12, ink)
     text(f"{hidden} ensayos > {int(YMAX)} ms no se ven, pero sí cuentan", (4.0, -0.3, 5.72), 0.09, ink)
 
     area_light("Clave", (-2.5, -8.0, 7.5), 675, 6.0, (4, 0, 2.2))
